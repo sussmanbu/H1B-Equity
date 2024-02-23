@@ -24,7 +24,10 @@ The members of this team are below.
 
 ## Wei
 
-122
+## Ellis Coldren
+
+Senior studying math and computer science in the BA/MA program. 
+
 ## Phil Ledoit
 
 Phil is a senior studying Statistics and Computer Science. His interests include data exploration, cleaning, and processing.
