@@ -25,9 +25,10 @@ The members of this team are below.
 ## Wei
 
 122
-## Name 1
+## Phil Ledoit
 
-122
+Phil is a senior studying Statistics and Computer Science. His interests include data exploration, cleaning, and processing.
+
 ## Name 1
 
 122
