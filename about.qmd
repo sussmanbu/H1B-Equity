@@ -23,6 +23,10 @@ This is a website for the final project for MA[46]15 Data Science with R by Team
 The members of this team are below.
 
 ## Wei
+Senior studying Data Science
+
+## Xinran Sun
+Xinran is a junior majoring in Economics and Mathematics at Boston University.
 
 ## Ellis Coldren
 
