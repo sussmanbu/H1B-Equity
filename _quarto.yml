@@ -4,7 +4,7 @@ project:
   resources: scripts
 
 website:
-  title: "MA [46]15 Final Project"
+  title: "MA [46]15 Final Project T3am-3"
   navbar:
     right:
       - about.qmd
