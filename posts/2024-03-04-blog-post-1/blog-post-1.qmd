@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 ---
 title: "Blog Post 1"
 author: "T3am-3"
@@ -28,8 +28,6 @@ We will load the data by using optical character recognition and combine the dat
 
 It may be challenging to load the data because it could be tedious. Also, this data will be difficult to join with other datasets because the most ‘relevant’ joining column will be month/year of issuance, which is not a very specific identifier for this data.
 
+3. The last dataset we plan to use is from the US Department of Labor: https://www.dol.gov/agencies/eta/foreign-labor/performance 
+It contains detailed performance data on H-1B applications from 2008 to 2023, with approximately 600,000 to 630,000 rows per CSV file and 26 columns. Each row represents one H-1B applicant with their case number. The 26 columns include information such as applicants’ job titles, application dates, wage levels, postal codes, etc. This data was published by the US Department of Labor. We will load the data in R, as all the data are saved in CSV files and organized by year. This dataset contains very precise information, and we want to focus on the applicants’ job titles, wage levels, and their postal codes to find out the economic impact of H-1B visas. One possible challenge I notice is that the dataset contains a huge amount of data; it’s important for us to filter out irrelevant information.
 
-
-
-
->>>>>>> 455739492a7009b136cede86fc035a0077af0f97
