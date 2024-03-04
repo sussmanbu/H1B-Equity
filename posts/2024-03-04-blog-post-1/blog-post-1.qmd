@@ -1,0 +1,20 @@
+---
+title: "Blog Post 1"
+author: "T3am-3"
+subtitle: ""
+description:  |
+  This post details our choices for dataset
+date: "2024-03-04"
+date-modified: "2024-03-04"
+draft: FALSE
+---
+
+1. First dataset we looked at is from Kaggle.
+https://www.kaggle.com/datasets/nivedithavudayagiri/h1b-employer-data-2021-2023
+It contains 3 csv files ranging from the year 2021 - 2023 with roughly approximately 15k-20k rows per csv files and 10 columns.
+Looking at the column of this dataset, it seems it was collected to see how many H1B goes through each year with number of denials, tax id, and the city applicants in. Because this is a tabular dataset, it is possible to load in R easily and start exploration data analysis.
+One challenge of working with dataset is the fact that it might not help us answer deep questions. For example, if we want to answer questions such as what companies, salary incomes(plotting salary distributions versus other features), ethnicity groups, and gender.
+
+Note: This same dataset can be found from U.S citizenship immigration services, but someone uploaded to Kaggle.
+
+
