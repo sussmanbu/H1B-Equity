@@ -161,6 +161,13 @@ ul.task-list li input[type="checkbox"] {
 <li>First dataset we looked at is from Kaggle. https://www.kaggle.com/datasets/nivedithavudayagiri/h1b-employer-data-2021-2023 It contains 3 csv files ranging from the year 2021 - 2023 with roughly approximately 15k-20k rows per csv files and 10 columns. Looking at the column of this dataset, it seems it was collected to see how many H1B goes through each year with number of denials, tax id, and the city applicants in. Because this is a tabular dataset, it is possible to load in R easily and start exploration data analysis. One challenge of working with dataset is the fact that it might not help us answer deep questions. For example, if we want to answer questions such as what companies, salary incomes(plotting salary distributions versus other features), ethnicity groups, and gender.</li>
 </ol>
 <p>Note: This same dataset can be found from U.S citizenship immigration services, but someone uploaded to Kaggle.</p>
+<ol start="2" type="1">
+<li>The second dataset[s] we will analyze is from travel.state.gov and can be found at: <a href="https://travel.state.gov/content/travel/en/legal/visa-law0/visa-statistics/annual-reports.html">travel.state.gov</a></li>
+</ol>
+<p>The data includes rows of countries of origin, separated by continent. The columns include Visa type and total visas issued. There is data that includes the month of the issuance as well.</p>
+<p>This data was published by the Visa Office of the US on the <a href="http://travel.state.gov">travel.state.gov</a> website. The main question this dataset addresses is the country of origin of visa recipients.</p>
+<p>We will load the data by using optical character recognition and combine the datasets from each year to form one large dataset. This larger dataset will have multiple rows for each country, one for each year from 2000-2023(maybe month as well) and can be used to evaluate changes in issuances by country over time.</p>
+<p>It may be challenging to load the data because it could be tedious. Also, this data will be difficult to join with other datasets because the most ‘relevant’ joining column will be month/year of issuance, which is not a very specific identifier for this data.</p>
 
 
 

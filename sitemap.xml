@@ -1,43 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://sussmanbu.github.io/final-project-t3am3/data.html</loc>
-    <lastmod>2024-03-04T05:34:08.104Z</lastmod>
-  </url>
-  <url>
-    <loc>https://sussmanbu.github.io/final-project-t3am3/analysis.html</loc>
-    <lastmod>2024-03-04T05:34:05.433Z</lastmod>
-  </url>
-  <url>
-    <loc>https://sussmanbu.github.io/final-project-t3am3/index.html</loc>
-    <lastmod>2024-03-04T05:34:01.935Z</lastmod>
-  </url>
-  <url>
     <loc>https://sussmanbu.github.io/final-project-t3am3/posts/2024-03-04-blog-post-1/blog-post-1.html</loc>
-    <lastmod>2024-03-04T05:34:00.578Z</lastmod>
-  </url>
-  <url>
-    <loc>https://sussmanbu.github.io/final-project-t3am3/posts/2023-10-13-first-team-meeting/first-team-meeting.html</loc>
-    <lastmod>2024-03-04T05:33:59.801Z</lastmod>
-  </url>
-  <url>
-    <loc>https://sussmanbu.github.io/final-project-t3am3/posts/2023-10-15-getting-started/getting-started.html</loc>
-    <lastmod>2024-03-04T05:33:59.331Z</lastmod>
-  </url>
-  <url>
-    <loc>https://sussmanbu.github.io/final-project-t3am3/posts/2024-02-23-test1/test1.html</loc>
-    <lastmod>2024-03-04T05:34:00.206Z</lastmod>
+    <lastmod>2024-03-04T20:28:42.575Z</lastmod>
   </url>
   <url>
     <loc>https://sussmanbu.github.io/final-project-t3am3/posts/2023-12-20-examples/examples.html</loc>
-    <lastmod>2024-03-04T05:34:01.300Z</lastmod>
+    <lastmod>2024-03-04T20:28:40.496Z</lastmod>
+  </url>
+  <url>
+    <loc>https://sussmanbu.github.io/final-project-t3am3/posts/2023-10-13-first-team-meeting/first-team-meeting.html</loc>
+    <lastmod>2024-03-04T20:28:38.330Z</lastmod>
+  </url>
+  <url>
+    <loc>https://sussmanbu.github.io/final-project-t3am3/data.html</loc>
+    <lastmod>2024-03-04T20:28:35.291Z</lastmod>
+  </url>
+  <url>
+    <loc>https://sussmanbu.github.io/final-project-t3am3/analysis.html</loc>
+    <lastmod>2024-03-04T20:28:28.386Z</lastmod>
   </url>
   <url>
     <loc>https://sussmanbu.github.io/final-project-t3am3/about.html</loc>
-    <lastmod>2024-03-04T05:34:02.269Z</lastmod>
+    <lastmod>2024-03-04T20:28:19.228Z</lastmod>
   </url>
   <url>
     <loc>https://sussmanbu.github.io/final-project-t3am3/big_picture.html</loc>
-    <lastmod>2024-03-04T05:34:05.897Z</lastmod>
+    <lastmod>2024-03-04T20:28:29.259Z</lastmod>
+  </url>
+  <url>
+    <loc>https://sussmanbu.github.io/final-project-t3am3/index.html</loc>
+    <lastmod>2024-03-04T20:28:37.433Z</lastmod>
+  </url>
+  <url>
+    <loc>https://sussmanbu.github.io/final-project-t3am3/posts/2023-10-15-getting-started/getting-started.html</loc>
+    <lastmod>2024-03-04T20:28:39.401Z</lastmod>
+  </url>
+  <url>
+    <loc>https://sussmanbu.github.io/final-project-t3am3/posts/2024-02-23-test1/test1.html</loc>
+    <lastmod>2024-03-04T20:28:41.406Z</lastmod>
   </url>
 </urlset>
