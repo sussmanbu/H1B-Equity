@@ -83,4 +83,31 @@ You will
   * Some repetition of what you do in your `load_and_clean_data.R` file is fine and encouraged if it helps explain what you did.
 * Organization, clarity, cleanliness of the page
   * Make sure to remove excessive warnings, use clean easy-to-read code (without side scrolling), organize with sections, use bullets and other organization tools, etc.
+  
+```{r}
+library(readxl)
+library(dplyr)
+
+file_path <- "dataset/FYs97-22_NIVDetailTable.xlsx"
+sheet_names <- excel_sheets(file_path)
+
+processed_data <- NULL
+
+for (sheet_name in sheet_names) {
+  sheet_data <- read_excel(file_path, sheet = sheet_name) %>%
+    select(Country = 1, `H-1B`) %>%
+    group_by(Country) %>%
+    summarise(`H-1B` = sum(`H-1B`, na.rm = TRUE)) %>%
+    ungroup()
+  colnames(sheet_data)[2] <- sheet_name
+  if (is.null(processed_data)) {
+    processed_data <- sheet_data
+  } else {
+    processed_data <- left_join(processed_data, sheet_data, by = "Country")
+  }
+}
+processed_data
+```
+  
+  
   * This page should be self-contained.
