@@ -46,6 +46,12 @@ For larger datasets, you'll need to create a new folder in the project root dire
 
 Your [load_and_clean_data.R](/scripts/load_and_clean_data.R) file is how you will load and clean your data. Here is a an example of a very simple one.
 
+```{r}
+source(
+  "scripts/load_and_clean_data.R",
+  echo = TRUE # Use echo=FALSE or omit it to avoid code output  
+)
+```
 You should never use absolute paths (eg. `/Users/danielsussman/path/to/project/` or `C:\MA415\\Final_Project\`).
 
 You might consider using the `here` function from the [`here` package](https://here.r-lib.org/articles/here.html) to avoid path problems.
@@ -77,41 +83,5 @@ You will
   * Some repetition of what you do in your `load_and_clean_data.R` file is fine and encouraged if it helps explain what you did.
 * Organization, clarity, cleanliness of the page
   * Make sure to remove excessive warnings, use clean easy-to-read code (without side scrolling), organize with sections, use bullets and other organization tools, etc.
-  
-```{r}
-library(readxl)
-library(dplyr)
-
-file_path <- "dataset/FYs97-22_NIVDetailTable.xlsx"
-sheet_names <- excel_sheets(file_path)
-
-processed_data <- NULL
-
-for (sheet_name in sheet_names) {
-  sheet_data <- read_excel(file_path, sheet = sheet_name)
-  if (sheet_name == 'FY22') {
-    colnames(sheet_data)[30] <- "H-1B"
-  }
-
-  # Ensure the dplyr operations are within a single pipeline and correctly scoped
-  sheet_data <- sheet_data %>%
-    select(Country = 1, `H-1B`) %>%
-    group_by(Country) %>%
-    summarise(`H-1B` = sum(`H-1B`, na.rm = TRUE)) %>%
-    ungroup()
-
-  # Update column name outside the dplyr pipeline
-  colnames(sheet_data)[2] <- sheet_name
-  
-  if (is.null(processed_data)) {
-    processed_data <- sheet_data
-  } else {
-    processed_data <- left_join(processed_data, sheet_data, by = "Country")
-  }
-}
-
-processed_data
-```
-  
   
   * This page should be self-contained.
