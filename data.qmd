@@ -47,11 +47,20 @@ For larger datasets, you'll need to create a new folder in the project root dire
 Your [load_and_clean_data.R](/scripts/load_and_clean_data.R) file is how you will load and clean your data. Here is a an example of a very simple one.
 
 ```{r}
+# run this to load and clean the data and save it as an rds file
 source(
   "scripts/load_and_clean_data.R",
-  echo = TRUE # Use echo=FALSE or omit it to avoid code output  
+  echo = FALSE
 )
 ```
+
+```{r}
+# run this to load the dataset from the rds
+data <- readRDS(file = "dataset/cleaned_h1b_data.rds")
+# your code here
+data
+```
+
 You should never use absolute paths (eg. `/Users/danielsussman/path/to/project/` or `C:\MA415\\Final_Project\`).
 
 You might consider using the `here` function from the [`here` package](https://here.r-lib.org/articles/here.html) to avoid path problems.

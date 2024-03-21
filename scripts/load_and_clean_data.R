@@ -42,8 +42,5 @@ for (sheet_name in sheet_names) {
     processed_data <- left_join(processed_data, sheet_data, by = "Country")
   }
 }
-processed_data <- processed_data %>%
-  filter(!is.na(Continent))
 
-write_csv(processed_data, file = here::here("dataset", "h1b_data_clean.csv"))
-save(processed_data, file = here::here("dataset/h1b_data_clean.RData"))
+saveRDS(processed_data, file = "dataset/cleaned_h1b_data.rds")
