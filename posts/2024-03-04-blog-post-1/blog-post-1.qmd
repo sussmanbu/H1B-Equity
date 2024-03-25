@@ -1,10 +1,9 @@
-<<<<<<< HEAD
 ---
 title: "Blog Post 1"
 author: "T3am-3"
 subtitle: ""
 description:  |
-  This post details our choices for dataset
+  This post details specifics of our dataset and our initial processing steps.
 date: "2024-03-04"
 date-modified: "2024-03-04"
 draft: FALSE
