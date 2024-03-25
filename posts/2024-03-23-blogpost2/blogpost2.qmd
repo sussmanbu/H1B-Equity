@@ -1,8 +1,22 @@
+<<<<<<< HEAD
 ---
-title: "blog-post-2"
-author: ""
-date: "2024-03-23"
-date-modified: "2024-03-23"
+title: "Blog Post 2"
+author: "T3am-3"
+subtitle: ""
+description:  |
+  This post details our choices for dataset
+date: "2024-03-04"
+date-modified: "2024-03-04"
 draft: FALSE
 ---
+
+
+3. Data Equity
+Acquisition - the dataset comes from travel state government. It reports statistical information on immigrants and non immigrants visa. Although official did not explicit mention the purpose of collecting these visa data annually, it is appropriate to reason that the data can use for security purposes since
+travel state government is responsible to provide visa services to foreign nationals who wish to stay in the U.S.
+Conception - Because our dataset contains H1B approval from origin countries, it shows immigrant trends and labor market dynamics. For example, governments may analyze H1B approval data to evaluate the effectiveness of immigrant policies attracting talents. 
+
+
+
+
 
