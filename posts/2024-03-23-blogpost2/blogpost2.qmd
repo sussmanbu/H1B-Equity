@@ -10,10 +10,13 @@ date-modified: "2024-03-04"
 draft: FALSE
 ---
 
+2. Data Loading and Cleaning
+The data was downloaded from `[link](https://travel.state.gov/content/dam/visas/Statistics/Non-Immigrant-Statistics/NIVDetailTables/FYs97-22_NIVDetailTable.xlsx)`. Since it is only a [size] mb large excel file, we put it into the `dataset` folder. Our `[load_and_clean_data.R](/scripts/load_and_clean_data.R)` r script currently reshapes the data from a 3d country-by-visa-type-by-year format to a country-by-year format where only h1b-type visas are considered. The stored data format is `.rds`. The original data also included continent names and totals as additional rows at the start and end of each continent-based group of countries. So our script allocates a continent value to each country based on row order, represented as an additional column. The additional rows containing continent names and totals are also removed. It is also noteworthy that there are two rows (countries) corresponding to an "Unknown" continent value, which are "No Nationality" and "United Nations Laissez-Passer", denoting special cases for which US visas may be given without a country passport.
+
 
 3. Data Equity
-Acquisition - the dataset comes from travel state government. It reports statistical information on immigrants and non immigrants visa. Although official did not explicit mention the purpose of collecting these visa data annually, it is appropriate to reason that the data can use for security purposes since
-travel state government is responsible to provide visa services to foreign nationals who wish to stay in the U.S.
+Acquisition - the dataset comes from travel state government. It reports statistical information on immigrants and non immigrants visa. Although official did not explicit mention the purpose of collecting these visa data annually, it is appropriate to reason that the data can use for security and transparency purposes since
+the travel state government is responsible to provide visa services to foreign nationals who wish to stay in the U.S.
 Conception - Because our dataset contains H1B approval from origin countries, it shows immigrant trends and labor market dynamics. For example, governments may analyze H1B approval data to evaluate the effectiveness of immigrant policies attracting talents. 
 
 
