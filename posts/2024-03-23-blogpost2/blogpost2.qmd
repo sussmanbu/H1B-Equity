@@ -9,17 +9,24 @@ date-modified: "2024-03-04"
 draft: FALSE
 ---
 
-1. Data background 
-The data we will analyze is from the U.S Department of State, more specifically the Bureau of Consular Affairs. The Report of the Visa Office is an annual report providing statistical information on immigrant and non-immigrant visa issuances by consular offices, including information on the use of visa numbers in numerically limited categories. The main part of this dataset we want to focus on is the country of origin of visa recipients for H1B-type visas.
+1. Data background
+
+The data we will analyze is from the U.S Department of State, more specifically the Bureau of Consular Affairs. The Report of the Visa Office is an annual report providing statistical information on immigrant and non-immigrant visa issuances by consular offices, including information visa allocation in numerically limited categories. The main part of this dataset we want to focus on is the country of origin of visa recipients for H1B-type visas. Years covered range from Fiscal Year 1997 to F.Y. 2022 inclusively.
+
 Regarding potential biases and issues, the data includes all types of visa applicants processed by U.S. consular offices, which could cause biases such as those related to the demographics of applicants or the economic conditions in their countries of origin. These factors might change the likelihood of type of visa for which individuals apply. 
 The data are collected for the purpose of providing transparent information regarding the visa operations and to assist in policy making, and research within government agencies as well as for public knowledge. Since FY2019, the methodology for calculating visa data improved for greater accuracy.
 
 
 2. Data Loading and Cleaning
-The raw data is a 2.3MB excel file downloaded from [the travel.state.gov website](https://travel.state.gov/content/dam/visas/Statistics/Non-Immigrant-Statistics/NIVDetailTables/FYs97-22_NIVDetailTable.xlsx) and stored in the `dataset` folder. Our [load_and_clean_data.R](/scripts/load_and_clean_data.R) script currently reshapes the data from a 3d country-by-visa-type-by-year format to a country-by-year format where only h1b-type visas are considered. The stored data format is `.rds`. The original data also includes continent names and totals as additional rows placed at the start and end of each continent-based group of countries. Our script allocates a continent value to each country based on row order relative to those rows, represented as its own `Continent` column. The rows containing continent names and totals are then removed. It is also noteworthy that there are two rows (countries) corresponding to an `Unknown` continent value, which are `No Nationality` and `United Nations Laissez-Passer`, denoting special cases for which US visas may be given without a country passport.
+
+The raw data is a 2.3MB excel file downloaded from the [travel.state.gov website](https://travel.state.gov/content/dam/visas/Statistics/Non-Immigrant-Statistics/NIVDetailTables/FYs97-22_NIVDetailTable.xlsx) and stored in the `dataset` folder. Our [load_and_clean_data.R](/scripts/load_and_clean_data.R) script currently reshapes the data from a 3D country-by-visa-type-by-year format to a 2D country-by-year format where only H1B-type visas are considered. The stored data format is `.rds`.
+
+The original data also includes continent names and totals entered as additional rows before and after every group of countries, which are arranged according to their continent. Our script allocates a continent value to each country based on row order relative to those rows, represented as its own `Continent` column. The rows containing continent names and totals are then removed. It is also noteworthy that an `Unknown` continent value exists for the two rows `No Nationality` and `United Nations Laissez-Passer`, which denote the two special cases for which US visas may be given without being linked to any specific country's passport.
 
 
 3. Data Equity
-Acquisition - the dataset comes from travel state government. It reports statistical information on immigrants and non immigrants visa. Although official did not explicit mention the purpose of collecting these visa data annually, it is appropriate to reason that the data can use for security and transparency purposes since
+
+Acquisition - the dataset comes from the travel state government. It reports statistical information on immigrants and non immigrants visas. Although officials did not explicitly mention the purpose of collecting these visa data annually, it is appropriate to infer that the data serves security and transparency purposes since
 the travel state government is responsible to provide visa services to foreign nationals who wish to stay in the U.S.
+
 Conception - Because our dataset contains H1B approval from origin countries, it shows immigrant trends and labor market dynamics. For example, governments may analyze H1B approval data to evaluate the effectiveness of immigrant policies attracting talents. 
