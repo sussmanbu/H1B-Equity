@@ -1,0 +1,31 @@
+```{r}
+suppressPackageStartupMessages(library(tidyverse))
+#filename <- file.choose("cleaned_h1b_data.rds")
+#print(filename)
+h1b_country <- 
+  read_rds('dataset/cleaned_h1b_data.rds')
+```
+
+```{r}
+h1b_country
+```
+
+```{r}
+
+h1b_continent <- h1b_country |>
+  group_by(Continent)|>
+  select(-Country) |>
+  summarize(across(everything(), sum, na.rm = TRUE))
+
+library(tidyr)
+data_long <- pivot_longer(h1b_continent, cols = -Continent, names_to = "year", values_to = "value")
+
+ggplot(data_long, aes(x = year, y = value, fill = Continent)) +
+  geom_bar(stat = "identity", position = "stack") +
+  labs(title = "Total Values by Continent Over the Years",
+       x = "Year", y = "Total Value") +
+  theme_minimal()+theme(legend.position = "top",
+        axis.text.x = element_text(angle = 45, hjust = 1))
+  #scale_fill_brewer(palette = "Set3")
+```
+
