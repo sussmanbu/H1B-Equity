@@ -49,15 +49,17 @@ ggplot(data_long, aes(x = year, y = count_h1b, fill = Continent)) +
         axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
-
 ```{r}
 ggplot(data_long, aes(x = year, y = count_h1b, fill = Continent)) +
   geom_bar(stat = "identity", position = "stack") +
-  facet_wrap(~Continent, scales='free_y')+
+  facet_wrap(~Continent, scales='free_y') + 
   labs(title = "Total Values by Continent Over the Years",
        x = "Year", y = "Total Value") + theme(legend.position = "top",
-        axis.text.x = element_text(angle = 45, hjust = 1))
+        axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_x_discrete(guide=guide_axis(check.overlap=TRUE))
 ```
+
+
 ```{r}
 h1b_continent <- h1b_country |>
   filter(Continent == 'Unknown') |>
