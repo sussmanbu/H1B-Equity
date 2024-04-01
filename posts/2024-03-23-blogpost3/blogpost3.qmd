@@ -7,3 +7,22 @@ draft: FALSE
 ---
 
 
+1. Further cleaning: we discovered that one of the rows of the `Unknown` continent, `United Nations Laissez-Passer`, contained only empty rows. This suggests that this `Country` value might have had some nonzero values for some non-H1B visa types in the original dataset, but since it has zero H1B visas given to it over all the years, we deleted this row.
+
+2. Data exploration: [comment on data exploration here, explaining the following 3 graphs:]
+
+```{r}
+# run this if you don't have the magick package installed
+install.packages("magick")
+```
+
+```{r}
+library(magick)
+image1 <- image_read('images/total_bar_stacked.png')
+plot(image1)
+image2 <- image_read('images/total_bar_faceted.png')
+plot(image2)
+image3 <- image_read('images/percent_bar_faceted.png')
+plot(image3)
+```
+
