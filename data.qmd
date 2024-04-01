@@ -81,7 +81,13 @@ You will
 
 * Describe where/how to find data.
   * You must include a link to the original data source(s). Make sure to provide attribution to those who collected the data.
+  
+  Our original data files is downloaded from the [travel.state.gov website](https://travel.state.gov/content/dam/visas/Statistics/Non-Immigrant-Statistics/NIVDetailTables/FYs97-22_NIVDetailTable.xlsx) and stored in the `dataset` folder. The data was collected by U.S Department of State, more specifically the Bureau of Consular Affairs. 
+  
   * Why was the data collected/curated? Who put it together? (This is important, if you don't know why it was collected then that might not be a good dataset to look at.
+  
+  The Report of the Visa Office is an annual report providing statistical information on immigrant and non-immigrant visa issuance by consular offices, including information visa allocation in numerically limited categories. The main part of this dataset we want to focus on is the country of origin of visa recipients for H1B-type visas. Years covered range from Fiscal Year 1997 to F.Y. 2022 inclusively.
+  
 * Describe the different data files used and what each variable means. 
   * If you have many variables then only describe the most relevant ones and summarize the rest.
 * Describe any cleaning you had to do for your data.
