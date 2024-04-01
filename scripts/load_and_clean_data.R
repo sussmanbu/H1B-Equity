@@ -5,7 +5,7 @@ file_path <- "dataset/FYs97-22_NIVDetailTable.xlsx"
 sheet_names <- excel_sheets(file_path)
 
 fy22 <- read_excel(file_path, sheet = 'FY22') %>%
-  filter(!is.na(`Fiscal Year 2022`))
+  filter(!is.na(`Fiscal Year 2022`) & `Fiscal Year 2022` != "United Nations Laissez-Passer")
 
 curr_continent <- fy22[1, 1]
 fy22$Continent <- NA

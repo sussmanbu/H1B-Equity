@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ```{r}
 suppressPackageStartupMessages(library(tidyverse))
 #filename <- file.choose("cleaned_h1b_data.rds")
@@ -393,3 +394,66 @@ data_long_other
 
 
 
+=======
+```{r}
+# Load libraries and dataset
+suppressPackageStartupMessages(library(tidyverse))
+h1b_country <- read_rds('dataset/cleaned_h1b_data.rds')
+```
+
+```{r}
+# Rename year columns
+years <- paste0(1997:2022)
+colnames(h1b_country) <- c('Country', 'Continent', years)
+```
+
+```{r}
+# Summarize total H1B visas per year and transform into long format for plotting
+total_h1b_by_year_long <- h1b_country %>%
+  select(all_of(years)) %>%
+  summarise(across(everything(), sum, na.rm = TRUE)) %>%
+  pivot_longer(cols = everything(), names_to = "year", values_to = "Total_H1B_Visas")
+
+# Plot total H1B visas issued worldwide over the years
+ggplot(total_h1b_by_year_long, aes(x = year, y = Total_H1B_Visas, fill = year)) +
+  geom_bar(stat = "identity") +
+  scale_fill_viridis_d() +
+  labs(title = "Total H1B Visas Issued Worldwide Over the Years",
+       x = "Year", y = "Total Number of H1B Visas") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1), legend.position = "none")
+```
+
+```{r}
+# Summarize data by continent and transform into long format
+data_long <- h1b_country %>%
+  group_by(Continent) %>%
+  summarise(across(all_of(years), sum, na.rm = TRUE)) %>%
+  pivot_longer(cols = all_of(years), names_to = "year", values_to = "count_h1b")
+
+# Plot total values by continent over the years
+ggplot(data_long, aes(x = year, y = count_h1b, fill = Continent)) +
+  geom_bar(stat = "identity", position = "stack") +
+  facet_wrap(~Continent, scales="free_y") +
+  labs(title = "Total H1B Visas by Continent Over the Years",
+       x = "Year", y = "Total Visas") +
+  theme(legend.position = "top", axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+```{r}
+# Calculate percentages for each continent per year
+data_long <- data_long %>%
+  left_join(total_h1b_by_year_long, by = "year") %>%
+  mutate(percentage_of_total = count_h1b / Total_H1B_Visas)
+
+# Plot percentage of total values by continent over the years
+ggplot(data_long, aes(x = year, y = percentage_of_total, fill = Continent)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  facet_wrap(~Continent, scales="free_y") +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 0.1)) +
+  labs(title = "Percentage of Total H1B Visas by Continent Over the Years",
+       x = "Year", y = "Percentage of Total Visas") +
+  theme(legend.position = "top", axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+>>>>>>> 5dcbcb76829b43c5323c8d54ece3b8995ca08211
