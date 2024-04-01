@@ -1,0 +1,16 @@
+{
+  "hash": "febc1116281b7385e144f08730791e8f",
+  "result": {
+    "markdown": "---\ntitle: \"blog-post-3\"\nauthor: \"\"\ndate: \"2024-04-5\"\ndate-modified: \"2024-03-23\"\ndraft: FALSE\n---\n\n\n\n1. Further cleaning: we discovered that one of the rows of the `Unknown` continent, `United Nations Laissez-Passer`, contained only empty rows. This suggests that this `Country` value might have had some nonzero values for some non-H1B visa types in the original dataset, but since it has zero H1B visas given to it over all the years, we deleted this row.\n\n2. Data exploration: [comment on data exploration here, explaining the following 3 graphs:]\n\n\n::: {.cell}\n\n```{.r .cell-code}\n# run this if you don't have the magick package installed\n# install.packages(\"magick\")\n```\n:::\n\n::: {.cell}\n\n```{.r .cell-code}\nlibrary(magick)\n```\n\n::: {.cell-output .cell-output-stderr}\n```\nLinking to ImageMagick 6.9.12.93\nEnabled features: cairo, fontconfig, freetype, heic, lcms, pango, raw, rsvg, webp\nDisabled features: fftw, ghostscript, x11\n```\n:::\n\n```{.r .cell-code}\nimage1 <- image_read('images/total_bar_stacked.png')\nplot(image1)\n```\n\n::: {.cell-output-display}\n![](blogpost3_files/figure-html/unnamed-chunk-2-1.png){width=672}\n:::\n\n```{.r .cell-code}\nimage2 <- image_read('images/total_bar_faceted.png')\nplot(image2)\n```\n\n::: {.cell-output-display}\n![](blogpost3_files/figure-html/unnamed-chunk-2-2.png){width=672}\n:::\n\n```{.r .cell-code}\nimage3 <- image_read('images/percent_bar_faceted.png')\nplot(image3)\n```\n\n::: {.cell-output-display}\n![](blogpost3_files/figure-html/unnamed-chunk-2-3.png){width=672}\n:::\n:::\n",
+    "supporting": [
+      "blogpost3_files"
+    ],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

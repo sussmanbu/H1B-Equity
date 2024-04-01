@@ -13,14 +13,15 @@ draft: FALSE
 
 ```{r}
 # run this if you don't have the magick package installed
-install.packages("magick")
+# install.packages("magick")
+# make sure to comment install.package out before creating gh-pages.
 ```
 
 ```{r}
 library(magick)
 image1 <- image_read('images/total_bar_stacked.png')
 plot(image1)
-image2 <- image_read('images/total_bar_faceted.png')
+image2 <- image_read('images/total_bar.png')
 plot(image2)
 image3 <- image_read('images/percent_bar_faceted.png')
 plot(image3)
