@@ -1,6 +1,8 @@
 ---
 title: "blog-post-3"
 author: ""
+description:  |
+  This post details basic explore data exploration.
 date: "2024-04-5"
 date-modified: "2024-03-23"
 draft: FALSE
@@ -31,10 +33,12 @@ However, we notice that there exist a sharp drop in year 2020 and 2021 particula
 image2 <- image_read('images/total_bar.png')
 plot(image2)
 ```
+Observation:
 For this side by side comparison of H1B approvals and other countries, we get to observe the trend of each countries.
 It seems like Asia has been getting positive trends since year 1997 till 2022 except 2020 and 2021 due to covid. In contrast, other countries like Europe, South America, Oceania and Africa have all been trending downward for H1B approval. It can be worth to understand what factors contribute to the trends.
 ```{r}
 image3 <- image_read('images/percent_bar_faceted.png')
 plot(image3)
 ```
+Observation:
 The last plot shows similar content to plot 2. However, with percentage being display, we see that Asia out numbered all other countries combined in terms of H1B approval and Europe comes in second place.
