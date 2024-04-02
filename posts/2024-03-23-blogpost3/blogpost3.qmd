@@ -22,9 +22,19 @@ This 'United Nations Laissez-Passer' is a document held by diplomats to make tra
 library(magick)
 image1 <- image_read('images/total_bar_stacked.png')
 plot(image1)
+```
+Observation:
+we see a positive trend on the number of H1B approvals. As the year progresses, the number of H1B approvals continue to rise.
+However, we notice that there exist a sharp drop in year 2020 and 2021 particularly due to covid. Next, it spikes back up in year 2022. From this plot, we also see that Asia has been the consistent country where H1B approvals happen the most.
+
+```{r}
 image2 <- image_read('images/total_bar.png')
 plot(image2)
+```
+For this side by side comparison of H1B approvals and other countries, we get to observe the trend of each countries.
+It seems like Asia has been getting positive trends since year 1997 till 2022 except 2020 and 2021 due to covid. In contrast, other countries like Europe, South America, Oceania and Africa have all been trending downward for H1B approval. It can be worth to understand what factors contribute to the trends.
+```{r}
 image3 <- image_read('images/percent_bar_faceted.png')
 plot(image3)
 ```
-
+The last plot shows similar content to plot 2. However, with percentage being display, we see that Asia out numbered all other countries combined in terms of H1B approval and Europe comes in second place.
