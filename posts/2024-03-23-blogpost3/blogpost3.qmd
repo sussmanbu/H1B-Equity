@@ -7,14 +7,15 @@ draft: FALSE
 ---
 
 
-1. Further cleaning: we discovered that one of the rows of the `Unknown` continent, `United Nations Laissez-Passer`, contained only empty rows. This suggests that this `Country` value might have had some nonzero values for some non-H1B visa types in the original dataset, but since it has zero H1B visas given to it over all the years, we deleted this row.
+1. Further cleaning: we discovered that one of the countries of the `Unknown` continent, `United Nations Laissez-Passer`, contained only empty rows. This suggests that this `Country` value might have had some nonzero values for some non-H1B visa types in the original dataset, but since it has zero H1B visas given to it over all the years, we deleted this row.
+This 'United Nations Laissez-Passer' is a document held by diplomats to make travelling between countries easier.
 
-2. Data exploration: [comment on data exploration here, explaining the following 3 graphs:]
+2. Data exploration: We did some preliminary comparisons between the continents and countries to see how the number of recipients has changed in proportion between 1997 and 2022. It is clear that across all countries, there was a significant decrease in H1B recpients throughout the Covid pandemic. The number of recipients with 'Unknown Nationality' has decreased to almost none since 1997. Africa, Europe, Oceania, and South America all have decreased in sponshorship throughout this time period, whereas Asia has increased. Asia also is the largest recipient of sponsorship by a significant proportion, as the continent receives between 50-80% of the administered visas in this time period. A good next step would be to normalize these proportions by population of each of these continents.
 
 ```{r}
-# run this if you don't have the magick package installed
-# install.packages("magick")
-# make sure to comment install.package out before creating gh-pages.
+#run this if you don't have the magick package installed
+#install.packages("magick")
+#make sure to comment install.package out before creating gh-pages.
 ```
 
 ```{r}
