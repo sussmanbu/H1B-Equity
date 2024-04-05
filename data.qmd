@@ -90,6 +90,18 @@ You will
   
 * Describe the different data files used and what each variable means. 
   * If you have many variables then only describe the most relevant ones and summarize the rest.
+  
+The original dataset comes with the following features/columns
+
+country: origin of country
+
+H1B: H1B approval count
+
+FY97 - FY22: represent year 1997 till 2022
+
+Essentially, this dataset contains information of H1B approval from year 1997 till 2022 and its originate country.
+
+
 * Describe any cleaning you had to do for your data.
   * You *must* include a link to your `load_and_clean_data.R` file.
   * Rrename variables and recode factors to make data more clear.
@@ -98,5 +110,57 @@ You will
   * Some repetition of what you do in your `load_and_clean_data.R` file is fine and encouraged if it helps explain what you did.
 * Organization, clarity, cleanliness of the page
   * Make sure to remove excessive warnings, use clean easy-to-read code (without side scrolling), organize with sections, use bullets and other organization tools, etc.
+
+The original dataset is in dataset directory as .xlsx file. It contains pivot tables for each year that describe various U.S travel approvals such as H1B. To transform the dataset into the current one, we did the following operation
+
+read in excel files
+
+filter out null values(continents, .., etc)
+
+group country
+
+filter out other columns and keep H1B column
+
+create columns for each year (1977-2022)
+
+
+The script to transform the dataset is in scripts directory `load_and_clean_data.R` file.
+
+This is an example of how to load our cleaned dataset from dataset directory:
+```{r}
+suppressPackageStartupMessages(library(tidyverse))
+#filename <- file.choose("cleaned_h1b_data.rds")
+#print(filename)
+h1b_country <- 
+  read_rds('dataset/cleaned_h1b_data.rds')
+```
+
+```{r}
+#changing the year to numerical values
+current_names <- names(h1b_country)
+print(current_names)
+#names(df) <- new_names
+
+```
+
+The code below is to rename the columns to understandable years format.
+```{r}
+colnames(h1b_country) <- c('Country','Continent','1997', '1998', '1999', '2000', '2001', '2002', '2003', '2004', '2005', '2006', '2007', '2008', '2009', '2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022') 
+
+h1b_country
+```
+
+The following code shortens the dimension of our dataframe to 3 columns specially the years columns. Having many years column can make the dataset hard to analysis or explore. 
+```{r}
+h1b_continent <- h1b_country |>
+  group_by(Continent)|>
+  select(-Country)|>
+  summarize(across(everything(), sum, na.rm = TRUE))
+
+library(tidyr)
+data_long <- pivot_longer(h1b_continent, cols = -Continent, names_to = "year", values_to = "count_h1b")
+
+data_long
+```
   
   * This page should be self-contained.
