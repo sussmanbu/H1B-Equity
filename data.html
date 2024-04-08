@@ -270,16 +270,13 @@ Attaching package: 'dplyr'</code></pre>
 <li><p>Describe where/how to find data.</p>
 <ul>
 <li>You must include a link to the original data source(s). Make sure to provide attribution to those who collected the data.</li>
-</ul>
-<p>Our original data files is downloaded from the <a href="https://travel.state.gov/content/dam/visas/Statistics/Non-Immigrant-Statistics/NIVDetailTables/FYs97-22_NIVDetailTable.xlsx">travel.state.gov website</a> and stored in the <code>dataset</code> folder. The data was collected by U.S Department of State, more specifically the Bureau of Consular Affairs.</p>
-<ul>
 <li>Why was the data collected/curated? Who put it together? (This is important, if you don’t know why it was collected then that might not be a good dataset to look at.</li>
-</ul>
-<p>The Report of the Visa Office is an annual report providing statistical information on immigrant and non-immigrant visa issuance by consular offices, including information visa allocation in numerically limited categories. The main part of this dataset we want to focus on is the country of origin of visa recipients for H1B-type visas. Years covered range from Fiscal Year 1997 to F.Y. 2022 inclusively.</p></li>
-<li><p>Describe the different data files used and what each variable means.</p>
-<ul>
+<li>Describe the different data files used and what each variable means.</li>
 <li>If you have many variables then only describe the most relevant ones and summarize the rest.</li>
-</ul></li>
+</ul>
+<h4 id="response" class="anchored">Response</h4>
+<p>Our original data files is downloaded from the <a href="https://travel.state.gov/content/dam/visas/Statistics/Non-Immigrant-Statistics/NIVDetailTables/FYs97-22_NIVDetailTable.xlsx">travel.state.gov website</a> and stored in the <code>dataset</code> folder. The data was collected by U.S Department of State, more specifically the Bureau of Consular Affairs.</p>
+<p>The Report of the Visa Office is an annual report providing statistical information on immigrant and non-immigrant visa issuance by consular offices, including information visa allocation in numerically limited categories. The main part of this dataset we want to focus on is the country of origin of visa recipients for H1B-type visas. Years covered range from Fiscal Year 1997 to F.Y. 2022 inclusively.</p></li>
 </ul>
 <p>The original dataset comes with the following features/columns</p>
 <p>country: origin of country</p>
@@ -300,6 +297,8 @@ Attaching package: 'dplyr'</code></pre>
 <li>Make sure to remove excessive warnings, use clean easy-to-read code (without side scrolling), organize with sections, use bullets and other organization tools, etc.</li>
 </ul></li>
 </ul>
+<section id="response-1" class="level4">
+<h4 class="anchored" data-anchor-id="response-1">Response</h4>
 <p>The original dataset is in dataset directory as .xlsx file. It contains pivot tables for each year that describe various U.S travel approvals such as H1B. To transform the dataset into the current one, we did the following operation</p>
 <p>read in excel files</p>
 <p>filter out null values(continents, .., etc)</p>
@@ -400,6 +399,7 @@ Supply arguments directly to `.fns` through an anonymous function instead.
 </ul>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->
