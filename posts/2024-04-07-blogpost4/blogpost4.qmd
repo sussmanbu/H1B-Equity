@@ -1,8 +1,135 @@
 ---
 title: "blog-post-4"
 author: "team3"
+description:  |
+  This post details blog-post-4
 date: "2024-04-07"
 date-modified: "2024-04-07"
 draft: FALSE
 ---
+
+## Continuation work
+In blog posts 2 and 3, we uncovered a noticeable trend in our second dataset. We analyzed the H1B visa approval rates across different countries by extracting data from an Excel file. One key finding was that Asian countries have the highest H1B approval counts compared to other regions. This discovery led us to delve deeper into understanding the reasons behind this trend and to explore the interconnections with other variables.
+
+However, we faced a challenge with the second dataset as it limited our ability to gain deeper insights or construct statistical models. To overcome this and enrich our analysis, we decided to integrate additional datasets from blog post 1. This integration aims to provide a more comprehensive view and enable a better exploration of the underlying factors influencing the H1B approval trends.
+
+## Dataset 1
+For our first dataset, we have the following columns
+
+Fiscal Year: The fiscal year of the H-1B application.
+
+Employer: The name of the employer applying for the H-1B visa.
+
+Initial Approval: The number of initial H-1B applications approved.
+
+Initial Denial: The number of initial H-1B applications denied.
+
+Continuing Approval: The number of continuing H-1B applications approved.
+
+Continuing Denial: The number of continuing H-1B applications denied.
+
+NAICS: The North American Industry Classification System code.
+
+Tax ID: The Tax Identification Number of the employer.
+
+State: The state where the employer is located.
+
+City: The city where the employer is located.
+
+ZIP: The ZIP code where the employer is located
+
+With this dataset, it seems like we can calculate approval and denial rates by employer. We also wonder of the possibility to predict approval/denial with logistic regression. However, we think that the features/columns in this dataset do not represent importances to help classify approval or denial.
+
+## Dataset 3
+With this dataset, it seems like we have a lot of features to explore. However, we can filter columns that contribute to the predicator variable we care about. Specifically, we will explore the most recent year dataset if we want to build statistical model on it. It does not make sense to build a statistical model on year 2010 and use it to explain current year since data distribution is not the same. For this blog post, we decide to start on the year 2024 first to do our exploration and initial modeling. Note that modeling is an iterative process.
+
+```{r}
+install.packages("readxl")
+install.packages("readr")
+library(readxl)
+library(readr)
+```
+
+### Initial thought
+Looking at this dataset, we want to filter out columns and explore relationships in dataset. Because the original dataset exceeds the limit for Github store without Git LFS, we will saved the cleaned and fewer columns dataset.
+
+Columns to consider
+
+case_number
+
+case_status
+
+received_date/decision_date
+
+Visa-class: Focus only H1B
+
+Job_title
+
+fulltime_position
+
+begin_date/end_date
+
+new_employment
+
+continued_employment
+
+employer name: company name
+
+employer state
+
+Agent_representing_employer
+
+join with additional dataset with more columns: 
+
+prevailing wage and name of study/colleges
+
+We decide to look into these columns since we think that these are high feature importances in terms of making predictive model. Also, we have a hypothesis that a good agent(lawyer) can also increase acceptance of H1B.
+
+
+
+```{r}
+library(dplyr)
+df <- readRDS("dataset/cleaned_disclosure.rds")
+print(df)
+```
+
+```{r}
+new_df <- df |>
+  filter(
+    VISA_CLASS %in% c(
+      "H-1B"
+    )
+  )
+```
+
+```{r}
+new_df$FULL_TIME_POSITION <- factor(new_df$FULL_TIME_POSITION)
+
+new_df$AGENT_REPRESENTING_EMPLOYER <- factor(new_df$AGENT_REPRESENTING_EMPLOYER)
+mylogit <- glm(FULL_TIME_POSITION ~ AGENT_REPRESENTING_EMPLOYER, data = new_df, family = "binomial")
+```
+
+```{r}
+summary(mylogit)
+
+```
+```{r}
+# model 2
+new_df$FULL_TIME_POSITION <- factor(new_df$FULL_TIME_POSITION)
+
+new_df$AGENT_REPRESENTING_EMPLOYER <- factor(new_df$AGENT_REPRESENTING_EMPLOYER)
+new_df$EMPLOYER_STATE <- factor(new_df$EMPLOYER_STATE)
+mylogit <- glm(FULL_TIME_POSITION ~ AGENT_REPRESENTING_EMPLOYER+EMPLOYER_STATE, data = new_df, family = "binomial")
+```
+
+```{r}
+summary(mylogit)
+```
+For AGENT_REPRESENTING_EMPLOYERYes, the coefficient is -0.19105, indicating that when the agent is representing the employer, the log-odds of having a full-time position ("Y") decrease compared to when the agent is not representing (the baseline). This contradicts to our assumption that having a good lawyer increases the chance of H1B approval. Perhaps, it is worth investigate further.
+
+For state, MA(Massachusetts) and NY(New York) have a similiar coefficient, that is, negative effect on the likelihood of getting full-time position.
+
+Overall, we can see that there exist features in dataset that  contribute to whether likely to being offer fulltime position or not. If possible, we can join the remaining two datasets with **case number** which gives us more features to work on.
+
+
 
