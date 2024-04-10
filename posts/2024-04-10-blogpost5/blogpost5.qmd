@@ -1,0 +1,43 @@
+---
+title: "blogpost5"
+description:  |
+  This blog post will build on blogpost4 to merge the 3rd dataset by case
+  numbers
+author: "team3"
+date: "2024-04-10"
+date-modified: "2024-04-10"
+draft: FALSE
+---
+
+```{r}
+library(readxl)
+library(readr)
+library(dplyr)
+```
+
+```{r}
+df <- readRDS("dataset/cleaned_disclosure.rds")
+print(df)
+```
+
+```{r}
+
+# rds for the other two projects
+# df2 <- read_excel("dataset/worksite.xlsx")
+# saveRDS(df2, "dataset/LCA_worksite.rds")
+
+# df3 <- read_excel("dataset/appendix.xlsx")
+# saveRDS(df3, "dataset/LCA_appendix.rds")
+```
+
+```{r}
+df2 <- readRDS("dataset/LCA_worksite.rds")
+
+print(df2)
+```
+
+```{r}
+df3 <- readRDS("dataset/appendix.rds")
+
+print(df3)
+```
