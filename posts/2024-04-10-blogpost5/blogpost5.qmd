@@ -41,3 +41,6 @@ df3 <- readRDS("dataset/appendix.rds")
 
 print(df3)
 ```
+
+## Merging by case number
+
