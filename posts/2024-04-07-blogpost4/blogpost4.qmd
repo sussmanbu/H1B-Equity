@@ -49,7 +49,6 @@ With this dataset, it seems like we can calculate approval and denial rates by e
 With this dataset, it seems like we have a lot of features to explore. However, we can filter columns that contribute to the predicator variable we care about. Specifically, we will explore the most recent year dataset if we want to build statistical model on it. It does not make sense to build a statistical model on year 2010 and use it to explain current year since data distribution is not the same. For this blog post, we decide to start on the year 2024 first to do our exploration and initial modeling. Note that modeling is an iterative process.
 
 ```{r}
-
 library(readxl)
 library(readr)
 ```

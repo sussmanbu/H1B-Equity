@@ -19,7 +19,11 @@ library(dplyr)
 df <- readRDS("dataset/cleaned_disclosure.rds")
 print(df)
 ```
+# Combining Dataset
 
+We selected this dataset, updated in 2024, because it comprehensively represents the evolution of U.S. immigration policy from the Trump to the Biden administration. It provides a wealth of columns suitable for statistical modeling. To enrich our analysis, we plan to merge it with two other datasets. The first includes information on the applicants' universities and majors, while the second contains data on their incomes, allowing us to construct a linear regression model. Once merged, we will have a dataframe with approximately 30+ columns.
+
+This is the line of code of how to read xlsx files and convert into rds. We commented out after done
 ```{r}
 
 # rds for the other two projects
@@ -31,16 +35,79 @@ print(df)
 ```
 
 ```{r}
+# read in df2
+
 df2 <- readRDS("dataset/LCA_worksite.rds")
 
 print(df2)
 ```
 
 ```{r}
+# read in df3
+
 df3 <- readRDS("dataset/appendix.rds")
 
 print(df3)
 ```
 
-## Merging by case number
+## Merging Process
+To merge the dataset together, we can find matching case numbers.
+
+```{r}
+# merge df1 and df2 by case number
+# merge_1 <- merge(df, df2, by="CASE_NUMBER", all = TRUE)
+```
+
+```{r}
+# final_merge <- merge(merge_1, df3, by="CASE_NUMBER", all = TRUE)
+```
+
+```{r}
+# visualize our new dataset
+# final_merge
+```
+
+```{r}
+# save as new rds for final_merge
+# saveRDS(final_merge, "dataset/final_merge.rds")
+```
+
+# Start HERE
+
+Just load in the final_merge dataset
+```{r}
+final_df <- readRDS("dataset/final_merge.rds")
+print(final_df)
+```
+
+```{r}
+colnames(final_df)
+```
+# Initial Thoughts
+After having complete columns, here are some thoughts we have in mind which guide our exploration data analysis
+
+### Employment Trends
+What are some most common jobs titles, industries, or the duration of employment contracts.
+
+```{r}
+print(sort(table(final_df$JOB_TITLE), decreasing=TRUE)[1:5])
+```
+
+```{r}
+filtered_data <- final_df |>
+  filter(FULL_TIME_POSITION == "Y") |>
+  count(JOB_TITLE, sort = TRUE)
+
+print(filtered_data)
+```
+From this result, we can see that tech related jobs are still the highest percentage of getting visas.
+
+### Geographical Patterns
+In blog-post-4, we learned that New York and Massachusetts have a negative likelihood of getting fulltime position, perhaps we can investigate more here.
+
+### Build on Logistic Regression
+This time with more features/columns, we can build a better logistic regression model to predict approved or denial
+
+### Linear Regression
+This time with numerical columns(wage), we can predict wages based on various features
 
