@@ -83,6 +83,13 @@ print(final_df)
 ```{r}
 colnames(final_df)
 ```
+# EDA
+
+```{r}
+# let's check missing values
+print(colSums(is.na(final_df)))
+```
+
 # Initial Thoughts
 After having complete columns, here are some thoughts we have in mind which guide our exploration data analysis
 
@@ -90,10 +97,12 @@ After having complete columns, here are some thoughts we have in mind which guid
 What are some most common jobs titles, industries, or the duration of employment contracts.
 
 ```{r}
+# top 5 job_title in this dataset
 print(sort(table(final_df$JOB_TITLE), decreasing=TRUE)[1:5])
 ```
 
 ```{r}
+# filter the dataset which jobs have most frequency and applicant get full time position
 filtered_data <- final_df |>
   filter(FULL_TIME_POSITION == "Y") |>
   count(JOB_TITLE, sort = TRUE)
@@ -110,4 +119,63 @@ This time with more features/columns, we can build a better logistic regression 
 
 ### Linear Regression
 This time with numerical columns(wage), we can predict wages based on various features
+
+
+### Clustering Analysis
+We can make use of various clustering techniques to group similar applicants together.
+```{r}
+library(tidymodels)
+library(cluster)
+library(ggplot2)
+library(dplyr)
+
+filtered_df <- final_df %>%
+  # filter(JOB_TITLE %in% c("Software Engineer", "Assistant Professor", "Business Analyst", "Machine Learning Engineer"),
+  # FULL_TIME_POSITION %in% c("Y", "N")) %>%
+  select(WAGE_RATE_OF_PAY_FROM, PREVAILING_WAGE)
+
+print(filtered_df)
+```
+
+
+```{r}
+# create recipe
+rec <- recipe(~ ., data=filtered_df) |>
+  step_dummy(all_nominal()) |>
+  prep()
+
+cluster_data <- bake(rec, new_data=NULL)
+
+# perform clustering
+set.seed(42)
+k <- 5
+clustered_result <- kmeans(cluster_data, centers=k)
+
+# visualize cluster
+filtered_df$cluster <- factor(clustered_result$cluster)
+print(filtered_df)
+```
+
+```{r}
+library(ggplot2)
+
+ggplot(filtered_df, aes(x = WAGE_RATE_OF_PAY_FROM, y = PREVAILING_WAGE)) +
+  geom_point(aes(color = cluster)) +
+  # facet_wrap(~ cluster) +
+  theme_minimal() +
+  labs(title = "Wage Rate vs. Prevailing Wage by Cluster") +
+  scale_x_log10() +
+  scale_y_log10()
+  
+```
+
+# Observation and Limitation
+
+WAGE_RATE_OF_PAY_FROM is the minimum wage pay at the worksite, 
+
+PREVAILING_WAGE is the average wage paid to similar employed workers in the field
+
+Looking at the result of KMeans with only two numerical columns, it was not necessary to make use of Kmeans because is obvious to notice a linear relationship. There's a positive correlation between these two features. As one increases, other tends to increase.
+
+For example, applicants who are highly specialized / high demand positions mostly lie in cluster 4. 
 
