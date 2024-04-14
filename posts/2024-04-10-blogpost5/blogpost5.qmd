@@ -108,6 +108,53 @@ In blog-post-4, we learned that New York and Massachusetts have a negative likel
 ### Build on Logistic Regression
 This time with more features/columns, we can build a better logistic regression model to predict approved or denial
 
+
 ### Linear Regression
 This time with numerical columns(wage), we can predict wages based on various features
+
+
+
+
+
+
+
+
+# data exploration 
+case status 
+```{r}
+library(dplyr)
+status_counts <- df %>% count(CASE_STATUS)
+ggplot(status_counts, aes(x = "", y = n, fill = CASE_STATUS)) +
+    geom_bar(width = 1, stat = "identity") +
+    coord_polar(theta = "y") +
+    theme_void() +
+    labs(fill = "Case Status", title = "Distribution of CASE_STATUS")
+```
+## import raw 
+```{r}
+
+mydata=PERM_Disclosure_Data_FY2018_EOY
+# Set seed for reproducibility
+set.seed(123)
+
+# Sample 1% of the data
+mydata <- mydata[sample(nrow(mydata), size = 0.01 * nrow(mydata)), ]
+
+status_counts <- mydata %>% count(CASE_STATUS)
+ggplot(status_counts, aes(x = "", y = n, fill = CASE_STATUS)) +
+    geom_bar(width = 1, stat = "identity") +
+    coord_polar(theta = "y") +
+    theme_void() +
+    labs(fill = "Case Status", title = "Distribution of CASE_STATUS")
+```
+```{r}
+
+lm_result <- lm(data_dif ~ PW_AMOUNT_9089, data = mydata)
+summary(lm_result)
+
+```
+
+
+
+
 
