@@ -155,6 +155,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#load-and-clean-data-script" id="toc-load-and-clean-data-script" class="nav-link" data-scroll-target="#load-and-clean-data-script">Load and clean data script</a></li>
   </ul></li>
   <li><a href="#rubric-on-this-page" id="toc-rubric-on-this-page" class="nav-link" data-scroll-target="#rubric-on-this-page">Rubric: On this page</a></li>
+  <li><a href="#data-background" id="toc-data-background" class="nav-link" data-scroll-target="#data-background">Data Background</a>
+  <ul class="collapse">
+  <li><a href="#first-dataset-background" id="toc-first-dataset-background" class="nav-link" data-scroll-target="#first-dataset-background">First Dataset Background</a></li>
+  <li><a href="#explaination" id="toc-explaination" class="nav-link" data-scroll-target="#explaination">Explaination</a></li>
+  </ul></li>
+  <li><a href="#dataset-3" id="toc-dataset-3" class="nav-link" data-scroll-target="#dataset-3">Dataset 3</a>
+  <ul class="collapse">
+  <li><a href="#background" id="toc-background" class="nav-link" data-scroll-target="#background">Background</a></li>
+  <li><a href="#how-it-was-collected" id="toc-how-it-was-collected" class="nav-link" data-scroll-target="#how-it-was-collected">How it was collected?</a></li>
+  <li><a href="#why-it-is-worth-exploring" id="toc-why-it-is-worth-exploring" class="nav-link" data-scroll-target="#why-it-is-worth-exploring">Why it is worth exploring?</a></li>
+  <li><a href="#cleaning-dataset" id="toc-cleaning-dataset" class="nav-link" data-scroll-target="#cleaning-dataset">Cleaning Dataset</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -267,23 +279,13 @@ Attaching package: 'dplyr'</code></pre>
 <h2 class="anchored" data-anchor-id="rubric-on-this-page">Rubric: On this page</h2>
 <p>You will</p>
 <ul>
-<li><p>Describe where/how to find data.</p>
+<li>Describe where/how to find data.
 <ul>
 <li>You must include a link to the original data source(s). Make sure to provide attribution to those who collected the data.</li>
 <li>Why was the data collected/curated? Who put it together? (This is important, if you don’t know why it was collected then that might not be a good dataset to look at.</li>
 <li>Describe the different data files used and what each variable means.</li>
 <li>If you have many variables then only describe the most relevant ones and summarize the rest.</li>
-</ul>
-<h4 id="response" class="anchored">Response</h4>
-<p>Our original data files is downloaded from the <a href="https://travel.state.gov/content/dam/visas/Statistics/Non-Immigrant-Statistics/NIVDetailTables/FYs97-22_NIVDetailTable.xlsx">travel.state.gov website</a> and stored in the <code>dataset</code> folder. The data was collected by U.S Department of State, more specifically the Bureau of Consular Affairs.</p>
-<p>The Report of the Visa Office is an annual report providing statistical information on immigrant and non-immigrant visa issuance by consular offices, including information visa allocation in numerically limited categories. The main part of this dataset we want to focus on is the country of origin of visa recipients for H1B-type visas. Years covered range from Fiscal Year 1997 to F.Y. 2022 inclusively.</p></li>
-</ul>
-<p>The original dataset comes with the following features/columns</p>
-<p>country: origin of country</p>
-<p>H1B: H1B approval count</p>
-<p>FY97 - FY22: represent year 1997 till 2022</p>
-<p>Essentially, this dataset contains information of H1B approval from year 1997 till 2022 and its originate country.</p>
-<ul>
+</ul></li>
 <li>Describe any cleaning you had to do for your data.
 <ul>
 <li>You <em>must</em> include a link to your <code>load_and_clean_data.R</code> file.</li>
@@ -297,8 +299,18 @@ Attaching package: 'dplyr'</code></pre>
 <li>Make sure to remove excessive warnings, use clean easy-to-read code (without side scrolling), organize with sections, use bullets and other organization tools, etc.</li>
 </ul></li>
 </ul>
-<section id="response-1" class="level4">
-<h4 class="anchored" data-anchor-id="response-1">Response</h4>
+</section>
+<section id="data-background" class="level1">
+<h1>Data Background</h1>
+<p>Our first dataset is downloaded from the <a href="https://travel.state.gov/content/dam/visas/Statistics/Non-Immigrant-Statistics/NIVDetailTables/FYs97-22_NIVDetailTable.xlsx">travel.state.gov website</a> and stored in the <code>dataset</code> folder. The data was collected by U.S Department of State, more specifically the Bureau of Consular Affairs.</p>
+<p>The Report of the Visa Office is an annual report providing statistical information on immigrant and non-immigrant visa issuance by consular offices, including information visa allocation in numerically limited categories. The main part of this dataset we want to focus on is the country of origin of visa recipients for H1B-type visas. Years covered range from Fiscal Year 1997 to F.Y. 2022 inclusively.</p>
+<p>The original dataset comes with the following features/columns</p>
+<p>country: origin of country</p>
+<p>H1B: H1B approval count</p>
+<p>FY97 - FY22: represent year 1997 till 2022</p>
+<p>Essentially, this dataset contains information of H1B approval from year 1997 till 2022 and its originate country.</p>
+<section id="first-dataset-background" class="level2">
+<h2 class="anchored" data-anchor-id="first-dataset-background">First Dataset Background</h2>
 <p>The original dataset is in dataset directory as .xlsx file. It contains pivot tables for each year that describe various U.S travel approvals such as H1B. To transform the dataset into the current one, we did the following operation</p>
 <p>read in excel files</p>
 <p>filter out null values(continents, .., etc)</p>
@@ -309,10 +321,12 @@ Attaching package: 'dplyr'</code></pre>
 <p>This is an example of how to load our cleaned dataset from dataset directory:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>(<span class="fu">library</span>(tidyverse))</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co">#filename &lt;- file.choose("cleaned_h1b_data.rds")</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co">#print(filename)</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>h1b_country <span class="ot">&lt;-</span> </span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">read_rds</span>(<span class="st">'dataset/cleaned_h1b_data.rds'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyr)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co">#filename &lt;- file.choose("cleaned_h1b_data.rds")</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="co">#print(filename)</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>h1b_country <span class="ot">&lt;-</span> </span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">read_rds</span>(<span class="st">'dataset/cleaned_h1b_data.rds'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">#changing the year to numerical values</span></span>
@@ -373,10 +387,9 @@ Supply arguments directly to `.fns` through an anonymous function instead.
   # Now
   across(a:b, \(x) mean(x, na.rm = TRUE))</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyr)</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>data_long <span class="ot">&lt;-</span> <span class="fu">pivot_longer</span>(h1b_continent, <span class="at">cols =</span> <span class="sc">-</span>Continent, <span class="at">names_to =</span> <span class="st">"year"</span>, <span class="at">values_to =</span> <span class="st">"count_h1b"</span>)</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>data_long</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>data_long <span class="ot">&lt;-</span> <span class="fu">pivot_longer</span>(h1b_continent, <span class="at">cols =</span> <span class="sc">-</span>Continent, <span class="at">names_to =</span> <span class="st">"year"</span>, <span class="at">values_to =</span> <span class="st">"count_h1b"</span>)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>data_long</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 182 × 3
    Continent year  count_h1b
@@ -394,6 +407,41 @@ Supply arguments directly to `.fns` through an anonymous function instead.
 # ℹ 172 more rows</code></pre>
 </div>
 </div>
+</section>
+<section id="explaination" class="level2">
+<h2 class="anchored" data-anchor-id="explaination">Explaination</h2>
+<p>While this dataset tells us about the country of origin of visa recipients for H1B-type visas. We believe that dataset 3 allows us to have a deeper understanding of the recent years and employment</p>
+</section>
+</section>
+<section id="dataset-3" class="level1">
+<h1>Dataset 3</h1>
+<section id="background" class="level2">
+<h2 class="anchored" data-anchor-id="background">Background</h2>
+<p>few columns to name here, since there exist too many columns</p>
+<p><a href="https://www.dol.gov/agencies/eta/foreign-labor/performance">U.S Department Labor</a> We downloaded LCA Programs H-1B and merge various dataset by case number to get columns.</p>
+<p>The data is made available as part of a broader government initiative toward transparency and open governance. This initiative aims to make government operations more accessible and understandable to the public.</p>
+<p>By providing access to historical and current data about immigration-related labor applications, the dataset aids in understand trends, evaluate the effectiveness of current policies, and plan future actions based on solid data.</p>
+<p>A couple of ideas we can draw from this dataset are…</p>
+<ul>
+<li>provide insights into the labor market</li>
+<li>immigration trends</li>
+<li>impacts on the economy</li>
+</ul>
+<p>The data includes information like case numbers, decision dates, and other metadata which are extracted from applications processed by the OFLC(Office of Foreign Labor Certification). This also includes newly added fields from updated visa application forms and systems, making the data more comprehensive over time. However, this dataset did not include personal or other case details due to privacy and integrity.</p>
+<p>Overall, this dataset is a critical resource for enhancing understanding and facilitating a data-driven approach to managing and legislating foreign labor and immigration-related activities.</p>
+</section>
+<section id="how-it-was-collected" class="level2">
+<h2 class="anchored" data-anchor-id="how-it-was-collected">How it was collected?</h2>
+<p>Recall that the dataset was provided by OFLC(Office of Foreign Labor Certification).</p>
+<p>Employers who are seeking to hire foreign workers must submit various forms of applications for prevailing wage determinations, labor certifications, and labor attestations. These applications are required for different visa programs, such as H-1B, H-2A, H-2B, and permanent residency applications. Our goal is focus on H-1B but not limited to explore other programs.</p>
+</section>
+<section id="why-it-is-worth-exploring" class="level2">
+<h2 class="anchored" data-anchor-id="why-it-is-worth-exploring">Why it is worth exploring?</h2>
+<p>Because our groups are interested in the labor market in U.S specifically in foreign labors. This dataset allows us to analyze the labor market dynamics related to foreign labor in the U.S. You can track trends in wages, understand the demand for labor in specific sectors, and assess how immigration policies impact the economy. This kind of analysis is crucial for crafting informed labor and economic policies.</p>
+</section>
+<section id="cleaning-dataset" class="level2">
+<h2 class="anchored" data-anchor-id="cleaning-dataset">Cleaning Dataset</h2>
+<p>The following steps would be describing how we load our dataset and merge additional columns.</p>
 <ul>
 <li>This page should be self-contained.</li>
 </ul>
