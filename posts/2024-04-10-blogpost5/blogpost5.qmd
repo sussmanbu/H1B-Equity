@@ -21,7 +21,7 @@ library(lubridate)
 
 ```{r}
 df <- readRDS("dataset/cleaned_disclosure.rds")
-print(df)
+head(df)
 ```
 # Combining Dataset
 
@@ -43,7 +43,6 @@ This is the line of code of how to read xlsx files and convert into rds. We comm
 
 df2 <- readRDS("dataset/LCA_worksite.rds")
 
-print(df2)
 ```
 
 ```{r}
@@ -51,7 +50,6 @@ print(df2)
 
 df3 <- readRDS("dataset/appendix.rds")
 
-print(df3)
 ```
 
 ## Merging Process
@@ -84,13 +82,10 @@ How are you combining them
 ```{r}
 # just load in this dataset
 final_df <- readRDS("dataset/final_merge.rds")
-print(final_df)
+head(final_df)
 ```
 # Exploration Data Analysis
 
-```{r}
-unique(final_df["RECEIVED_DATE"])
-```
 
 ```{r}
 # extract year from date
@@ -236,24 +231,25 @@ Top 20 states where received the highest number of applications. Now you know wh
 
 ```{r}
 
-mydata=PERM_Disclosure_Data_FY2018_EOY
+# mydata=PERM_Disclosure_Data_FY2018_EOY
 # Set seed for reproducibility
-set.seed(123)
+# set.seed(123)
 
 # Sample 1% of the data
-mydata <- mydata[sample(nrow(mydata), size = 0.01 * nrow(mydata)), ]
+# mydata <- mydata[sample(nrow(mydata), size = 0.01 * nrow(mydata)), ]
 
-status_counts <- mydata %>% count(CASE_STATUS)
-ggplot(status_counts, aes(x = "", y = n, fill = CASE_STATUS)) +
-    geom_bar(width = 1, stat = "identity") +
-    coord_polar(theta = "y") +
-    theme_void() +
-    labs(fill = "Case Status", title = "Distribution of CASE_STATUS")
+# status_counts <- mydata %>% count(CASE_STATUS)
+# ggplot(status_counts, aes(x = "", y = n, fill = CASE_STATUS)) +
+    # geom_bar(width = 1, stat = "identity") +
+    # coord_polar(theta = "y") +
+    # theme_void() +
+    # labs(fill = "Case Status", title = "Distribution of CASE_STATUS")
 ```
+
 ```{r}
 
-lm_result <- lm(data_dif ~ PW_AMOUNT_9089, data = mydata)
-summary(lm_result)
+# lm_result <- lm(data_dif ~ PW_AMOUNT_9089, data = mydata)
+# summary(lm_result)
 
 ```
 
@@ -271,7 +267,7 @@ filtered_df <- final_df %>%
   # FULL_TIME_POSITION %in% c("Y", "N")) %>%
   select(WAGE_RATE_OF_PAY_FROM, PREVAILING_WAGE)
 
-print(filtered_df)
+head(filtered_df)
 ```
 
 
@@ -290,7 +286,7 @@ clustered_result <- kmeans(cluster_data, centers=k)
 
 # visualize cluster
 filtered_df$cluster <- factor(clustered_result$cluster)
-print(filtered_df)
+head(filtered_df)
 ```
 
 ```{r}
