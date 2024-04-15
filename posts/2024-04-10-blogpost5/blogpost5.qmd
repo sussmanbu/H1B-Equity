@@ -72,34 +72,33 @@ To merge the dataset together, we can find matching case numbers.
 # saveRDS(final_merge, "dataset/final_merge.rds")
 ```
 
-# Start HERE
+# Data Background
+This is the dataset we are combining..
+How are you combining them
 
-Just load in the final_merge dataset
+# Start HERE - Import Data
 ```{r}
+# just load in this dataset
 final_df <- readRDS("dataset/final_merge.rds")
 print(final_df)
 ```
+# Exploration Data Analysis
 
 ```{r}
 colnames(final_df)
 ```
-# EDA
+
 
 ```{r}
 # let's check missing values
 print(colSums(is.na(final_df)))
 ```
-
-# Initial Thoughts
-After having complete columns, here are some thoughts we have in mind which guide our exploration data analysis
+```{r}
+unique(final_df["FULL_TIME_POSITION"])
+```
 
 ### Employment Trends
 What are some most common jobs titles, industries, or the duration of employment contracts.
-
-```{r}
-# top 5 job_title in this dataset
-print(sort(table(final_df$JOB_TITLE), decreasing=TRUE)[1:5])
-```
 
 ```{r}
 # filter the dataset which jobs have most frequency and applicant get full time position
@@ -109,38 +108,42 @@ filtered_data <- final_df |>
 
 print(filtered_data)
 ```
-From this result, we can see that tech related jobs are still the highest percentage of getting visas.
+This is the most frequent job titles appear in the dataset. From this result, we can see that tech related jobs are still the highest percentage of applying for Visas.
+
+
+```{r}
+# filter the dataset which jobs have most frequency and applicant get full time position
+filtered_data <- final_df |>
+  count(EMPLOYER_NAME, sort = TRUE)
+
+print(filtered_data)
+```
+
 
 ### Geographical Patterns
 In blog-post-4, we learned that New York and Massachusetts have a negative likelihood of getting fulltime position, perhaps we can investigate more here.
 
-### Build on Logistic Regression
-This time with more features/columns, we can build a better logistic regression model to predict approved or denial
+```{r}
 
+# filter the dataset which jobs have most frequency and applicant get full time position
+filtered_data <- final_df |>
+  count(EMPLOYER_NAME, sort = TRUE)
 
-### Linear Regression
-This time with numerical columns(wage), we can predict wages based on various features
+print(filtered_data)
+```
 
-
-<<<<<<< HEAD
-
-
-
-
-
-
-# data exploration 
 case status 
 ```{r}
-library(dplyr)
-status_counts <- df %>% count(CASE_STATUS)
-ggplot(status_counts, aes(x = "", y = n, fill = CASE_STATUS)) +
-    geom_bar(width = 1, stat = "identity") +
-    coord_polar(theta = "y") +
-    theme_void() +
-    labs(fill = "Case Status", title = "Distribution of CASE_STATUS")
+case_df <- final_df %>%
+  count(CASE_STATUS) %>%
+  mutate(percent = n / sum(n) * 100)
+
+ggplot(case_df, aes(x = CASE_STATUS, y = percent, fill = CASE_STATUS)) +
+  geom_col() +
+  geom_text(aes(label = sprintf("%.1f%%", percent)), position = position_stack(vjust = 0.5), hjust = 1) +
+  labs(fill = "Case Status", title = "Distribution of CASE_STATUS")
 ```
-## import raw 
+
 ```{r}
 
 mydata=PERM_Disclosure_Data_FY2018_EOY
@@ -165,7 +168,8 @@ summary(lm_result)
 ```
 
 
-
+### Linear Regression
+This time with numerical columns(wage), we can predict wages based on various features
 
 =======
 ### Clustering Analysis
@@ -222,8 +226,14 @@ WAGE_RATE_OF_PAY_FROM is the minimum wage pay at the worksite,
 
 PREVAILING_WAGE is the average wage paid to similar employed workers in the field
 
-Looking at the result of KMeans with only two numerical columns, it was not necessary to make use of Kmeans because is obvious to notice a linear relationship. There's a positive correlation between these two features. As one increases, other tends to increase.
+Looking at the result of KMeans with only two numerical columns, it was not necessary to make use of Kmeans because is obvious to notice a linear relationship. There's a positive correlation between these two features. It is expected that employers are pay more at the worksite than prevailng wages.
 
 For example, applicants who are highly specialized / high demand positions mostly lie in cluster 4. 
->>>>>>> refs/remotes/origin/main
 
+To recall, one limitation of this KMeans is the choice of cluster, k, and limited numerical columns to work with. 
+# What's Next
+
+### Build on Logistic Regression
+This time with more features/columns, we can build a better logistic regression model to predict approved or denial
+
+### Linear Regression on income

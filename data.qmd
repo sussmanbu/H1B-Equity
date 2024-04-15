@@ -85,9 +85,18 @@ You will
   * Describe the different data files used and what each variable means. 
   * If you have many variables then only describe the most relevant ones and summarize the rest.
   
-  #### Response
+* Describe any cleaning you had to do for your data.
+  * You *must* include a link to your `load_and_clean_data.R` file.
+  * Rrename variables and recode factors to make data more clear.
+  * Also, describe any additional R packages you used outside of those covered in class.
+  * Describe and show code for how you combined multiple data files and any cleaning that was necessary for that.
+  * Some repetition of what you do in your `load_and_clean_data.R` file is fine and encouraged if it helps explain what you did.
+* Organization, clarity, cleanliness of the page
+  * Make sure to remove excessive warnings, use clean easy-to-read code (without side scrolling), organize with sections, use bullets and other organization tools, etc.
   
-  Our original data files is downloaded from the [travel.state.gov website](https://travel.state.gov/content/dam/visas/Statistics/Non-Immigrant-Statistics/NIVDetailTables/FYs97-22_NIVDetailTable.xlsx) and stored in the `dataset` folder. The data was collected by U.S Department of State, more specifically the Bureau of Consular Affairs. 
+# Data Background
+  
+  Our first dataset is downloaded from the [travel.state.gov website](https://travel.state.gov/content/dam/visas/Statistics/Non-Immigrant-Statistics/NIVDetailTables/FYs97-22_NIVDetailTable.xlsx) and stored in the `dataset` folder. The data was collected by U.S Department of State, more specifically the Bureau of Consular Affairs. 
   
   The Report of the Visa Office is an annual report providing statistical information on immigrant and non-immigrant visa issuance by consular offices, including information visa allocation in numerically limited categories. The main part of this dataset we want to focus on is the country of origin of visa recipients for H1B-type visas. Years covered range from Fiscal Year 1997 to F.Y. 2022 inclusively.
 
@@ -103,16 +112,7 @@ FY97 - FY22: represent year 1997 till 2022
 Essentially, this dataset contains information of H1B approval from year 1997 till 2022 and its originate country.
 
 
-* Describe any cleaning you had to do for your data.
-  * You *must* include a link to your `load_and_clean_data.R` file.
-  * Rrename variables and recode factors to make data more clear.
-  * Also, describe any additional R packages you used outside of those covered in class.
-  * Describe and show code for how you combined multiple data files and any cleaning that was necessary for that.
-  * Some repetition of what you do in your `load_and_clean_data.R` file is fine and encouraged if it helps explain what you did.
-* Organization, clarity, cleanliness of the page
-  * Make sure to remove excessive warnings, use clean easy-to-read code (without side scrolling), organize with sections, use bullets and other organization tools, etc.
-
-#### Response
+## First Dataset Background
 
 The original dataset is in dataset directory as .xlsx file. It contains pivot tables for each year that describe various U.S travel approvals such as H1B. To transform the dataset into the current one, we did the following operation
 
@@ -132,6 +132,8 @@ The script to transform the dataset is in scripts directory `load_and_clean_data
 This is an example of how to load our cleaned dataset from dataset directory:
 ```{r}
 suppressPackageStartupMessages(library(tidyverse))
+library(tidyr)
+
 #filename <- file.choose("cleaned_h1b_data.rds")
 #print(filename)
 h1b_country <- 
@@ -160,10 +162,44 @@ h1b_continent <- h1b_country |>
   select(-Country)|>
   summarize(across(everything(), sum, na.rm = TRUE))
 
-library(tidyr)
 data_long <- pivot_longer(h1b_continent, cols = -Continent, names_to = "year", values_to = "count_h1b")
 
 data_long
 ```
-  
-  * This page should be self-contained.
+## Explaination
+
+While this dataset tells us about the country of origin of visa recipients for H1B-type visas. We believe that dataset 3 allows us to have a deeper understanding of the recent years and employment
+
+# Dataset 3
+
+## Background
+
+The data is made available as part of a broader government initiative toward transparency and open governance. This initiative aims to make government operations more accessible and understandable to the public.
+
+By providing access to historical and current data about immigration-related labor applications, the dataset aids in understand trends, evaluate the effectiveness of current policies, and plan future actions based on solid data.
+
+A couple of ideas we can draw from this dataset are...
+
+* provide insights into the labor market
+* immigration trends
+* impacts on the economy
+
+The data includes information like case numbers, decision dates, and other metadata which are extracted from applications processed by the OFLC(Office of Foreign Labor Certification).
+This also includes newly added fields from updated visa application forms and systems, making the data more comprehensive over time. However, this dataset did not include personal or other case details due to privacy and integrity.
+
+Overall, this dataset is a critical resource for enhancing understanding and facilitating a data-driven approach to managing and legislating foreign labor and immigration-related activities.
+
+
+## How it was collected?
+Recall that the dataset was provided by OFLC(Office of Foreign Labor Certification). 
+
+Employers who are seeking to hire foreign workers must submit various forms of applications for prevailing wage determinations, labor certifications, and labor attestations. These applications are required for different visa programs, such as H-1B, H-2A, H-2B, and permanent residency applications. Our goal is focus on H-1B but not limited to explore other programs.
+
+## Why it is worth exploring?
+Because our groups are interested in the labor market in U.S specifically in foreign labors. This dataset allows us to analyze the labor market dynamics related to foreign labor in the U.S. You can track trends in wages, understand the demand for labor in specific sectors, and assess how immigration policies impact the economy. This kind of analysis is crucial for crafting informed labor and economic policies.
+
+## Cleaning Dataset
+The following steps would be describing how we load our dataset and merge additional columns.
+
+
+* This page should be self-contained.
