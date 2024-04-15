@@ -13,6 +13,10 @@ draft: FALSE
 library(readxl)
 library(readr)
 library(dplyr)
+library(tidymodels)
+library(cluster)
+library(ggplot2)
+library(lubridate)
 ```
 
 ```{r}
@@ -85,6 +89,38 @@ print(final_df)
 # Exploration Data Analysis
 
 ```{r}
+unique(final_df["RECEIVED_DATE"])
+```
+
+```{r}
+# extract year from date
+final_df$YEAR_RECEIVED = as.integer(substr(final_df$RECEIVED_DATE, 1, 4))
+final_df$MONTH_RECEIVED = month(final_df$RECEIVED_DATE)
+final_df$DAY_RECEIVED = day(final_df$RECEIVED_DATE)
+```
+Let's do the same for the remainder date columns
+
+```{r}
+
+final_df$YEAR_END = as.integer(substr(final_df$END_DATE, 1, 4))
+final_df$MONTH_END = month(final_df$END_DATE)
+final_df$DAY_END = day(final_df$END_DATE)
+
+final_df$YEAR_DECISION = as.integer(substr(final_df$DECISION_DATE, 1, 4))
+final_df$MONTH_DECISION = month(final_df$DECISION_DATE)
+final_df$DAY_DECISION = day(final_df$DECISION_DATE)
+
+
+final_df$YEAR_BEGIN = as.integer(substr(final_df$BEGIN_DATE, 1, 4))
+final_df$MONTH_BEGIN = month(final_df$BEGIN_DATE)
+final_df$DAY_BEGIN = day(final_df$BEGIN_DATE)
+```
+
+```{r}
+head(final_df)
+```
+
+```{r}
 colnames(final_df)
 ```
 
@@ -93,6 +129,7 @@ colnames(final_df)
 # let's check missing values
 print(colSums(is.na(final_df)))
 ```
+
 ```{r}
 unique(final_df["FULL_TIME_POSITION"])
 ```
@@ -104,33 +141,24 @@ What are some most common jobs titles, industries, or the duration of employment
 # filter the dataset which jobs have most frequency and applicant get full time position
 filtered_data <- final_df |>
   filter(FULL_TIME_POSITION == "Y") |>
-  count(JOB_TITLE, sort = TRUE)
+  count(JOB_TITLE, sort = TRUE) |>
+  top_n(5)
 
 print(filtered_data)
 ```
-This is the most frequent job titles appear in the dataset. From this result, we can see that tech related jobs are still the highest percentage of applying for Visas.
+This is the most frequent job titles appear in the dataset. From this result, we can see that tech related jobs are still the highest percentage of strong hire in United States.
 
 
 ```{r}
 # filter the dataset which jobs have most frequency and applicant get full time position
 filtered_data <- final_df |>
-  count(EMPLOYER_NAME, sort = TRUE)
+  count(EMPLOYER_NAME, sort = TRUE) |>
+  top_n(5)
 
 print(filtered_data)
 ```
+Big companies has always mass hire workers since they have more budget. It is no surprise to see Amazon to be at top.
 
-
-### Geographical Patterns
-In blog-post-4, we learned that New York and Massachusetts have a negative likelihood of getting fulltime position, perhaps we can investigate more here.
-
-```{r}
-
-# filter the dataset which jobs have most frequency and applicant get full time position
-filtered_data <- final_df |>
-  count(EMPLOYER_NAME, sort = TRUE)
-
-print(filtered_data)
-```
 
 case status 
 ```{r}
@@ -143,6 +171,68 @@ ggplot(case_df, aes(x = CASE_STATUS, y = percent, fill = CASE_STATUS)) +
   geom_text(aes(label = sprintf("%.1f%%", percent)), position = position_stack(vjust = 0.5), hjust = 1) +
   labs(fill = "Case Status", title = "Distribution of CASE_STATUS")
 ```
+Looking at the plot, it might not be suitable to build a classifier to predict labels since it is high imbalance.
+What does each label mean?
+
+When application is certified, it allows the employer to proceed with next steps of the visa process, which include petitioning U.S. Citizenship and Immigration Services (USCIS) for a visa on behalf of the foreign worker.
+
+We also notice a 9% certified - withdrawn. In other word, this is saying the application is approved but employer chose to withdraw it before foreign worker began employment. This can happen due to several reason.
+
+Company's budget cut
+
+candidate issues - candidate might accepted job offers elsewhere
+
+Next, we will observe fulltime position.
+```{r}
+case_df <- final_df %>%
+  count(FULL_TIME_POSITION) %>%
+  mutate(percent = n / sum(n) * 100)
+
+ggplot(case_df, aes(x = FULL_TIME_POSITION, y = percent, fill = FULL_TIME_POSITION)) +
+  geom_col() +
+  geom_text(aes(label = sprintf("%.1f%%", percent)), position = position_stack(vjust = 0.5), hjust = 1) +
+  labs(fill = "FULL_TIME_POSITION", title = "Distribution of FULL_TIME_POSITION")
+```
+Again, we see that highly imbalance target labels. Remember that employers who are seeking to hire foreign workers must submit various forms of applications. Those candidates who received full time positions from employers are considered strong candidates which is why employers are willing to submit applications to OFLC.
+
+
+
+```{r}
+# Identify states with high number of applicants or high approval rates
+state_df <- final_df
+
+state_df <- na.omit(state_df[c("EMPLOYER_STATE", "CASE_STATUS")])
+
+state_data <- state_df |>
+  group_by(EMPLOYER_STATE) |>
+  summarise(
+    Total_Applications = n(),
+    Approved_Applications = sum(CASE_STATUS == "Approved")
+  )
+
+```
+
+```{r}
+# Sort by total applications
+state_data_sorted_applicants <- state_data %>%
+  arrange(desc(Total_Applications))
+
+top_states <- state_data_sorted_applicants |>
+  top_n(20, Total_Applications)
+```
+
+
+```{r}
+# visualizing
+
+# Plot for Total Applications
+ggplot(top_states, aes(x = reorder(EMPLOYER_STATE, -Total_Applications), y = Total_Applications)) +
+  geom_bar(stat = "identity", fill = "GREY") +
+  theme(axis.text.y = element_text(size = 6)) +  # Smaller text size for states
+  labs(title = "Total Visa Applications by State", x = "State", y = "Number of Applications") +
+  coord_flip()  # Flips the coordinates to make labels readable
+```
+Top 20 states where received the highest number of applications. Now you know what states to look for jobs.
 
 ```{r}
 
@@ -175,10 +265,6 @@ This time with numerical columns(wage), we can predict wages based on various fe
 ### Clustering Analysis
 We can make use of various clustering techniques to group similar applicants together.
 ```{r}
-library(tidymodels)
-library(cluster)
-library(ggplot2)
-library(dplyr)
 
 filtered_df <- final_df %>%
   # filter(JOB_TITLE %in% c("Software Engineer", "Assistant Professor", "Business Analyst", "Machine Learning Engineer"),
@@ -208,8 +294,6 @@ print(filtered_df)
 ```
 
 ```{r}
-library(ggplot2)
-
 ggplot(filtered_df, aes(x = WAGE_RATE_OF_PAY_FROM, y = PREVAILING_WAGE)) +
   geom_point(aes(color = cluster)) +
   # facet_wrap(~ cluster) +
@@ -231,6 +315,24 @@ Looking at the result of KMeans with only two numerical columns, it was not nece
 For example, applicants who are highly specialized / high demand positions mostly lie in cluster 4. 
 
 To recall, one limitation of this KMeans is the choice of cluster, k, and limited numerical columns to work with. 
+
+
+```{r}
+yearly_wage <- final_df %>%
+  group_by(YEAR_BEGIN) %>%
+  summarise(Avg_Prevailing_Wage = mean(PREVAILING_WAGE, na.rm = TRUE))
+
+ggplot(yearly_wage, aes(x = YEAR_BEGIN, y = Avg_Prevailing_Wage)) +
+  geom_line() +  # Use a line plot to show trends over time
+  geom_point() +  # Add points to highlight each year's average wage
+  labs(title = "Average Prevailing Wage Per Year",
+       x = "Year",
+       y = "Average Prevailing Wage") 
+
+```
+we see a sharp drop in year 2021 due to COVID-19. 
+
+
 # What's Next
 
 ### Build on Logistic Regression
