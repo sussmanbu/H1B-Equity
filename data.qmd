@@ -44,21 +44,13 @@ If you create a folder named `data` this will cause problems.
 
 For larger datasets, you'll need to create a new folder in the project root directory named `dataset-ignore`. This will be ignored by git (based off the `.gitignore` file in the project root directory) which will help you avoid issues with Github's size limits. Your team will have to manually make sure the data files in `dataset-ignore` are synced across team members.
 
-Your [load_and_clean_data.R](/scripts/load_and_clean_data.R) file is how you will load and clean your data. Here is a an example of a very simple one.
-
-```{r}
-# run this to load and clean the data and save it as an rds file
-source(
-  "scripts/load_and_clean_data.R",
-  echo = FALSE
-)
-```
+Your [load_and_clean_data.R](/scripts/load_and_clean_data.R) file is how you will load and clean your data.
 
 ```{r}
 # run this to load the dataset from the rds
 data <- readRDS(file = "dataset/cleaned_h1b_data.rds")
 # your code here
-data
+head(data)
 ```
 
 You should never use absolute paths (eg. `/Users/danielsussman/path/to/project/` or `C:\MA415\\Final_Project\`).
@@ -93,6 +85,15 @@ You will
   * Some repetition of what you do in your `load_and_clean_data.R` file is fine and encouraged if it helps explain what you did.
 * Organization, clarity, cleanliness of the page
   * Make sure to remove excessive warnings, use clean easy-to-read code (without side scrolling), organize with sections, use bullets and other organization tools, etc.
+  
+# Dependencies Used For Data.qmd
+```{r}
+suppressPackageStartupMessages(library(tidyverse))
+library(tidyr)
+library(viridis)
+library(ggplot2)
+library(dplyr)
+```
   
 # Data Background
   
@@ -131,8 +132,6 @@ The script to transform the dataset is in scripts directory `load_and_clean_data
 
 This is an example of how to load our cleaned dataset from dataset directory:
 ```{r}
-suppressPackageStartupMessages(library(tidyverse))
-library(tidyr)
 
 #filename <- file.choose("cleaned_h1b_data.rds")
 #print(filename)
@@ -152,7 +151,7 @@ The code below is to rename the columns to understandable years format.
 ```{r}
 colnames(h1b_country) <- c('Country','Continent','1997', '1998', '1999', '2000', '2001', '2002', '2003', '2004', '2005', '2006', '2007', '2008', '2009', '2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022') 
 
-h1b_country
+head(h1b_country)
 ```
 
 The following code shortens the dimension of our dataframe to 3 columns specially the years columns. Having many years column can make the dataset hard to analysis or explore. 
@@ -164,8 +163,114 @@ h1b_continent <- h1b_country |>
 
 data_long <- pivot_longer(h1b_continent, cols = -Continent, names_to = "year", values_to = "count_h1b")
 
-data_long
+head(data_long)
 ```
+
+```{r}
+# Sample data manipulation assuming h1b_country is your dataset
+h1b_country_temp <- h1b_country %>%
+  select(-Continent)
+
+# Convert the data from wide to long format
+data_long_all <- pivot_longer(h1b_country_temp, cols=-Country, names_to = "year", values_to = "count_h1b")
+
+# Filter for only recent years 2022, 2021, 2020, etc.
+years_of_interest <- c("2022", "2021", "2020", "2019", "2018")
+data_filtered <- data_long_all %>%
+  filter(year %in% years_of_interest)
+
+# Initialize an empty list to store the pie charts
+piecharts_all <- list()
+
+# Loop only over the filtered years
+for (year_iter in years_of_interest) {
+  print(year_iter)
+  all_temp <- data_filtered %>% 
+    filter(year == year_iter)
+  
+  # Select the top 5 countries based on the count
+  top_countries <- all_temp %>%
+    group_by(Country) %>%
+    summarise(total_count = sum(count_h1b), .groups = "drop") %>%
+    arrange(desc(total_count)) %>%
+    slice_max(order_by = total_count, n = 5)  # Updated to use slice_max which is more explicit
+  
+  # Summarise the rest as 'Other'
+  other_countries <- all_temp %>%
+    anti_join(top_countries, by = "Country") %>%
+    filter(!is.na(count_h1b)) %>%
+    summarise(Country = "Other",
+              total_count = sum(count_h1b), .groups = "drop")
+  
+  # Combine the top countries and 'Other'
+  combined_data <- bind_rows(top_countries, other_countries)
+  # Create pie chart
+  pie_chart <- pie(combined_data$total_count, labels = combined_data$Country, main = paste("Top 5 Countries in", year_iter), col=viridis(length(combined_data$total_count)))
+  
+  # Store the pie chart in the list
+  piecharts_all[[year_iter]] <- pie_chart
+}
+
+# Print all pie charts stored in the list
+print(piecharts_all)
+```
+
+```{r}
+ggplot(data_long, aes(x = year, y = count_h1b, fill = Continent)) +
+  geom_bar(stat = "identity", position = "stack") +
+  labs(title = "Total Values by Continent Over the Years",
+       x = "Year", y = "Total Value") + theme(legend.position = "top",
+        axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+```{r}
+ggplot(data_long, aes(x = year, y = count_h1b, fill = Continent)) +
+  geom_bar(stat = "identity", position = "stack") +
+  facet_wrap(~Continent, scales='free_y') + 
+  labs(title = "Total Values by Continent Over the Years",
+       x = "Year", y = "Total Value") + theme(legend.position = "top",
+        axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_x_discrete(guide=guide_axis(check.overlap=TRUE))
+```
+
+```{r}
+# Rename year columns
+years <- paste0(1997:2022)
+colnames(h1b_country) <- c('Country', 'Continent', years)
+
+# Summarize total H1B visas per year and transform into long format for plotting
+total_h1b_by_year_long <- h1b_country %>%
+  select(all_of(years)) %>%
+  summarise(across(everything(), sum, na.rm = TRUE)) %>%
+  pivot_longer(cols = everything(), names_to = "year", values_to = "Total_H1B_Visas")
+
+# Plot total H1B visas issued worldwide over the years
+ggplot(total_h1b_by_year_long, aes(x = year, y = Total_H1B_Visas, fill = year)) +
+  geom_bar(stat = "identity") +
+  scale_fill_viridis_d() +
+  labs(title = "Total H1B Visas Issued Worldwide Over the Years",
+       x = "Year", y = "Total Number of H1B Visas") +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1), legend.position = "none")
+```
+
+```{r}
+# Summarize data by continent and transform into long format
+data_long <- h1b_country %>%
+  group_by(Continent) %>%
+  summarise(across(all_of(years), sum, na.rm = TRUE)) %>%
+  pivot_longer(cols = all_of(years), names_to = "year", values_to = "count_h1b")
+
+# Plot total values by continent over the years
+ggplot(data_long, aes(x = year, y = count_h1b, fill = Continent)) +
+  geom_bar(stat = "identity") +
+  facet_wrap(~Continent, scales="free_y") +
+  scale_x_discrete(guide = guide_axis(check.overlap = TRUE)) +
+  labs(title = "Total H1B Visas by Continent Over the Years",
+       x = "Year", y = "Total Visas") +
+  theme(legend.position = "top", axis.text.x = element_text(angle = 45, hjust = 1),
+        plot.margin = unit(c(1, 1, 1, 1), "cm"))
+```
+
 ## Explaination
 
 While this dataset tells us about the country of origin of visa recipients for H1B-type visas. We believe that dataset 3 allows us to have a deeper understanding of the recent years and employment
@@ -173,7 +278,28 @@ While this dataset tells us about the country of origin of visa recipients for H
 # Dataset 3
 
 ## Background
-few columns to name here, since there exist too many columns
+Since there exist many columns, we will list a few important columns.
+
+**CASE_NUMBER**: Unique identifier assigned to each application submitted for processing to OFLC.
+
+**CASE_STATUS**: decision on application. Once certified, employer can proceed with next steps of the visa process to get VISAs for foreign worker
+
+**FULL_TIME_POSITION**: Y for getting fulltime and N for not getting
+
+**TOTAL_WORKER_POSITIONS**: Total number of foreign workers requested by employers
+
+**EMPLOYER_NAME**: Business name
+
+**PREVAILING_WAGE**: average wage based on labor market
+
+**WAGE_RATE_OF_PAY_FROM**: wage paid at the site
+
+**WORKSITE_CITY**: City of the worksite
+
+**AGENT_REPRESENTING_EMPLOYER**: employer represented by agent or attorney, Y or N
+
+**RECEIVED_DATE**: Date the application received by OFLC
+
 
 [U.S Department Labor](https://www.dol.gov/agencies/eta/foreign-labor/performance)
 We downloaded LCA Programs H-1B and merge various dataset by case number to get columns. 

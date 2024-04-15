@@ -253,11 +253,6 @@ Top 20 states where received the highest number of applications. Now you know wh
 
 ```
 
-
-### Linear Regression
-This time with numerical columns(wage), we can predict wages based on various features
-
-=======
 ### Clustering Analysis
 We can make use of various clustering techniques to group similar applicants together.
 ```{r}
