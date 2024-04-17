@@ -469,7 +469,20 @@ ggplot(filtered_df, aes(x = log(PREVAILING_WAGE), y = log(WAGE_RATE_OF_PAY_FROM)
   theme_minimal()  # Uses a minimal theme for a cleaner look
 
 ```
+```{r}
+# Identify states with high number of applicants or high approval rates
+state_df <- final_df
 
+state_df <- na.omit(state_df[c("EMPLOYER_STATE", "CASE_STATUS")])
+
+state_data <- state_df |>
+  group_by(EMPLOYER_STATE) |>
+  summarise(
+    Total_Applications = n(),
+    Approved_Applications = sum(CASE_STATUS == "Approved")
+  )
+
+```
 
 ```{r}
 # visualizing
