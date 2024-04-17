@@ -824,20 +824,22 @@ Supply arguments directly to `.fns` through an anonymous function instead.
 6                202442          168958</code></pre>
 </div>
 </div>
+<p>Next, we will plot the log scale of prevailing_wage and wage_rate_of_pay_from.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Assuming final_df is already loaded and available</span></span>
 <span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>filtered_df <span class="ot">&lt;-</span> final_df <span class="sc">%&gt;%</span></span>
-<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(JOB_TITLE <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Software Engineer"</span>, <span class="st">"Assistant Professor"</span>, <span class="st">"Business Analyst"</span>, <span class="st">"Machine Learning Engineer"</span>),</span>
-<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a>         FULL_TIME_POSITION <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Y"</span>, <span class="st">"N"</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb52-6"><a href="#cb52-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(WAGE_RATE_OF_PAY_FROM, PREVAILING_WAGE)</span>
-<span id="cb52-7"><a href="#cb52-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb52-8"><a href="#cb52-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a ggplot scatter plot with a linear regression line</span></span>
-<span id="cb52-9"><a href="#cb52-9" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(filtered_df, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">log</span>(PREVAILING_WAGE), <span class="at">y =</span> <span class="fu">log</span>(WAGE_RATE_OF_PAY_FROM) )) <span class="sc">+</span></span>
-<span id="cb52-10"><a href="#cb52-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span>  <span class="co"># Adds scatter plot points with some transparency</span></span>
-<span id="cb52-11"><a href="#cb52-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">se =</span> <span class="cn">FALSE</span>) <span class="sc">+</span>  <span class="co"># Adds a linear regression line without the confidence interval</span></span>
-<span id="cb52-12"><a href="#cb52-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Prevailing Wage"</span>, <span class="at">y =</span> <span class="st">"Wage Rate of Pay From"</span>, <span class="at">title =</span> <span class="st">"Relationship between Prevailing Wage and Wage Rate of Pay"</span>) <span class="sc">+</span></span>
-<span id="cb52-13"><a href="#cb52-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()  <span class="co"># Uses a minimal theme for a cleaner look</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(</span>
+<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a>         FULL_TIME_POSITION <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Y"</span>, <span class="st">"N"</span>),</span>
+<span id="cb52-6"><a href="#cb52-6" aria-hidden="true" tabindex="-1"></a>         <span class="co"># some wage unit of pay is in hours.</span></span>
+<span id="cb52-7"><a href="#cb52-7" aria-hidden="true" tabindex="-1"></a>         WAGE_UNIT_OF_PAY <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Year"</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb52-8"><a href="#cb52-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(WAGE_RATE_OF_PAY_FROM, PREVAILING_WAGE, WAGE_UNIT_OF_PAY)</span>
+<span id="cb52-9"><a href="#cb52-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-10"><a href="#cb52-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a ggplot scatter plot with a linear regression line</span></span>
+<span id="cb52-11"><a href="#cb52-11" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(filtered_df, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">log</span>(PREVAILING_WAGE), <span class="at">y =</span> <span class="fu">log</span>(WAGE_RATE_OF_PAY_FROM) )) <span class="sc">+</span></span>
+<span id="cb52-12"><a href="#cb52-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span>  <span class="co"># Adds scatter plot points with some transparency</span></span>
+<span id="cb52-13"><a href="#cb52-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">se =</span> <span class="cn">TRUE</span>) <span class="sc">+</span>  <span class="co"># Adds a linear regression line without the confidence interval</span></span>
+<span id="cb52-14"><a href="#cb52-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Prevailing Wage"</span>, <span class="at">y =</span> <span class="st">"Wage Rate of Pay From"</span>, <span class="at">title =</span> <span class="st">"Relationship between Prevailing Wage and Wage Rate of Pay"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>`geom_smooth()` using formula = 'y ~ x'</code></pre>
 </div>
@@ -845,6 +847,7 @@ Supply arguments directly to `.fns` through an anonymous function instead.
 <p><img src="data_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
+<p>We can see there there exist linear relationship between Prevailing wage and wage paid at worksite. To recall, prevailing wage is the average wage paid according to the labor market. It would be a surprise if foreign workers are paid less than their peers.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Identify states with high number of applicants or high approval rates</span></span>
 <span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>state_df <span class="ot">&lt;-</span> final_df</span>
@@ -877,7 +880,7 @@ Supply arguments directly to `.fns` through an anonymous function instead.
 <p><img src="data_files/figure-html/unnamed-chunk-27-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<p>Top 20 states where received the highest number of applications. Now you know what states to look for jobs.</p>
+<p>Top 20 states where received the highest number of visa applications. In other word, these are the states that hire and submit applications for foreign workers the most (up to date 2024). From previous exploration, we learned that majority of the job titles are tech related jobs, and majority of tech companies still hiring located in these states.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>yearly_wage <span class="ot">&lt;-</span> final_df <span class="sc">%&gt;%</span></span>
 <span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(YEAR_BEGIN) <span class="sc">%&gt;%</span></span>
@@ -893,21 +896,37 @@ Supply arguments directly to `.fns` through an anonymous function instead.
 <p><img src="data_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<p>we see a sharp drop in year 2021 due to COVID-19.</p>
+<p>Average prevailing wage might not be a good choice since tech jobs would skew the average. We would take a look at the medians.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>yearly_wage <span class="ot">&lt;-</span> final_df <span class="sc">%&gt;%</span></span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(YEAR_BEGIN) <span class="sc">%&gt;%</span></span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">median_Prevailing_Wage =</span> <span class="fu">median</span>(PREVAILING_WAGE, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(yearly_wage, <span class="fu">aes</span>(<span class="at">x =</span> YEAR_BEGIN, <span class="at">y =</span> median_Prevailing_Wage)) <span class="sc">+</span></span>
+<span id="cb57-6"><a href="#cb57-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span>  <span class="co"># Use a line plot to show trends over time</span></span>
+<span id="cb57-7"><a href="#cb57-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span>  <span class="co"># Add points to highlight each year's average wage</span></span>
+<span id="cb57-8"><a href="#cb57-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Median Prevailing Wage Per Year"</span>,</span>
+<span id="cb57-9"><a href="#cb57-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Year"</span>,</span>
+<span id="cb57-10"><a href="#cb57-10" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Median Prevailing Wage"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="data_files/figure-html/unnamed-chunk-29-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Biden becomes president at year 2020. A sudden drop in wages happen in year 2021 due to covid19. Afterward, the trends goes right back up.</p>
 </section>
 <section id="perm_disclosure_data" class="level2">
 <h2 class="anchored" data-anchor-id="perm_disclosure_data">PERM_DISCLOSURE_DATA</h2>
 <p>To recall, the first step required in the process for certain foreign nationals to obtain an employment-based immigrant visa, or green card is in <strong>PERM_DISCLOSURE_DATA</strong> It contains information about applications submitted by employers who wish to hire foreign workers permanently. This data can provide insights into which companies are applying for labor certifications, the positions they are looking to fill, the salaries offered, the status of applications (whether they were certified, denied, or withdrawn), and other relevant details.</p>
 <p>Here, we will load in the data and do basic inspection of the data. Acknowledging that this dataset contains many columns. We can create a separate df that contains columns we believe is important.</p>
-<p><strong>Note</strong> that PERM_DISCLOSURE_DATA is almost the identical as LCA_Program data but PERM_DISCLOSURE_DATA contains more columns.</p>
+<p><strong>Note</strong> that PERM_DISCLOSURE_DATA is almost the identical as LCA_Program data but PERM_DISCLOSURE_DATA contains more columns which you can select various columns depend on your needs.</p>
 <p>Commented it out since this is one time operation</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="co"># perm_data &lt;- read_excel("dataset/PERM_data.xlsx")</span></span>
-<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a><span class="co"># saveRDS(perm_data, "dataset/perm_data.rds")</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="co"># perm_data &lt;- read_excel("dataset/PERM_data.xlsx")</span></span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a><span class="co"># saveRDS(perm_data, "dataset/perm_data.rds")</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>perm_df <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"dataset/perm_data.rds"</span>)</span>
-<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(perm_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>perm_df <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"dataset/perm_data.rds"</span>)</span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(perm_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 6 × 154
   CASE_NUMBER   CASE_STATUS RECEIVED_DATE       DECISION_DATE       REFILE
@@ -928,8 +947,8 @@ Supply arguments directly to `.fns` through an anonymous function instead.
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="co"># let's check missing values</span></span>
-<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">colSums</span>(<span class="fu">is.na</span>(perm_df)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="co"># let's check missing values</span></span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">colSums</span>(<span class="fu">is.na</span>(perm_df)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                       CASE_NUMBER                        CASE_STATUS 
                                  0                                  0 
@@ -1088,8 +1107,8 @@ Supply arguments directly to `.fns` through an anonymous function instead.
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 24962 rows, 154 columns</span></span>
-<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(perm_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 24962 rows, 154 columns</span></span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(perm_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 24962   154</code></pre>
 </div>
@@ -1098,12 +1117,12 @@ Supply arguments directly to `.fns` through an anonymous function instead.
 <section id="eda-version-3" class="level2">
 <h2 class="anchored" data-anchor-id="eda-version-3">EDA version 3</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a>final_perm_df <span class="ot">&lt;-</span> <span class="fu">select</span>(perm_df, <span class="st">"CASE_NUMBER"</span>, <span class="st">"CASE_STATUS"</span>, <span class="st">"RECEIVED_DATE"</span>, <span class="st">"DECISION_DATE"</span>, <span class="st">"EMPLOYER_NAME"</span>,</span>
-<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a>                        <span class="st">"EMPLOYER_NUM_EMPLOYEES"</span>, <span class="st">"AGENT_ATTORNEY_FIRM_NAME"</span>, <span class="st">"PW_WAGE"</span>, <span class="st">"PW_SKILL_LEVEL"</span>, <span class="st">"WORKSITE_STATE"</span>, <span class="st">"JOB_TITLE"</span>, <span class="st">"PW_UNIT_OF_PAY"</span>, <span class="st">"WAGE_OFFER_FROM"</span>, <span class="st">"WAGE_OFFER_UNIT_OF_PAY"</span>,</span>
-<span id="cb64-3"><a href="#cb64-3" aria-hidden="true" tabindex="-1"></a>                        , <span class="st">"MINIMUM_EDUCATION"</span>, <span class="st">"REQUIRED_EXPERIENCE"</span>, <span class="st">"COUNTRY_OF_CITIZENSHIP"</span>, <span class="st">"CLASS_OF_ADMISSION"</span></span>
-<span id="cb64-4"><a href="#cb64-4" aria-hidden="true" tabindex="-1"></a>                        )</span>
-<span id="cb64-5"><a href="#cb64-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb64-6"><a href="#cb64-6" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(final_perm_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>final_perm_df <span class="ot">&lt;-</span> <span class="fu">select</span>(perm_df, <span class="st">"CASE_NUMBER"</span>, <span class="st">"CASE_STATUS"</span>, <span class="st">"RECEIVED_DATE"</span>, <span class="st">"DECISION_DATE"</span>, <span class="st">"EMPLOYER_NAME"</span>,</span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a>                        <span class="st">"EMPLOYER_NUM_EMPLOYEES"</span>, <span class="st">"AGENT_ATTORNEY_FIRM_NAME"</span>, <span class="st">"PW_WAGE"</span>, <span class="st">"PW_SKILL_LEVEL"</span>, <span class="st">"WORKSITE_STATE"</span>, <span class="st">"JOB_TITLE"</span>, <span class="st">"PW_UNIT_OF_PAY"</span>, <span class="st">"WAGE_OFFER_FROM"</span>, <span class="st">"WAGE_OFFER_UNIT_OF_PAY"</span>,</span>
+<span id="cb65-3"><a href="#cb65-3" aria-hidden="true" tabindex="-1"></a>                        , <span class="st">"MINIMUM_EDUCATION"</span>, <span class="st">"REQUIRED_EXPERIENCE"</span>, <span class="st">"COUNTRY_OF_CITIZENSHIP"</span>, <span class="st">"CLASS_OF_ADMISSION"</span></span>
+<span id="cb65-4"><a href="#cb65-4" aria-hidden="true" tabindex="-1"></a>                        )</span>
+<span id="cb65-5"><a href="#cb65-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb65-6"><a href="#cb65-6" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(final_perm_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 6 × 18
   CASE_NUMBER  CASE_STATUS RECEIVED_DATE       DECISION_DATE       EMPLOYER_NAME
