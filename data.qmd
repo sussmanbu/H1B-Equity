@@ -451,24 +451,27 @@ filtered_df <- final_df %>%
 
 head(filtered_df)
 ```
-
+Next, we will plot the log scale of prevailing_wage and wage_rate_of_pay_from.
 ```{r}
 
 # Assuming final_df is already loaded and available
 
 filtered_df <- final_df %>%
-  filter(JOB_TITLE %in% c("Software Engineer", "Assistant Professor", "Business Analyst", "Machine Learning Engineer"),
-         FULL_TIME_POSITION %in% c("Y", "N")) %>%
-  select(WAGE_RATE_OF_PAY_FROM, PREVAILING_WAGE)
+  filter(
+         FULL_TIME_POSITION %in% c("Y", "N"),
+         # some wage unit of pay is in hours.
+         WAGE_UNIT_OF_PAY %in% c("Year")) |> 
+  select(WAGE_RATE_OF_PAY_FROM, PREVAILING_WAGE, WAGE_UNIT_OF_PAY)
 
 # Create a ggplot scatter plot with a linear regression line
 ggplot(filtered_df, aes(x = log(PREVAILING_WAGE), y = log(WAGE_RATE_OF_PAY_FROM) )) +
   geom_point(alpha = 0.5) +  # Adds scatter plot points with some transparency
-  geom_smooth(method = "lm", se = FALSE) +  # Adds a linear regression line without the confidence interval
-  labs(x = "Prevailing Wage", y = "Wage Rate of Pay From", title = "Relationship between Prevailing Wage and Wage Rate of Pay") +
-  theme_minimal()  # Uses a minimal theme for a cleaner look
+  geom_smooth(method = "lm", se = TRUE) +  # Adds a linear regression line without the confidence interval
+  labs(x = "Prevailing Wage", y = "Wage Rate of Pay From", title = "Relationship between Prevailing Wage and Wage Rate of Pay") 
 
 ```
+We can see there there exist linear relationship between Prevailing wage and wage paid at worksite. To recall, prevailing wage is the average wage paid according to the labor market. It would be a surprise if foreign workers are paid less than their peers. 
+
 ```{r}
 # Identify states with high number of applicants or high approval rates
 state_df <- final_df
@@ -500,7 +503,7 @@ ggplot(top_states, aes(x = reorder(EMPLOYER_STATE, -Total_Applications), y = Tot
   labs(title = "Total Visa Applications by State", x = "State", y = "Number of Applications") +
   coord_flip()  # Flips the coordinates to make labels readable
 ```
-Top 20 states where received the highest number of applications. Now you know what states to look for jobs.
+Top 20 states where received the highest number of visa applications. In other word, these are the states that hire and submit applications for foreign workers the most (up to date 2024). From previous exploration, we learned that majority of the job titles are tech related jobs, and majority of tech companies still hiring located in these states.
 
 ```{r}
 yearly_wage <- final_df %>%
@@ -515,7 +518,22 @@ ggplot(yearly_wage, aes(x = YEAR_BEGIN, y = Avg_Prevailing_Wage)) +
        y = "Average Prevailing Wage") 
 
 ```
-we see a sharp drop in year 2021 due to COVID-19. 
+Average prevailing wage might not be a good choice since tech jobs would skew the average. We would take a look at the medians.
+
+```{r}
+yearly_wage <- final_df %>%
+  group_by(YEAR_BEGIN) %>%
+  summarise(median_Prevailing_Wage = median(PREVAILING_WAGE, na.rm = TRUE))
+
+ggplot(yearly_wage, aes(x = YEAR_BEGIN, y = median_Prevailing_Wage)) +
+  geom_line() +  # Use a line plot to show trends over time
+  geom_point() +  # Add points to highlight each year's average wage
+  labs(title = "Median Prevailing Wage Per Year",
+       x = "Year",
+       y = "Median Prevailing Wage") 
+
+```
+Biden becomes president at year 2020. A sudden drop in wages happen in year 2021 due to covid19. Afterward, the trends goes right back up.
 
 ## PERM_DISCLOSURE_DATA
 To recall, the first step required in the process for certain foreign nationals to obtain an employment-based immigrant visa, or green card is in **PERM_DISCLOSURE_DATA**
@@ -523,7 +541,7 @@ It contains information about applications submitted by employers who wish to hi
 
 Here, we will load in the data and do basic inspection of the data. Acknowledging that this dataset contains many columns. We can create a separate df that contains columns we believe is important.
 
-**Note** that PERM_DISCLOSURE_DATA is almost the identical as LCA_Program data but PERM_DISCLOSURE_DATA contains more columns.
+**Note** that PERM_DISCLOSURE_DATA is almost the identical as LCA_Program data but PERM_DISCLOSURE_DATA contains more columns which you can select various columns depend on your needs.
 
 Commented it out since this is one time operation
 ```{r}
