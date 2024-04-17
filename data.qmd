@@ -473,6 +473,12 @@ ggplot(filtered_df, aes(x = log(PREVAILING_WAGE), y = log(WAGE_RATE_OF_PAY_FROM)
 
 ```{r}
 # visualizing
+# Sort by total applications
+state_data_sorted_applicants <- state_data %>%
+  arrange(desc(Total_Applications))
+
+top_states <- state_data_sorted_applicants |>
+  top_n(20, Total_Applications)
 
 # Plot for Total Applications
 ggplot(top_states, aes(x = reorder(EMPLOYER_STATE, -Total_Applications), y = Total_Applications)) +
