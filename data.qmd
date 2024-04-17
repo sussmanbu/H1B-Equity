@@ -93,6 +93,9 @@ library(tidyr)
 library(viridis)
 library(ggplot2)
 library(dplyr)
+library(readxl)
+library(readr)
+library(lubridate)
 ```
   
 # Data Background
@@ -301,8 +304,9 @@ Since there exist many columns, we will list a few important columns.
 **RECEIVED_DATE**: Date the application received by OFLC
 
 
-[U.S Department Labor](https://www.dol.gov/agencies/eta/foreign-labor/performance)
-We downloaded LCA Programs H-1B and merge various dataset by case number to get columns. 
+Source of Dataset: [U.S Department Labor](https://www.dol.gov/agencies/eta/foreign-labor/performance)
+
+We downloaded LCA Programs H-1B and PERM disclosure data 
 
 The data is made available as part of a broader government initiative toward transparency and open governance. This initiative aims to make government operations more accessible and understandable to the public.
 
@@ -328,8 +332,208 @@ Employers who are seeking to hire foreign workers must submit various forms of a
 ## Why it is worth exploring?
 Because our groups are interested in the labor market in U.S specifically in foreign labors. This dataset allows us to analyze the labor market dynamics related to foreign labor in the U.S. You can track trends in wages, understand the demand for labor in specific sectors, and assess how immigration policies impact the economy. This kind of analysis is crucial for crafting informed labor and economic policies.
 
+## Our contribution
+Here, we will look into two related datasets, both from the same source. 
+
+PERM_disclosure_data: A system used by the U.S Department of Labor to process labor certifications, which is the first step required in the process for certain foreign nationals to obtain an employment-based immigrant visa, or green card.
+The PERM disclosure data typically includes information about applications submitted by employers who wish to hire foreign workers permanently. This data can provide insights into which companies are applying for labor certifications, the positions they are looking to fill, the salaries offered, the status of applications (whether they were certified, denied, or withdrawn), and other relevant details.
+
+LCA_Program_data: LCA stands for Labor Condition Application. This application is a component of the H1B visa process, where employers in the U.S. must attest to the Department of Labor that they will pay the H1B visa holder a wage that is no less than the wage paid to similarly qualified U.S. workers. It also ensures that employing a foreign worker will not adversely affect the working conditions of U.S. workers similarly employed.
+The LCA Program H1B data contains information regarding these applications, including details about the employers filing them, the positions for which they are filed, wage levels, locations of employment, and the status of these applications.
+
+Our direction is to start initial progress on LCA_Program_data to testify if H1B visa holder has a wage similar to qualified U.S. workers. Then, we will shift to perm_disclosure_data which is the where the main analysis is done.
+
 ## Cleaning Dataset
 The following steps would be describing how we load our dataset and merge additional columns.
 
+```{r}
+df <- readRDS("dataset/cleaned_disclosure.rds")
+head(df)
+```
 
-* This page should be self-contained.
+
+We selected this dataset, updated in 2024, because it comprehensively represents the evolution of U.S. immigration policy from the Trump to the Biden administration. It provides a wealth of columns suitable for statistical modeling. To enrich our analysis, we plan to merge it with two other datasets. The first includes information on the applicants' universities and majors, while the second contains data on their incomes, allowing us to construct a linear regression model. Once merged, we will have a dataframe with approximately 30+ columns.
+
+This is the line of code of how to read xlsx files and convert into rds. We commented out after done. Afterward, we can load in rds files and merge the columns
+```{r}
+# rds for the other two projects
+# df2 <- read_excel("dataset/worksite.xlsx")
+# saveRDS(df2, "dataset/LCA_worksite.rds")
+
+# df3 <- read_excel("dataset/appendix.xlsx")
+# saveRDS(df3, "dataset/LCA_appendix.rds")
+```
+
+```{r}
+# read in df2
+
+df2 <- readRDS("dataset/LCA_worksite.rds")
+head(df2)
+```
+
+```{r}
+# read in df3
+
+df3 <- readRDS("dataset/appendix.rds")
+head(df3)
+```
+
+To merge the dataset together, we can find matching case numbers. The additional dataset gives additional information about applicants university, field of major, date of degree etc... 
+
+ Here we commented it out since the dataset has already been merged.
+```{r}
+# merge df1 and df2 by case number
+# merge_1 <- merge(df, df2, by="CASE_NUMBER", all = TRUE)
+```
+
+```{r}
+# final_merge <- merge(merge_1, df3, by="CASE_NUMBER", all = TRUE)
+```
+
+```{r}
+# save as new rds for final_merge
+# saveRDS(final_merge, "dataset/final_merge.rds")
+```
+
+
+## EDA version 2
+```{r}
+final_df <- readRDS("dataset/final_merge.rds")
+head(final_df)
+```
+
+```{r}
+# filter the dataset which jobs have most frequency and applicant get full time position
+filtered_data <- final_df |>
+  filter(FULL_TIME_POSITION == "Y") |>
+  count(JOB_TITLE, sort = TRUE) |>
+  top_n(5)
+
+print(filtered_data)
+```
+```{r}
+# extract year, month, day from date
+final_df$YEAR_RECEIVED = as.integer(substr(final_df$RECEIVED_DATE, 1, 4))
+final_df$MONTH_RECEIVED = month(final_df$RECEIVED_DATE)
+final_df$DAY_RECEIVED = day(final_df$RECEIVED_DATE)
+```
+
+```{r}
+
+final_df$YEAR_END = as.integer(substr(final_df$END_DATE, 1, 4))
+final_df$MONTH_END = month(final_df$END_DATE)
+final_df$DAY_END = day(final_df$END_DATE)
+
+final_df$YEAR_DECISION = as.integer(substr(final_df$DECISION_DATE, 1, 4))
+final_df$MONTH_DECISION = month(final_df$DECISION_DATE)
+final_df$DAY_DECISION = day(final_df$DECISION_DATE)
+
+
+final_df$YEAR_BEGIN = as.integer(substr(final_df$BEGIN_DATE, 1, 4))
+final_df$MONTH_BEGIN = month(final_df$BEGIN_DATE)
+final_df$DAY_BEGIN = day(final_df$BEGIN_DATE)
+```
+
+```{r}
+# filter the dataset which jobs have most frequency and applicant get full time position
+filtered_data <- final_df |>
+  count(EMPLOYER_NAME, sort = TRUE) |>
+  top_n(5)
+
+print(filtered_data)
+```
+```{r}
+
+filtered_df <- final_df %>%
+  # filter(JOB_TITLE %in% c("Software Engineer", "Assistant Professor", "Business Analyst", "Machine Learning Engineer"),
+  # FULL_TIME_POSITION %in% c("Y", "N")) %>%
+  select(WAGE_RATE_OF_PAY_FROM, PREVAILING_WAGE)
+
+head(filtered_df)
+```
+
+```{r}
+
+# Assuming final_df is already loaded and available
+
+filtered_df <- final_df %>%
+  filter(JOB_TITLE %in% c("Software Engineer", "Assistant Professor", "Business Analyst", "Machine Learning Engineer"),
+         FULL_TIME_POSITION %in% c("Y", "N")) %>%
+  select(WAGE_RATE_OF_PAY_FROM, PREVAILING_WAGE)
+
+# Create a ggplot scatter plot with a linear regression line
+ggplot(filtered_df, aes(x = log(PREVAILING_WAGE), y = log(WAGE_RATE_OF_PAY_FROM) )) +
+  geom_point(alpha = 0.5) +  # Adds scatter plot points with some transparency
+  geom_smooth(method = "lm", se = FALSE) +  # Adds a linear regression line without the confidence interval
+  labs(x = "Prevailing Wage", y = "Wage Rate of Pay From", title = "Relationship between Prevailing Wage and Wage Rate of Pay") +
+  theme_minimal()  # Uses a minimal theme for a cleaner look
+
+```
+
+
+```{r}
+# visualizing
+
+# Plot for Total Applications
+ggplot(top_states, aes(x = reorder(EMPLOYER_STATE, -Total_Applications), y = Total_Applications)) +
+  geom_bar(stat = "identity", fill = "GREY") +
+  theme(axis.text.y = element_text(size = 6)) +  # Smaller text size for states
+  labs(title = "Total Visa Applications by State", x = "State", y = "Number of Applications") +
+  coord_flip()  # Flips the coordinates to make labels readable
+```
+Top 20 states where received the highest number of applications. Now you know what states to look for jobs.
+
+```{r}
+yearly_wage <- final_df %>%
+  group_by(YEAR_BEGIN) %>%
+  summarise(Avg_Prevailing_Wage = mean(PREVAILING_WAGE, na.rm = TRUE))
+
+ggplot(yearly_wage, aes(x = YEAR_BEGIN, y = Avg_Prevailing_Wage)) +
+  geom_line() +  # Use a line plot to show trends over time
+  geom_point() +  # Add points to highlight each year's average wage
+  labs(title = "Average Prevailing Wage Per Year",
+       x = "Year",
+       y = "Average Prevailing Wage") 
+
+```
+we see a sharp drop in year 2021 due to COVID-19. 
+
+## PERM_DISCLOSURE_DATA
+To recall, the first step required in the process for certain foreign nationals to obtain an employment-based immigrant visa, or green card is in **PERM_DISCLOSURE_DATA**
+It contains information about applications submitted by employers who wish to hire foreign workers permanently. This data can provide insights into which companies are applying for labor certifications, the positions they are looking to fill, the salaries offered, the status of applications (whether they were certified, denied, or withdrawn), and other relevant details.
+
+Here, we will load in the data and do basic inspection of the data. Acknowledging that this dataset contains many columns. We can create a separate df that contains columns we believe is important.
+
+**Note** that PERM_DISCLOSURE_DATA is almost the identical as LCA_Program data but PERM_DISCLOSURE_DATA contains more columns.
+
+Commented it out since this is one time operation
+```{r}
+# perm_data <- read_excel("dataset/PERM_data.xlsx")
+# saveRDS(perm_data, "dataset/perm_data.rds")
+```
+
+```{r}
+perm_df <- readRDS("dataset/perm_data.rds")
+head(perm_df)
+```
+
+```{r}
+# let's check missing values
+print(colSums(is.na(perm_df)))
+```
+
+```{r}
+# 24962 rows, 154 columns
+dim(perm_df)
+```
+
+## EDA version 3
+```{r}
+final_perm_df <- select(perm_df, "CASE_NUMBER", "CASE_STATUS", "RECEIVED_DATE", "DECISION_DATE", "EMPLOYER_NAME",
+                        "EMPLOYER_NUM_EMPLOYEES", "AGENT_ATTORNEY_FIRM_NAME", "PW_WAGE", "PW_SKILL_LEVEL", "WORKSITE_STATE", "JOB_TITLE", "PW_UNIT_OF_PAY", "WAGE_OFFER_FROM", "WAGE_OFFER_UNIT_OF_PAY",
+                        , "MINIMUM_EDUCATION", "REQUIRED_EXPERIENCE", "COUNTRY_OF_CITIZENSHIP", "CLASS_OF_ADMISSION"
+                        )
+
+head(final_perm_df)
+```
+

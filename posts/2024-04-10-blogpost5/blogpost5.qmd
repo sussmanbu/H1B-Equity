@@ -29,7 +29,6 @@ We selected this dataset, updated in 2024, because it comprehensively represents
 
 This is the line of code of how to read xlsx files and convert into rds. We commented out after done
 ```{r}
-
 # rds for the other two projects
 # df2 <- read_excel("dataset/worksite.xlsx")
 # saveRDS(df2, "dataset/LCA_worksite.rds")
@@ -76,7 +75,6 @@ To merge the dataset together, we can find matching case numbers.
 
 # Data Background
 This is the dataset we are combining..
-How are you combining them
 
 # Start HERE - Import Data
 ```{r}
