@@ -166,7 +166,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#background" id="toc-background" class="nav-link" data-scroll-target="#background">Background</a></li>
   <li><a href="#how-it-was-collected" id="toc-how-it-was-collected" class="nav-link" data-scroll-target="#how-it-was-collected">How it was collected?</a></li>
   <li><a href="#why-it-is-worth-exploring" id="toc-why-it-is-worth-exploring" class="nav-link" data-scroll-target="#why-it-is-worth-exploring">Why it is worth exploring?</a></li>
+  <li><a href="#our-contribution" id="toc-our-contribution" class="nav-link" data-scroll-target="#our-contribution">Our contribution</a></li>
   <li><a href="#cleaning-dataset" id="toc-cleaning-dataset" class="nav-link" data-scroll-target="#cleaning-dataset">Cleaning Dataset</a></li>
+  <li><a href="#eda-version-2" id="toc-eda-version-2" class="nav-link" data-scroll-target="#eda-version-2">EDA version 2</a></li>
+  <li><a href="#perm_disclosure_data" id="toc-perm_disclosure_data" class="nav-link" data-scroll-target="#perm_disclosure_data">PERM_DISCLOSURE_DATA</a></li>
+  <li><a href="#eda-version-3" id="toc-eda-version-3" class="nav-link" data-scroll-target="#eda-version-3">EDA version 3</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -287,7 +291,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <pre><code>Loading required package: viridisLite</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readxl)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readr)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lubridate)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="data-background" class="level1">
@@ -549,7 +556,8 @@ Supply arguments directly to `.fns` through an anonymous function instead.
 <p><strong>WORKSITE_CITY</strong>: City of the worksite</p>
 <p><strong>AGENT_REPRESENTING_EMPLOYER</strong>: employer represented by agent or attorney, Y or N</p>
 <p><strong>RECEIVED_DATE</strong>: Date the application received by OFLC</p>
-<p><a href="https://www.dol.gov/agencies/eta/foreign-labor/performance">U.S Department Labor</a> We downloaded LCA Programs H-1B and merge various dataset by case number to get columns.</p>
+<p>Source of Dataset: <a href="https://www.dol.gov/agencies/eta/foreign-labor/performance">U.S Department Labor</a></p>
+<p>We downloaded LCA Programs H-1B and PERM disclosure data</p>
 <p>The data is made available as part of a broader government initiative toward transparency and open governance. This initiative aims to make government operations more accessible and understandable to the public.</p>
 <p>By providing access to historical and current data about immigration-related labor applications, the dataset aids in understand trends, evaluate the effectiveness of current policies, and plan future actions based on solid data.</p>
 <p>A couple of ideas we can draw from this dataset are…</p>
@@ -570,12 +578,550 @@ Supply arguments directly to `.fns` through an anonymous function instead.
 <h2 class="anchored" data-anchor-id="why-it-is-worth-exploring">Why it is worth exploring?</h2>
 <p>Because our groups are interested in the labor market in U.S specifically in foreign labors. This dataset allows us to analyze the labor market dynamics related to foreign labor in the U.S. You can track trends in wages, understand the demand for labor in specific sectors, and assess how immigration policies impact the economy. This kind of analysis is crucial for crafting informed labor and economic policies.</p>
 </section>
+<section id="our-contribution" class="level2">
+<h2 class="anchored" data-anchor-id="our-contribution">Our contribution</h2>
+<p>Here, we will look into two related datasets, both from the same source.</p>
+<p>PERM_disclosure_data: A system used by the U.S Department of Labor to process labor certifications, which is the first step required in the process for certain foreign nationals to obtain an employment-based immigrant visa, or green card. The PERM disclosure data typically includes information about applications submitted by employers who wish to hire foreign workers permanently. This data can provide insights into which companies are applying for labor certifications, the positions they are looking to fill, the salaries offered, the status of applications (whether they were certified, denied, or withdrawn), and other relevant details.</p>
+<p>LCA_Program_data: LCA stands for Labor Condition Application. This application is a component of the H1B visa process, where employers in the U.S. must attest to the Department of Labor that they will pay the H1B visa holder a wage that is no less than the wage paid to similarly qualified U.S. workers. It also ensures that employing a foreign worker will not adversely affect the working conditions of U.S. workers similarly employed. The LCA Program H1B data contains information regarding these applications, including details about the employers filing them, the positions for which they are filed, wage levels, locations of employment, and the status of these applications.</p>
+<p>Our direction is to start initial progress on LCA_Program_data to testify if H1B visa holder has a wage similar to qualified U.S. workers. Then, we will shift to perm_disclosure_data which is the where the main analysis is done.</p>
+</section>
 <section id="cleaning-dataset" class="level2">
 <h2 class="anchored" data-anchor-id="cleaning-dataset">Cleaning Dataset</h2>
 <p>The following steps would be describing how we load our dataset and merge additional columns.</p>
-<ul>
-<li>This page should be self-contained.</li>
-</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"dataset/cleaned_disclosure.rds"</span>)</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 12
+  CASE_NUMBER     CASE_STATUS RECEIVED_DATE       DECISION_DATE       VISA_CLASS
+  &lt;chr&gt;           &lt;chr&gt;       &lt;dttm&gt;              &lt;dttm&gt;              &lt;chr&gt;     
+1 I-200-23355-58… Certified   2023-12-21 00:00:00 2023-12-29 00:00:00 H-1B      
+2 I-203-23355-58… Certified   2023-12-21 00:00:00 2023-12-29 00:00:00 E-3 Austr…
+3 I-200-23355-58… Certified   2023-12-21 00:00:00 2023-12-29 00:00:00 H-1B      
+4 I-200-23355-58… Certified   2023-12-21 00:00:00 2023-12-29 00:00:00 H-1B      
+5 I-200-23355-58… Certified   2023-12-21 00:00:00 2023-12-29 00:00:00 H-1B      
+6 I-200-23355-58… Certified   2023-12-21 00:00:00 2023-12-29 00:00:00 H-1B      
+# ℹ 7 more variables: JOB_TITLE &lt;chr&gt;, FULL_TIME_POSITION &lt;chr&gt;,
+#   BEGIN_DATE &lt;dttm&gt;, END_DATE &lt;dttm&gt;, EMPLOYER_NAME &lt;chr&gt;,
+#   EMPLOYER_STATE &lt;chr&gt;, AGENT_REPRESENTING_EMPLOYER &lt;chr&gt;</code></pre>
+</div>
+</div>
+<p>We selected this dataset, updated in 2024, because it comprehensively represents the evolution of U.S. immigration policy from the Trump to the Biden administration. It provides a wealth of columns suitable for statistical modeling. To enrich our analysis, we plan to merge it with two other datasets. The first includes information on the applicants’ universities and majors, while the second contains data on their incomes, allowing us to construct a linear regression model. Once merged, we will have a dataframe with approximately 30+ columns.</p>
+<p>This is the line of code of how to read xlsx files and convert into rds. We commented out after done. Afterward, we can load in rds files and merge the columns</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># rds for the other two projects</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="co"># df2 &lt;- read_excel("dataset/worksite.xlsx")</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a><span class="co"># saveRDS(df2, "dataset/LCA_worksite.rds")</span></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a><span class="co"># df3 &lt;- read_excel("dataset/appendix.xlsx")</span></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a><span class="co"># saveRDS(df3, "dataset/LCA_appendix.rds")</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># read in df2</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>df2 <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"dataset/LCA_worksite.rds"</span>)</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(df2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 22
+  CASE_NUMBER        WORKSITE_WORKERS SECONDARY_ENTITY SECONDARY_ENTITY_BUSINE…¹
+  &lt;chr&gt;                         &lt;dbl&gt; &lt;chr&gt;            &lt;chr&gt;                    
+1 I-200-19297-106681                1 N                &lt;NA&gt;                     
+2 I-200-19319-148860                1 N                &lt;NA&gt;                     
+3 I-200-19319-148860                1 N                &lt;NA&gt;                     
+4 I-200-19319-148860                1 Y                Acuity Eyecare Group     
+5 I-200-19319-149308                1 N                &lt;NA&gt;                     
+6 I-200-19323-154281                1 N                &lt;NA&gt;                     
+# ℹ abbreviated name: ¹​SECONDARY_ENTITY_BUSINESS_NAME
+# ℹ 18 more variables: WORKSITE_ADDRESS1 &lt;chr&gt;, WORKSITE_ADDRESS2 &lt;chr&gt;,
+#   WORKSITE_CITY &lt;chr&gt;, WORKSITE_COUNTY &lt;chr&gt;, WORKSITE_STATE &lt;chr&gt;,
+#   WORKSITE_POSTAL_CODE &lt;dbl&gt;, WAGE_RATE_OF_PAY_FROM &lt;dbl&gt;,
+#   WAGE_RATE_OF_PAY_TO &lt;dbl&gt;, WAGE_UNIT_OF_PAY &lt;chr&gt;, PREVAILING_WAGE &lt;dbl&gt;,
+#   PW_UNIT_OF_PAY &lt;chr&gt;, PW_TRACKING_NUMBER &lt;chr&gt;, PW_WAGE_LEVEL &lt;chr&gt;,
+#   PW_OES_YEAR &lt;chr&gt;, PW_OTHER_SOURCE &lt;chr&gt;, PW_OTHER_YEAR &lt;dbl&gt;, …</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># read in df3</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>df3 <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"dataset/appendix.rds"</span>)</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(df3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 5
+  CASE_NUMBER        APPX_A_NO_OF_EXEMPT_WORKERS APPX_A_NAME_OF_INSTITUTION     
+  &lt;chr&gt;                                    &lt;dbl&gt; &lt;chr&gt;                          
+1 I-200-20353-968632                           1 The William Paterson Universit…
+2 I-200-21116-258512                           1 GOVERNORS STATE UNIVERISTY     
+3 I-200-22115-102220                           1 Lamar University               
+4 I-200-22126-145447                           1 California State University, L…
+5 I-200-22164-272276                           1 Illinois Institute of Technolo…
+6 I-200-22180-320955                           1 University of Missouri         
+# ℹ 2 more variables: APPX_A_FIELD_OF_STUDY &lt;chr&gt;, APPX_A_DATE_OF_DEGREE &lt;dttm&gt;</code></pre>
+</div>
+</div>
+<p>To merge the dataset together, we can find matching case numbers. The additional dataset gives additional information about applicants university, field of major, date of degree etc…</p>
+<p>Here we commented it out since the dataset has already been merged.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># merge df1 and df2 by case number</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="co"># merge_1 &lt;- merge(df, df2, by="CASE_NUMBER", all = TRUE)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># final_merge &lt;- merge(merge_1, df3, by="CASE_NUMBER", all = TRUE)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co"># save as new rds for final_merge</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="co"># saveRDS(final_merge, "dataset/final_merge.rds")</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="eda-version-2" class="level2">
+<h2 class="anchored" data-anchor-id="eda-version-2">EDA version 2</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>final_df <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"dataset/final_merge.rds"</span>)</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(final_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         CASE_NUMBER           CASE_STATUS RECEIVED_DATE DECISION_DATE
+1 I-200-19297-106681 Certified - Withdrawn    2019-10-24    2023-11-01
+2 I-200-19319-148860 Certified - Withdrawn    2019-11-15    2023-10-20
+3 I-200-19319-148860 Certified - Withdrawn    2019-11-15    2023-10-20
+4 I-200-19319-148860 Certified - Withdrawn    2019-11-15    2023-10-20
+5 I-200-19319-149308 Certified - Withdrawn    2019-11-15    2023-10-05
+6 I-200-19323-154281 Certified - Withdrawn    2019-11-19    2023-10-02
+  VISA_CLASS                JOB_TITLE FULL_TIME_POSITION BEGIN_DATE   END_DATE
+1       H-1B     Research Scientist I                  Y 2019-10-24 2022-10-23
+2       H-1B       Software Developer                  Y 2019-12-01 2022-11-30
+3       H-1B       Software Developer                  Y 2019-12-01 2022-11-30
+4       H-1B       Software Developer                  Y 2019-12-01 2022-11-30
+5       H-1B       Software Developer                  Y 2019-11-18 2022-11-17
+6       H-1B SENIOR SOFTWARE ENGINEER                  Y 2020-05-16 2023-05-15
+                       EMPLOYER_NAME EMPLOYER_STATE AGENT_REPRESENTING_EMPLOYER
+1    Georgia Institute of Technology             GA                          No
+2                     TRISHULLA, LLC             WI                         Yes
+3                     TRISHULLA, LLC             WI                         Yes
+4                     TRISHULLA, LLC             WI                         Yes
+5 INTERNATIONAL SOFTWARE SYSTEMS INC             MD                          No
+6            UBER TECHNOLOGIES, INC.             CA                         Yes
+  WORKSITE_WORKERS SECONDARY_ENTITY SECONDARY_ENTITY_BUSINESS_NAME
+1                1                N                           &lt;NA&gt;
+2                1                Y           Acuity Eyecare Group
+3                1                N                           &lt;NA&gt;
+4                1                N                           &lt;NA&gt;
+5                1                N                           &lt;NA&gt;
+6                1                N                           &lt;NA&gt;
+                     WORKSITE_ADDRESS1 WORKSITE_ADDRESS2 WORKSITE_CITY
+1                      313 Ferst Drive              &lt;NA&gt;       Atlanta
+2 4835 Lyndon B Johnson Fwy, Suite 850              &lt;NA&gt;        Dallas
+3       6629 UNIVERSITY AVE, SUITE 210              &lt;NA&gt;     MIDDLETON
+4       8383 Greenway Blvd., Suite 600              &lt;NA&gt;     Middleton
+5                 7337 Hanover Parkway           Suite A     Greenbelt
+6                   1455 MARKET STREET         4TH FLOOR SAN FRANCISCO
+  WORKSITE_COUNTY WORKSITE_STATE WORKSITE_POSTAL_CODE WAGE_RATE_OF_PAY_FROM
+1          FULTON        GEORGIA                30332                 52100
+2          DALLAS          TEXAS                75244                 77605
+3            DANE      WISCONSIN                53562                 77605
+4            DANE      WISCONSIN                53562                 77605
+5 PRINCE GEORGE'S       MARYLAND                20770                 76000
+6   SAN FRANCISCO     CALIFORNIA                94103                202442
+  WAGE_RATE_OF_PAY_TO WAGE_UNIT_OF_PAY PREVAILING_WAGE PW_UNIT_OF_PAY
+1                  NA             Year           46821           Year
+2               77700             Year           77605           Year
+3               77700             Year           65458           Year
+4               77700             Year           65458           Year
+5                  NA             Year           75712           Year
+6                  NA             Year          168958           Year
+  PW_TRACKING_NUMBER PW_WAGE_LEVEL          PW_OES_YEAR PW_OTHER_SOURCE
+1               &lt;NA&gt;             I 7/1/2019 - 6/30/2020            &lt;NA&gt;
+2               &lt;NA&gt;             I 7/1/2019 - 6/30/2020            &lt;NA&gt;
+3               &lt;NA&gt;             I 7/1/2019 - 6/30/2020            &lt;NA&gt;
+4               &lt;NA&gt;             I 7/1/2019 - 6/30/2020            &lt;NA&gt;
+5               &lt;NA&gt;             I 7/1/2019 - 6/30/2020            &lt;NA&gt;
+6               &lt;NA&gt;            IV 7/1/2019 - 6/30/2020            &lt;NA&gt;
+  PW_OTHER_YEAR PW_SURVEY_PUBLISHER PW_SURVEY_NAME APPX_A_NO_OF_EXEMPT_WORKERS
+1            NA                &lt;NA&gt;           &lt;NA&gt;                          NA
+2            NA                &lt;NA&gt;           &lt;NA&gt;                          NA
+3            NA                &lt;NA&gt;           &lt;NA&gt;                          NA
+4            NA                &lt;NA&gt;           &lt;NA&gt;                          NA
+5            NA                &lt;NA&gt;           &lt;NA&gt;                          NA
+6            NA                &lt;NA&gt;           &lt;NA&gt;                          NA
+  APPX_A_NAME_OF_INSTITUTION APPX_A_FIELD_OF_STUDY APPX_A_DATE_OF_DEGREE
+1                       &lt;NA&gt;                  &lt;NA&gt;                  &lt;NA&gt;
+2                       &lt;NA&gt;                  &lt;NA&gt;                  &lt;NA&gt;
+3                       &lt;NA&gt;                  &lt;NA&gt;                  &lt;NA&gt;
+4                       &lt;NA&gt;                  &lt;NA&gt;                  &lt;NA&gt;
+5                       &lt;NA&gt;                  &lt;NA&gt;                  &lt;NA&gt;
+6                       &lt;NA&gt;                  &lt;NA&gt;                  &lt;NA&gt;</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co"># filter the dataset which jobs have most frequency and applicant get full time position</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>filtered_data <span class="ot">&lt;-</span> final_df <span class="sc">|&gt;</span></span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(FULL_TIME_POSITION <span class="sc">==</span> <span class="st">"Y"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(JOB_TITLE, <span class="at">sort =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">top_n</span>(<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Selecting by n</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(filtered_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                 JOB_TITLE    n
+1        Software Engineer 8481
+2       Software Developer 5442
+3 Senior Software Engineer 2260
+4       SOFTWARE DEVELOPER 1723
+5      Assistant Professor 1183</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="co"># extract year, month, day from date</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>final_df<span class="sc">$</span>YEAR_RECEIVED <span class="ot">=</span> <span class="fu">as.integer</span>(<span class="fu">substr</span>(final_df<span class="sc">$</span>RECEIVED_DATE, <span class="dv">1</span>, <span class="dv">4</span>))</span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>final_df<span class="sc">$</span>MONTH_RECEIVED <span class="ot">=</span> <span class="fu">month</span>(final_df<span class="sc">$</span>RECEIVED_DATE)</span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>final_df<span class="sc">$</span>DAY_RECEIVED <span class="ot">=</span> <span class="fu">day</span>(final_df<span class="sc">$</span>RECEIVED_DATE)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>final_df<span class="sc">$</span>YEAR_END <span class="ot">=</span> <span class="fu">as.integer</span>(<span class="fu">substr</span>(final_df<span class="sc">$</span>END_DATE, <span class="dv">1</span>, <span class="dv">4</span>))</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>final_df<span class="sc">$</span>MONTH_END <span class="ot">=</span> <span class="fu">month</span>(final_df<span class="sc">$</span>END_DATE)</span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>final_df<span class="sc">$</span>DAY_END <span class="ot">=</span> <span class="fu">day</span>(final_df<span class="sc">$</span>END_DATE)</span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>final_df<span class="sc">$</span>YEAR_DECISION <span class="ot">=</span> <span class="fu">as.integer</span>(<span class="fu">substr</span>(final_df<span class="sc">$</span>DECISION_DATE, <span class="dv">1</span>, <span class="dv">4</span>))</span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>final_df<span class="sc">$</span>MONTH_DECISION <span class="ot">=</span> <span class="fu">month</span>(final_df<span class="sc">$</span>DECISION_DATE)</span>
+<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a>final_df<span class="sc">$</span>DAY_DECISION <span class="ot">=</span> <span class="fu">day</span>(final_df<span class="sc">$</span>DECISION_DATE)</span>
+<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-9"><a href="#cb45-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-10"><a href="#cb45-10" aria-hidden="true" tabindex="-1"></a>final_df<span class="sc">$</span>YEAR_BEGIN <span class="ot">=</span> <span class="fu">as.integer</span>(<span class="fu">substr</span>(final_df<span class="sc">$</span>BEGIN_DATE, <span class="dv">1</span>, <span class="dv">4</span>))</span>
+<span id="cb45-11"><a href="#cb45-11" aria-hidden="true" tabindex="-1"></a>final_df<span class="sc">$</span>MONTH_BEGIN <span class="ot">=</span> <span class="fu">month</span>(final_df<span class="sc">$</span>BEGIN_DATE)</span>
+<span id="cb45-12"><a href="#cb45-12" aria-hidden="true" tabindex="-1"></a>final_df<span class="sc">$</span>DAY_BEGIN <span class="ot">=</span> <span class="fu">day</span>(final_df<span class="sc">$</span>BEGIN_DATE)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="co"># filter the dataset which jobs have most frequency and applicant get full time position</span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>filtered_data <span class="ot">&lt;-</span> final_df <span class="sc">|&gt;</span></span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(EMPLOYER_NAME, <span class="at">sort =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">top_n</span>(<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Selecting by n</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(filtered_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                           EMPLOYER_NAME    n
+1                Amazon.com Services LLC 3259
+2                 Ernst &amp; Young U.S. LLP 2610
+3                             Google LLC 2325
+4                  Microsoft Corporation 2190
+5 COGNIZANT TECHNOLOGY SOLUTIONS US CORP 1639</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>filtered_df <span class="ot">&lt;-</span> final_df <span class="sc">%&gt;%</span></span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># filter(JOB_TITLE %in% c("Software Engineer", "Assistant Professor", "Business Analyst", "Machine Learning Engineer"),</span></span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># FULL_TIME_POSITION %in% c("Y", "N")) %&gt;%</span></span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(WAGE_RATE_OF_PAY_FROM, PREVAILING_WAGE)</span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(filtered_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  WAGE_RATE_OF_PAY_FROM PREVAILING_WAGE
+1                 52100           46821
+2                 77605           77605
+3                 77605           65458
+4                 77605           65458
+5                 76000           75712
+6                202442          168958</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Assuming final_df is already loaded and available</span></span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>filtered_df <span class="ot">&lt;-</span> final_df <span class="sc">%&gt;%</span></span>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(JOB_TITLE <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Software Engineer"</span>, <span class="st">"Assistant Professor"</span>, <span class="st">"Business Analyst"</span>, <span class="st">"Machine Learning Engineer"</span>),</span>
+<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a>         FULL_TIME_POSITION <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Y"</span>, <span class="st">"N"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb52-6"><a href="#cb52-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(WAGE_RATE_OF_PAY_FROM, PREVAILING_WAGE)</span>
+<span id="cb52-7"><a href="#cb52-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-8"><a href="#cb52-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a ggplot scatter plot with a linear regression line</span></span>
+<span id="cb52-9"><a href="#cb52-9" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(filtered_df, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">log</span>(PREVAILING_WAGE), <span class="at">y =</span> <span class="fu">log</span>(WAGE_RATE_OF_PAY_FROM) )) <span class="sc">+</span></span>
+<span id="cb52-10"><a href="#cb52-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span>  <span class="co"># Adds scatter plot points with some transparency</span></span>
+<span id="cb52-11"><a href="#cb52-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">se =</span> <span class="cn">FALSE</span>) <span class="sc">+</span>  <span class="co"># Adds a linear regression line without the confidence interval</span></span>
+<span id="cb52-12"><a href="#cb52-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Prevailing Wage"</span>, <span class="at">y =</span> <span class="st">"Wage Rate of Pay From"</span>, <span class="at">title =</span> <span class="st">"Relationship between Prevailing Wage and Wage Rate of Pay"</span>) <span class="sc">+</span></span>
+<span id="cb52-13"><a href="#cb52-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()  <span class="co"># Uses a minimal theme for a cleaner look</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`geom_smooth()` using formula = 'y ~ x'</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="data_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Identify states with high number of applicants or high approval rates</span></span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>state_df <span class="ot">&lt;-</span> final_df</span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a>state_df <span class="ot">&lt;-</span> <span class="fu">na.omit</span>(state_df[<span class="fu">c</span>(<span class="st">"EMPLOYER_STATE"</span>, <span class="st">"CASE_STATUS"</span>)])</span>
+<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-6"><a href="#cb54-6" aria-hidden="true" tabindex="-1"></a>state_data <span class="ot">&lt;-</span> state_df <span class="sc">|&gt;</span></span>
+<span id="cb54-7"><a href="#cb54-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(EMPLOYER_STATE) <span class="sc">|&gt;</span></span>
+<span id="cb54-8"><a href="#cb54-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb54-9"><a href="#cb54-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">Total_Applications =</span> <span class="fu">n</span>(),</span>
+<span id="cb54-10"><a href="#cb54-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">Approved_Applications =</span> <span class="fu">sum</span>(CASE_STATUS <span class="sc">==</span> <span class="st">"Approved"</span>)</span>
+<span id="cb54-11"><a href="#cb54-11" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="co"># visualizing</span></span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Sort by total applications</span></span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>state_data_sorted_applicants <span class="ot">&lt;-</span> state_data <span class="sc">%&gt;%</span></span>
+<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(Total_Applications))</span>
+<span id="cb55-5"><a href="#cb55-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-6"><a href="#cb55-6" aria-hidden="true" tabindex="-1"></a>top_states <span class="ot">&lt;-</span> state_data_sorted_applicants <span class="sc">|&gt;</span></span>
+<span id="cb55-7"><a href="#cb55-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">top_n</span>(<span class="dv">20</span>, Total_Applications)</span>
+<span id="cb55-8"><a href="#cb55-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-9"><a href="#cb55-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot for Total Applications</span></span>
+<span id="cb55-10"><a href="#cb55-10" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(top_states, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">reorder</span>(EMPLOYER_STATE, <span class="sc">-</span>Total_Applications), <span class="at">y =</span> Total_Applications)) <span class="sc">+</span></span>
+<span id="cb55-11"><a href="#cb55-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">fill =</span> <span class="st">"GREY"</span>) <span class="sc">+</span></span>
+<span id="cb55-12"><a href="#cb55-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">6</span>)) <span class="sc">+</span>  <span class="co"># Smaller text size for states</span></span>
+<span id="cb55-13"><a href="#cb55-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Total Visa Applications by State"</span>, <span class="at">x =</span> <span class="st">"State"</span>, <span class="at">y =</span> <span class="st">"Number of Applications"</span>) <span class="sc">+</span></span>
+<span id="cb55-14"><a href="#cb55-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>()  <span class="co"># Flips the coordinates to make labels readable</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="data_files/figure-html/unnamed-chunk-27-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Top 20 states where received the highest number of applications. Now you know what states to look for jobs.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>yearly_wage <span class="ot">&lt;-</span> final_df <span class="sc">%&gt;%</span></span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(YEAR_BEGIN) <span class="sc">%&gt;%</span></span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">Avg_Prevailing_Wage =</span> <span class="fu">mean</span>(PREVAILING_WAGE, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-5"><a href="#cb56-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(yearly_wage, <span class="fu">aes</span>(<span class="at">x =</span> YEAR_BEGIN, <span class="at">y =</span> Avg_Prevailing_Wage)) <span class="sc">+</span></span>
+<span id="cb56-6"><a href="#cb56-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span>  <span class="co"># Use a line plot to show trends over time</span></span>
+<span id="cb56-7"><a href="#cb56-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span>  <span class="co"># Add points to highlight each year's average wage</span></span>
+<span id="cb56-8"><a href="#cb56-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Average Prevailing Wage Per Year"</span>,</span>
+<span id="cb56-9"><a href="#cb56-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Year"</span>,</span>
+<span id="cb56-10"><a href="#cb56-10" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Average Prevailing Wage"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="data_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>we see a sharp drop in year 2021 due to COVID-19.</p>
+</section>
+<section id="perm_disclosure_data" class="level2">
+<h2 class="anchored" data-anchor-id="perm_disclosure_data">PERM_DISCLOSURE_DATA</h2>
+<p>To recall, the first step required in the process for certain foreign nationals to obtain an employment-based immigrant visa, or green card is in <strong>PERM_DISCLOSURE_DATA</strong> It contains information about applications submitted by employers who wish to hire foreign workers permanently. This data can provide insights into which companies are applying for labor certifications, the positions they are looking to fill, the salaries offered, the status of applications (whether they were certified, denied, or withdrawn), and other relevant details.</p>
+<p>Here, we will load in the data and do basic inspection of the data. Acknowledging that this dataset contains many columns. We can create a separate df that contains columns we believe is important.</p>
+<p><strong>Note</strong> that PERM_DISCLOSURE_DATA is almost the identical as LCA_Program data but PERM_DISCLOSURE_DATA contains more columns.</p>
+<p>Commented it out since this is one time operation</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="co"># perm_data &lt;- read_excel("dataset/PERM_data.xlsx")</span></span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a><span class="co"># saveRDS(perm_data, "dataset/perm_data.rds")</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>perm_df <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"dataset/perm_data.rds"</span>)</span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(perm_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 154
+  CASE_NUMBER   CASE_STATUS RECEIVED_DATE       DECISION_DATE       REFILE
+  &lt;chr&gt;         &lt;chr&gt;       &lt;dttm&gt;              &lt;dttm&gt;              &lt;chr&gt; 
+1 A-23043-00641 Withdrawn   2023-02-12 00:00:00 2023-10-01 00:00:00 N     
+2 A-22256-20380 Certified   2022-09-22 00:00:00 2023-10-02 00:00:00 N     
+3 A-22271-30061 Certified   2022-10-24 00:00:00 2023-10-02 00:00:00 N     
+4 A-22272-30740 Certified   2022-10-24 00:00:00 2023-10-02 00:00:00 N     
+5 A-22185-82932 Certified   2022-07-26 00:00:00 2023-10-02 00:00:00 N     
+6 A-22189-85099 Certified   2022-11-16 00:00:00 2023-10-02 00:00:00 N     
+# ℹ 149 more variables: ORIG_FILE_DATE &lt;dttm&gt;,
+#   PREVIOUS_SWA_CASE_NUMBER_STATE &lt;chr&gt;, SCHD_A_SHEEPHERDER &lt;chr&gt;,
+#   EMPLOYER_NAME &lt;chr&gt;, EMPLOYER_ADDRESS_1 &lt;chr&gt;, EMPLOYER_ADDRESS_2 &lt;chr&gt;,
+#   EMPLOYER_CITY &lt;chr&gt;, EMPLOYER_STATE_PROVINCE &lt;chr&gt;, EMPLOYER_COUNTRY &lt;chr&gt;,
+#   EMPLOYER_POSTAL_CODE &lt;dbl&gt;, EMPLOYER_PHONE &lt;chr&gt;, EMPLOYER_PHONE_EXT &lt;chr&gt;,
+#   EMPLOYER_NUM_EMPLOYEES &lt;dbl&gt;, EMPLOYER_YEAR_COMMENCED_BUSINESS &lt;dbl&gt;,
+#   NAICS_CODE &lt;dbl&gt;, FW_OWNERSHIP_INTEREST &lt;chr&gt;, EMP_CONTACT_NAME &lt;chr&gt;, …</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="co"># let's check missing values</span></span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">colSums</span>(<span class="fu">is.na</span>(perm_df)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                       CASE_NUMBER                        CASE_STATUS 
+                                 0                                  0 
+                     RECEIVED_DATE                      DECISION_DATE 
+                                 0                                  0 
+                            REFILE                     ORIG_FILE_DATE 
+                                 0                              24953 
+    PREVIOUS_SWA_CASE_NUMBER_STATE                 SCHD_A_SHEEPHERDER 
+                             24934                                  0 
+                     EMPLOYER_NAME                 EMPLOYER_ADDRESS_1 
+                                 0                                  0 
+                EMPLOYER_ADDRESS_2                      EMPLOYER_CITY 
+                             17503                                  0 
+           EMPLOYER_STATE_PROVINCE                   EMPLOYER_COUNTRY 
+                                 1                                  9 
+              EMPLOYER_POSTAL_CODE                     EMPLOYER_PHONE 
+                               112                                  0 
+                EMPLOYER_PHONE_EXT             EMPLOYER_NUM_EMPLOYEES 
+                             23505                                  3 
+  EMPLOYER_YEAR_COMMENCED_BUSINESS                         NAICS_CODE 
+                                15                                 23 
+             FW_OWNERSHIP_INTEREST                   EMP_CONTACT_NAME 
+                                 1                                  0 
+             EMP_CONTACT_ADDRESS_1              EMP_CONTACT_ADDRESS_2 
+                                 2                              16610 
+                  EMP_CONTACT_CITY         EMP_CONTACT_STATE_PROVINCE 
+                                 0                                  0 
+               EMP_CONTACT_COUNTRY            EMP_CONTACT_POSTAL_CODE 
+                                 7                                  0 
+                 EMP_CONTACT_PHONE                  EMP_CONTACT_EMAIL 
+                                 1                                  4 
+               AGENT_ATTORNEY_NAME           AGENT_ATTORNEY_FIRM_NAME 
+                              2014                               2291 
+              AGENT_ATTORNEY_PHONE           AGENT_ATTORNEY_PHONE_EXT 
+                              2015                              24415 
+          AGENT_ATTORNEY_ADDRESS_1           AGENT_ATTORNEY_ADDRESS_2 
+                              2015                               7825 
+               AGENT_ATTORNEY_CITY      AGENT_ATTORNEY_STATE_PROVINCE 
+                              2013                               2200 
+            AGENT_ATTORNEY_COUNTRY         AGENT_ATTORNEY_POSTAL_CODE 
+                              2012                               2033 
+              AGENT_ATTORNEY_EMAIL                    PW_TRACK_NUMBER 
+                              2017                                128 
+                       PW_SOC_CODE                       PW_SOC_TITLE 
+                                21                                  3 
+                    PW_SKILL_LEVEL                            PW_WAGE 
+                               127                                  3 
+                    PW_UNIT_OF_PAY                     PW_WAGE_SOURCE 
+                                 3                                  5 
+              PW_SOURCE_NAME_OTHER              PW_DETERMINATION_DATE 
+                             24002                                 19 
+                PW_EXPIRATION_DATE                    WAGE_OFFER_FROM 
+                                21                                  2 
+                     WAGE_OFFER_TO             WAGE_OFFER_UNIT_OF_PAY 
+                             14811                                  1 
+                WORKSITE_ADDRESS_1                 WORKSITE_ADDRESS_2 
+                                 1                              16021 
+                     WORKSITE_CITY                     WORKSITE_STATE 
+                                 0                                  2 
+              WORKSITE_POSTAL_CODE                          JOB_TITLE 
+                                 1                                  1 
+                 MINIMUM_EDUCATION            JOB_EDUCATION_MIN_OTHER 
+                                 5                              24453 
+              MAJOR_FIELD_OF_STUDY                  REQUIRED_TRAINING 
+                              5988                                  0 
+          REQUIRED_TRAINING_MONTHS         REQUIRED_FIELD_OF_TRAINING 
+                             24775                              24731 
+               REQUIRED_EXPERIENCE         REQUIRED_EXPERIENCE_MONTHS 
+                                 0                              11595 
+         ACCEPT_ALT_FIELD_OF_STUDY      ACCEPT_ALT_MAJOR_FLD_OF_STUDY 
+                                 1                              13966 
+                  ACCEPT_ALT_COMBO         ACCEPT_ALT_COMBO_EDUCATION 
+                                 1                              18459 
+         ACCEPT_ALT_COMBO_ED_OTHER     ACCEPT_ALT_COMBO_EDUCATION_YRS 
+                             24651                              18511 
+          ACCEPT_FOREIGN_EDUCATION              ACCEPT_ALT_OCCUPATION 
+                                 1                                  2 
+      ACCEPT_ALT_OCCUPATION_MONTHS               ACCEPT_ALT_JOB_TITLE 
+                              8402                               8348 
+       JOB_OPP_REQUIREMENTS_NORMAL          FOREIGN_LANGUAGE_REQUIRED 
+                                 0                                  0 
+                   SPECIFIC_SKILLS             COMBINATION_OCCUPATION 
+                              1841                                  0 
+    OFFERED_TO_APPL_FOREIGN_WORKER        FOREIGN_WORKER_LIVE_ON_PREM 
+                                 0                                  0 
+    FOREIGN_WORKER_LIVE_IN_DOM_SER FOREIGN_WORKER_LIVE_IN_DOM_SVC_CNT 
+                                 0                              24790 
+           PROFESSIONAL_OCCUPATION          APP_FOR_COLLEGE_U_TEACHER 
+                                 0                                  1 
+               COMPETITIVE_PROCESS          BASIC_RECRUITMENT_PROCESS 
+                             24774                              24778 
+               TEACHER_SELECT_DATE           TEACHER_PUB_JOURNAL_NAME 
+                             24839                              24791 
+           ADD_RECRUIT_INFORMATION           SWA_JOB_ORDER_START_DATE 
+                             24713                                153 
+            SWA_JOB_ORDER_END_DATE           SUNDAY_EDITION_NEWSPAPER 
+                               154                                138 
+              FIRST_NEWSPAPER_NAME     FIRST_ADVERTISEMENT_START_DATE 
+                               140                                151 
+          SECOND_NEWSPAPER_AD_NAME          SECOND_ADVERTISEMENT_TYPE 
+                               143                                152 
+              SECOND_AD_START_DATE                 JOB_FAIR_FROM_DATE 
+                               152                              24915 
+                  JOB_FAIR_TO_DATE     ON_CAMPUS_RECRUITING_FROM_DATE 
+                             24915                              24866 
+      ON_CAMPUS_RECRUITING_TO_DATE         EMPLOYER_WEBSITE_FROM_DATE 
+                             24866                              14699 
+          EMPLOYER_WEBSITE_TO_DATE               PRO_ORG_AD_FROM_DATE 
+                             14699                              20371 
+     PRO_ORG_ADVERTISEMENT_TO_DATE       JOB_SEARCH_WEBSITE_FROM_DATE 
+                             20371                               6877 
+        JOB_SEARCH_WEBSITE_TO_DATE      PVT_EMPLOYMENT_FIRM_FROM_DATE 
+                              6877                              24158 
+       PVT_EMPLOYMENT_FIRM_TO_DATE        EMPLOYEE_REF_PROG_FROM_DATE 
+                             24158                              20776 
+    EMPLOYEE_REFERRAL_PROG_TO_DATE         CAMPUS_PLACEMENT_FROM_DATE 
+                             20776                              23424 
+          CAMPUS_PLACEMENT_TO_DATE       LOCAL_ETHNIC_PAPER_FROM_DATE 
+                             23424                              10316 
+        LOCAL_ETHNIC_PAPER_TO_DATE              RADIO_TV_AD_FROM_DATE 
+                             10316                              21619 
+               RADIO_TV_AD_TO_DATE               EMP_RECEIVED_PAYMENT 
+                             21619                                  3 
+                   PAYMENT_DETAILS            BARGAINING_REP_NOTIFIED 
+                             24924                                  3 
+         POSTED_NOTICE_AT_WORKSITE          LAYOFF_IN_PAST_SIX_MONTHS 
+                                 3                                  3 
+             US_WORKERS_CONSIDERED             COUNTRY_OF_CITIZENSHIP 
+                             23565                                  5 
+      FOREIGN_WORKER_BIRTH_COUNTRY                 CLASS_OF_ADMISSION 
+                                 3                               2629 
+          FOREIGN_WORKER_EDUCATION     FOREIGN_WORKER_EDUCATION_OTHER 
+                                 5                              24350 
+         FOREIGN_WORKER_INFO_MAJOR         FOREIGN_WORKER_YRS_ED_COMP 
+                              4418                               4311 
+         FOREIGN_WORKER_INST_OF_ED       FOREIGN_WORKER_ED_INST_ADD_1 
+                              4281                               4467 
+      FOREIGN_WORKER_ED_INST_ADD_2        FOREIGN_WORKER_ED_INST_CITY 
+                             22251                               4318 
+    FOREIGN_WORKER_ED_INST_STATE_P     FOREIGN_WORKER_ED_INST_COUNTRY 
+                              6021                               4491 
+    FOREIGN_WORKER_ED_INST_POST_CD       FOREIGN_WORKER_TRAINING_COMP 
+                              5224                                  1 
+     FOREIGN_WORKER_REQ_EXPERIENCE          FOREIGN_WORKER_ALT_ED_EXP 
+                                 0                                  0 
+        FOREIGN_WORKER_ALT_OCC_EXP       FOREIGN_WORKER_EXP_WITH_EMPL 
+                                 1                                  1 
+    FOREIGN_WORKER_EMPL_PAY_FOR_ED       FOREIGN_WORKER_CURR_EMPLOYED 
+                                 0                                  0 
+    EMPLOYER_COMPLETED_APPLICATION                      PREPARER_NAME 
+                                 1                               2116 
+                    PREPARER_TITLE                     PREPARER_EMAIL 
+                              2118                               2121 
+                EMP_INFO_DECL_NAME                     EMP_DECL_TITLE 
+                                 2                                  3 </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 24962 rows, 154 columns</span></span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(perm_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 24962   154</code></pre>
+</div>
+</div>
+</section>
+<section id="eda-version-3" class="level2">
+<h2 class="anchored" data-anchor-id="eda-version-3">EDA version 3</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a>final_perm_df <span class="ot">&lt;-</span> <span class="fu">select</span>(perm_df, <span class="st">"CASE_NUMBER"</span>, <span class="st">"CASE_STATUS"</span>, <span class="st">"RECEIVED_DATE"</span>, <span class="st">"DECISION_DATE"</span>, <span class="st">"EMPLOYER_NAME"</span>,</span>
+<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a>                        <span class="st">"EMPLOYER_NUM_EMPLOYEES"</span>, <span class="st">"AGENT_ATTORNEY_FIRM_NAME"</span>, <span class="st">"PW_WAGE"</span>, <span class="st">"PW_SKILL_LEVEL"</span>, <span class="st">"WORKSITE_STATE"</span>, <span class="st">"JOB_TITLE"</span>, <span class="st">"PW_UNIT_OF_PAY"</span>, <span class="st">"WAGE_OFFER_FROM"</span>, <span class="st">"WAGE_OFFER_UNIT_OF_PAY"</span>,</span>
+<span id="cb64-3"><a href="#cb64-3" aria-hidden="true" tabindex="-1"></a>                        , <span class="st">"MINIMUM_EDUCATION"</span>, <span class="st">"REQUIRED_EXPERIENCE"</span>, <span class="st">"COUNTRY_OF_CITIZENSHIP"</span>, <span class="st">"CLASS_OF_ADMISSION"</span></span>
+<span id="cb64-4"><a href="#cb64-4" aria-hidden="true" tabindex="-1"></a>                        )</span>
+<span id="cb64-5"><a href="#cb64-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb64-6"><a href="#cb64-6" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(final_perm_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 18
+  CASE_NUMBER  CASE_STATUS RECEIVED_DATE       DECISION_DATE       EMPLOYER_NAME
+  &lt;chr&gt;        &lt;chr&gt;       &lt;dttm&gt;              &lt;dttm&gt;              &lt;chr&gt;        
+1 A-23043-006… Withdrawn   2023-02-12 00:00:00 2023-10-01 00:00:00 LIBERTY CIVI…
+2 A-22256-203… Certified   2022-09-22 00:00:00 2023-10-02 00:00:00 Siser North …
+3 A-22271-300… Certified   2022-10-24 00:00:00 2023-10-02 00:00:00 Blend360 LLC 
+4 A-22272-307… Certified   2022-10-24 00:00:00 2023-10-02 00:00:00 Blend360 LLC 
+5 A-22185-829… Certified   2022-07-26 00:00:00 2023-10-02 00:00:00 AMDOCS INC.  
+6 A-22189-850… Certified   2022-11-16 00:00:00 2023-10-02 00:00:00 VMWARE, INC. 
+# ℹ 13 more variables: EMPLOYER_NUM_EMPLOYEES &lt;dbl&gt;,
+#   AGENT_ATTORNEY_FIRM_NAME &lt;chr&gt;, PW_WAGE &lt;dbl&gt;, PW_SKILL_LEVEL &lt;chr&gt;,
+#   WORKSITE_STATE &lt;chr&gt;, JOB_TITLE &lt;chr&gt;, PW_UNIT_OF_PAY &lt;chr&gt;,
+#   WAGE_OFFER_FROM &lt;dbl&gt;, WAGE_OFFER_UNIT_OF_PAY &lt;chr&gt;,
+#   MINIMUM_EDUCATION &lt;chr&gt;, REQUIRED_EXPERIENCE &lt;chr&gt;,
+#   COUNTRY_OF_CITIZENSHIP &lt;chr&gt;, CLASS_OF_ADMISSION &lt;chr&gt;</code></pre>
+</div>
+</div>
 
 
 </section>
