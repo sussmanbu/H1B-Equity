@@ -91,38 +91,56 @@ ggplot(unknown_longer, aes(x = year, y = count_h1b, fill = Country)) +
 
 
 ```{r}
+library(dplyr)
+library(tidyr)
 library(viridis)
-h1b_country_temp <- h1b_country |>
+library(ggplot2)  # for ggplot (optional if you want to use ggplot for visualization)
+
+# Sample data manipulation assuming h1b_country is your dataset
+h1b_country_temp <- h1b_country %>%
   select(-Continent)
 
+# Convert the data from wide to long format
 data_long_all <- pivot_longer(h1b_country_temp, cols=-Country, names_to = "year", values_to = "count_h1b")
 
+# Filter for only recent years 2022, 2021, 2020, etc.
+years_of_interest <- c("2022", "2021", "2020", "2019", "2018")
+data_filtered <- data_long_all %>%
+  filter(year %in% years_of_interest)
+
+# Initialize an empty list to store the pie charts
 piecharts_all <- list()
 
-for(year_iter in unique(data_long_all$year)){
+# Loop only over the filtered years
+for (year_iter in years_of_interest) {
   print(year_iter)
-  all_temp <- data_long_all |> filter(year == year_iter)
+  all_temp <- data_filtered %>% 
+    filter(year == year_iter)
   
-  #choose top 5
-  top_countries <- all_temp |>
-  group_by(Country) |>
-  summarise(total_count = count_h1b) |>
-  arrange(desc(total_count)) |>
-  top_n(5)
+  # Select the top 5 countries based on the count
+  top_countries <- all_temp %>%
+    group_by(Country) %>%
+    summarise(total_count = sum(count_h1b), .groups = "drop") %>%
+    arrange(desc(total_count)) %>%
+    slice_max(order_by = total_count, n = 5)  # Updated to use slice_max which is more explicit
   
-  #summarise the rest
-  other_countries <- all_temp |>
-  anti_join(top_countries, by = "Country") |>
-    filter(!is.na(count_h1b))|>
-  summarise(Country = "Other",
-            total_count = sum(count_h1b))
+  # Summarise the rest as 'Other'
+  other_countries <- all_temp %>%
+    anti_join(top_countries, by = "Country") %>%
+    filter(!is.na(count_h1b)) %>%
+    summarise(Country = "Other",
+              total_count = sum(count_h1b), .groups = "drop")
   
+  # Combine the top countries and 'Other'
   combined_data <- bind_rows(top_countries, other_countries)
+  # Create pie chart
   pie_chart <- pie(combined_data$total_count, labels = combined_data$Country, main = paste("Top 5 Countries in", year_iter), col=viridis(length(combined_data$total_count)))
   
+  # Store the pie chart in the list
   piecharts_all[[year_iter]] <- pie_chart
-  
 }
+
+# Print all pie charts stored in the list
 print(piecharts_all)
 ```
 
@@ -430,27 +448,15 @@ data_long <- h1b_country %>%
 
 # Plot total values by continent over the years
 ggplot(data_long, aes(x = year, y = count_h1b, fill = Continent)) +
-  geom_bar(stat = "identity", position = "stack") +
+  geom_bar(stat = "identity") +
   facet_wrap(~Continent, scales="free_y") +
+  scale_x_discrete(guide = guide_axis(check.overlap = TRUE)) +
   labs(title = "Total H1B Visas by Continent Over the Years",
        x = "Year", y = "Total Visas") +
-  theme(legend.position = "top", axis.text.x = element_text(angle = 45, hjust = 1))
+  theme(legend.position = "top", axis.text.x = element_text(angle = 45, hjust = 1),
+        plot.margin = unit(c(1, 1, 1, 1), "cm"))
 ```
 
-```{r}
-# Calculate percentages for each continent per year
-data_long <- data_long %>%
-  left_join(total_h1b_by_year_long, by = "year") %>%
-  mutate(percentage_of_total = count_h1b / Total_H1B_Visas)
 
-# Plot percentage of total values by continent over the years
-ggplot(data_long, aes(x = year, y = percentage_of_total, fill = Continent)) +
-  geom_bar(stat = "identity", position = "dodge") +
-  facet_wrap(~Continent, scales="free_y") +
-  scale_y_continuous(labels = scales::percent_format(accuracy = 0.1)) +
-  labs(title = "Percentage of Total H1B Visas by Continent Over the Years",
-       x = "Year", y = "Percentage of Total Visas") +
-  theme(legend.position = "top", axis.text.x = element_text(angle = 45, hjust = 1))
-```
 
 >>>>>>> 5dcbcb76829b43c5323c8d54ece3b8995ca08211
