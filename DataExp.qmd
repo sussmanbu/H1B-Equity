@@ -36,6 +36,130 @@ data_long
 ```
 
 
+Goal: Explore relationship between number of applications and wages
+```{r}
+library(readxl)
+library(readr)
+library(dplyr)
+library(tidymodels)
+library(cluster)
+library(ggplot2)
+library(lubridate)
+```
+
+```{r}
+df <- readRDS("dataset/cleaned_disclosure.rds")
+head(df)
+```
+```{r}
+df_merged <- readRDS("dataset/final_merge.rds")
+```
+
+```{r}
+df_merged
+```
+#1. Group by company
+#2. Compare rates per company
+#3. Linear relationship between number of applications and wages, by company
+
+```{r}
+filtered_data <- final_df |>
+  filter(FULL_TIME_POSITION == "Y") |>
+  mutate(JOB_TITLE = tolower(JOB_TITLE)) |>
+  count(JOB_TITLE, sort = TRUE)
+
+print(filtered_data |> top_n(5))
+```
+
+
+```{r}
+filtered_data <- final_df |>
+  count(EMPLOYER_NAME, sort = TRUE)
+
+print(filtered_data |> top_n(5))
+```
+
+
+```{r}
+final_df$YEAR_RECEIVED = as.integer(substr(final_df$RECEIVED_DATE, 1, 4))
+final_df$MONTH_RECEIVED = month(final_df$RECEIVED_DATE)
+final_df$DAY_RECEIVED = day(final_df$RECEIVED_DATE)
+final_df$YEAR_END = as.integer(substr(final_df$END_DATE, 1, 4))
+final_df$MONTH_END = month(final_df$END_DATE)
+final_df$DAY_END = day(final_df$END_DATE)
+
+final_df$YEAR_DECISION = as.integer(substr(final_df$DECISION_DATE, 1, 4))
+final_df$MONTH_DECISION = month(final_df$DECISION_DATE)
+final_df$DAY_DECISION = day(final_df$DECISION_DATE)
+
+
+final_df$YEAR_BEGIN = as.integer(substr(final_df$BEGIN_DATE, 1, 4))
+final_df$MONTH_BEGIN = month(final_df$BEGIN_DATE)
+final_df$DAY_BEGIN = day(final_df$BEGIN_DATE)
+```
+
+```{r}
+top_5_employer <- final_df |>
+  group_by(EMPLOYER_NAME)|>
+  count(EMPLOYER_NAME, sort = TRUE) |>
+  top_n(5)
+head(top_5_employer)
+```
+
+
+```{r}
+top_5_summarise <- top_5_employer|>
+  group_by(YEAR_BEGIN, EMPLOYER_NAME) |>
+  mutate(count_h1b = n())
+```
+```{r}
+head(top_5_summarise)
+```
+
+```{r}
+unique(top_5_summarise$EMPLOYER_NAME)
+```
+
+
+
+```{r}
+ggplot(top_5_summarise, aes(x = YEAR_BEGIN, y = count_h1b, fill = EMPLOYER_NAME)) +
+  geom_bar(stat = "identity", position = "stack") +
+  facet_wrap(~EMPLOYER_NAME)+
+  labs(title = "Total H1b Visas by Company Over the Years",
+       x = "Year", y = "Total Value") + theme(legend.position = "",
+        axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+```{r}
+summary_data <- final_df %>%
+  group_by(EMPLOYER_NAME, YEAR_BEGIN, WAGE_UNIT_OF_PAY, WAGE_RATE_OF_PAY_FROM) %>%
+  filter(!is.na(WAGE_RATE_OF_PAY_FROM))|>
+  mutate(applications = n(), avg_wage = mean(WAGE_RATE_OF_PAY_FROM))
+```
+
+```{r}
+nrow(summary_data)
+nrow(final_df)
+```
+
+```{r}
+head(summary_data)
+summary(summary_data)
+```
+
+
+```{r}
+correlation <- cor(summary_data$applications, summary_data$avg_wage)
+```
+
+```{r}
+correlation
+```
+
+Goal: Financial Info with countries
+
+
 ```{r}
 ggplot(data_long, aes(x = year, y = count_h1b, fill = Continent)) +
   geom_bar(stat = "identity", position = "stack") +
@@ -456,6 +580,8 @@ ggplot(data_long, aes(x = year, y = count_h1b, fill = Continent)) +
   theme(legend.position = "top", axis.text.x = element_text(angle = 45, hjust = 1),
         plot.margin = unit(c(1, 1, 1, 1), "cm"))
 ```
+
+
 
 
 
