@@ -37,11 +37,6 @@ data_long
 
 
 ```{r}
-
-```
-
-
-```{r}
 ggplot(data_long, aes(x = year, y = count_h1b, fill = Continent)) +
   geom_bar(stat = "identity", position = "stack") +
   labs(title = "Total Values by Continent Over the Years",
