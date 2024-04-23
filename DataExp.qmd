@@ -223,54 +223,7 @@ ggplot(unknown_longer, aes(x = year, y = count_h1b, fill = Country)) +
 ```
 
 
-```{r}
-  africa_temp <- data_long_africa |> filter(year == 1997)
-  
-  #choose top 5
-  top_countries <- africa_temp |>
-  group_by(Country) |>
-  summarise(total_count = count_h1b) |>
-  arrange(desc(total_count)) |>
-  top_n(5)
-  
-  #summarise the rest
-  other_countries <- africa_temp |>
-  anti_join(top_countries, by = "Country") |>
-  filter(!is.na(count_h1b))|>
-  summarise(Country = "Other",total_count = sum(count_h1b))
-  
-  other_countries
-```
 
-```{r}
-
-piecharts <- list()
-for(year_iter in unique(data_long_africa$year)){
-  africa_temp <- data_long_africa |> filter(year == year_iter)
-  
-  #choose top 5
-  top_countries <- africa_temp |>
-  group_by(Country) |>
-  summarise(total_count = count_h1b) |>
-  arrange(desc(total_count)) |>
-  top_n(5)
-  
-  #summarise the rest
-  other_countries <- africa_temp |>
-  anti_join(top_countries, by = "Country") |>
-    filter(!is.na(count_h1b))|>
-  summarise(Country = "Other",
-            total_count = sum(count_h1b))
-  
-  combined_data <- bind_rows(top_countries, other_countries)
-  pie_chart <- pie(combined_data$total_count, labels = combined_data$Country, main = paste("Top 5 African Countries in", year_iter), col=viridis(length(combined_data$total_count)))
-  
-  piecharts[[year_iter]] <- pie_chart
-  
-}
-print(piecharts)
-
-```
 
 
 ```{r}
