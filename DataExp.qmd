@@ -1,5 +1,10 @@
 <<<<<<< HEAD
 ```{r}
+library(viridis)
+
+```
+
+```{r}
 suppressPackageStartupMessages(library(tidyverse))
 #filename <- file.choose("cleaned_h1b_data.rds")
 #print(filename)
