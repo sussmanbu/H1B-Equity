@@ -1,0 +1,137 @@
+---
+title: "blogpost6"
+author: ""
+date: "2024-04-22"
+date-modified: "2024-04-22"
+draft: FALSE
+---
+
+## Import library
+```{r}
+suppressPackageStartupMessages(library(tidyverse))
+library(tidyr)
+library(viridis)
+library(ggplot2)
+library(dplyr)
+library(ggfortify)
+library(tidymodels)
+library(readxl)
+library(readr)
+library(lubridate)
+```
+
+```{r}
+final_df <- readRDS("dataset/final_merge.rds")
+head(final_df)
+```
+
+```{r}
+perm_df <- readRDS("dataset/perm_data.rds")
+head(perm_df)
+```
+
+```{r}
+final_perm_df <- select(perm_df, "CASE_NUMBER", "CASE_STATUS", "RECEIVED_DATE", "DECISION_DATE", "EMPLOYER_NAME",
+                        "EMPLOYER_NUM_EMPLOYEES", "AGENT_ATTORNEY_FIRM_NAME", "PW_WAGE", "PW_SKILL_LEVEL", "WORKSITE_STATE", "JOB_TITLE", "PW_UNIT_OF_PAY", "WAGE_OFFER_FROM", "WAGE_OFFER_UNIT_OF_PAY",
+                        , "MINIMUM_EDUCATION", "REQUIRED_EXPERIENCE", "COUNTRY_OF_CITIZENSHIP", "CLASS_OF_ADMISSION"
+                        )
+
+final_perm_df <- final_perm_df %>%
+  filter(PW_UNIT_OF_PAY == "Year")
+```
+
+```{r}
+# Split data into training and testing sets
+set.seed(123)
+data_split <- initial_split(final_perm_df, prop = 0.8)
+train_data <- training(data_split)
+test_data <- testing(data_split)
+
+# Create a recipe for preprocessing
+recipe <- recipe(WAGE_OFFER_FROM ~ WORKSITE_STATE + PW_SKILL_LEVEL + MINIMUM_EDUCATION + REQUIRED_EXPERIENCE, data = train_data) %>%
+  step_dummy(all_nominal(), -all_outcomes()) %>%
+  step_zv(all_predictors())
+
+# Create a model specification
+model_spec <- linear_reg() %>% 
+  set_engine("lm") %>% 
+  set_mode("regression")
+
+# Bundle the recipe and model spec in a workflow
+workflow <- workflow() %>%
+  add_recipe(recipe) %>%
+  add_model(model_spec)
+
+# Fit the model
+fitted_model <- fit(workflow, data = train_data)
+
+# Evaluate the model
+test_results <- fitted_model %>%
+  predict(new_data = test_data) %>%
+  bind_cols(test_data) %>%
+  metrics(truth = WAGE_OFFER_FROM, estimate = .pred)
+
+# Print results
+print(test_results)
+```
+```{r}
+# Extract the model fit and view the summary
+model_fit <- extract_fit_parsnip(fitted_model)
+summary(model_fit$fit)
+```
+
+## Residual Analysis
+```{r}
+# Predict and calculate residuals
+residuals_df <- fitted_model %>%
+  predict(new_data = test_data) %>%
+  bind_cols(test_data) %>%
+  mutate(residuals = WAGE_OFFER_FROM - .pred)
+
+# Plot residuals
+ggplot(residuals_df, aes(x = .pred, y = residuals)) +
+  geom_point() +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  labs(x = "Predicted", y = "Residuals", title = "Residual Plot")
+```
+
+## variable analysis
+```{r}
+# Extract model coefficients and sort by absolute value
+importance <- tidy(model_fit$fit) %>%
+  filter(term != "(Intercept)") %>%
+  arrange(desc(abs(estimate)))
+
+print(importance)
+```
+
+```{r}
+# Plot diagnostic plots
+autoplot(model_fit$fit)
+```
+
+```{r}
+# Set up cross-validation
+cv_folds <- vfold_cv(train_data, v = 5)
+
+# Fit and evaluate the model across folds
+cv_results <- fit_resamples(
+  workflow,
+  resamples = cv_folds,
+  metrics = metric_set(rmse, rsq)
+)
+collect_metrics(cv_results)
+```
+
+```{r}
+# Calculate and add prediction intervals to the prediction frame
+interval_df <- predict(fitted_model, new_data = test_data, type = "pred_int", level = 0.95)
+# print(interval_df)
+
+print(test_data)
+```
+
+
+# Conclusion
+Based on the dataset, linear regression(multivariate) is not feasible in this dataset. In terms of next step,
+As you can see at the feature space, the data might need a model that can capture nonlinear relationships. Neural network is a bit overkill but other machine learning models such as random forest, XGBOOST, and support vector machine can help explain the dataset.
