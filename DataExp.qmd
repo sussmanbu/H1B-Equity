@@ -104,7 +104,8 @@ final_df$DAY_BEGIN = day(final_df$BEGIN_DATE)
 
 ```{r}
 top_5_employer <- final_df |>
-  group_by(EMPLOYER_NAME)|>
+  group_by(EMPLOYER_NAME, YEAR_BEGIN)|>
+  
   count(EMPLOYER_NAME, sort = TRUE) |>
   top_n(5)
 head(top_5_employer)
@@ -112,10 +113,11 @@ head(top_5_employer)
 
 
 ```{r}
-top_5_summarise <- top_5_employer|>
+top_5_summarise <- top_5_employer |>
   group_by(YEAR_BEGIN, EMPLOYER_NAME) |>
   mutate(count_h1b = n())
 ```
+
 ```{r}
 head(top_5_summarise)
 ```
