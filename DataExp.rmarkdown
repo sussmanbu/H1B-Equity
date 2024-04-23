@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+
 ```{r}
 suppressPackageStartupMessages(library(tidyverse))
 #filename <- file.choose("cleaned_h1b_data.rds")
@@ -15,13 +16,11 @@ print(current_names)
 
 ```
 
-
 ```{r}
 colnames(h1b_country) <- c('Country','Continent','1997', '1998', '1999', '2000', '2001', '2002', '2003', '2004', '2005', '2006', '2007', '2008', '2009', '2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022') 
 
 h1b_country
 ```
-
 
 ```{r}
 h1b_continent <- h1b_country |>
@@ -36,7 +35,9 @@ data_long
 ```
 
 
+
 Goal: Explore relationship between number of applications and wages
+
 ```{r}
 library(readxl)
 library(readr)
@@ -51,6 +52,7 @@ library(lubridate)
 df <- readRDS("dataset/cleaned_disclosure.rds")
 head(df)
 ```
+
 ```{r}
 df_merged <- readRDS("dataset/final_merge.rds")
 ```
@@ -58,13 +60,16 @@ df_merged <- readRDS("dataset/final_merge.rds")
 ```{r}
 df_merged
 ```
+
 ```{r}
 final_df <- readRDS("dataset/final_merge.rds")
 ```
 
+
 #1. Group by company
 #2. Compare rates per company
 #3. Linear relationship between number of applications and wages, by company
+
 
 ```{r}
 filtered_data <- final_df |>
@@ -75,14 +80,12 @@ filtered_data <- final_df |>
 print(filtered_data |> top_n(5))
 ```
 
-
 ```{r}
 filtered_data <- final_df |>
   count(EMPLOYER_NAME, sort = TRUE)
 
 print(filtered_data |> top_n(5))
 ```
-
 
 ```{r}
 final_df$YEAR_RECEIVED = as.integer(substr(final_df$RECEIVED_DATE, 1, 4))
@@ -111,7 +114,6 @@ top_5_employer <- final_df |>
 head(top_5_employer)
 ```
 
-
 ```{r}
 top_5_summarise <- top_5_employer |>
   group_by(YEAR_BEGIN, EMPLOYER_NAME) |>
@@ -125,8 +127,6 @@ head(top_5_summarise)
 ```{r}
 # unique(top_5_summarise$EMPLOYER_NAME)
 ```
-
-
 
 ```{r}
 ggplot(top_5_summarise, aes(x = YEAR_BEGIN, y = count_h1b, fill = EMPLOYER_NAME)) +
@@ -154,7 +154,6 @@ head(summary_data)
 summary(summary_data)
 ```
 
-
 ```{r}
 correlation <- cor(summary_data$applications, summary_data$avg_wage)
 ```
@@ -163,7 +162,9 @@ correlation <- cor(summary_data$applications, summary_data$avg_wage)
 correlation
 ```
 
+
 Goal: Financial Info with countries
+
 
 
 ```{r}
@@ -184,7 +185,6 @@ ggplot(data_long, aes(x = year, y = count_h1b, fill = Continent)) +
   scale_x_discrete(guide=guide_axis(check.overlap=TRUE))
 ```
 
-
 ```{r}
 h1b_continent <- h1b_country |>
   filter(Continent == 'Unknown') |>
@@ -200,7 +200,6 @@ unknown_longer
 names(unknown_longer)
 ```
 
-
 ```{r}
 clean_un <- unknown_longer |>
   filter(Country == 'United Nations Laissez-Passer')|>
@@ -208,7 +207,9 @@ clean_un <- unknown_longer |>
 
 clean_un
 ```
+
 This shows that no one with a nationality designated as 'United Nations Laissez-Passer' has received an h1b visa from the years 1997-2022, so we can clear that.
+
 
 ```{r}
 ggplot(unknown_longer, aes(x = year, y = count_h1b, fill = Country)) +
@@ -218,7 +219,6 @@ ggplot(unknown_longer, aes(x = year, y = count_h1b, fill = Country)) +
        x = "Year", y = "Total Value") + theme(legend.position = "top",
         axis.text.x = element_text(angle = 45, hjust = 1))
 ```
-
 
 ```{r}
 library(dplyr)
@@ -274,8 +274,6 @@ for (year_iter in years_of_interest) {
 print(piecharts_all)
 ```
 
-
-
 ```{r}
 h1b_africa <- h1b_country |>
   filter(Continent == 'Africa') |>
@@ -284,7 +282,6 @@ h1b_africa <- h1b_country |>
 
 data_long_africa <- pivot_longer(h1b_africa, cols=-Country, names_to = "year", values_to = "count_h1b")
 ```
-
 
 ```{r}
   africa_temp <- data_long_africa |> filter(year == 1997)
@@ -335,7 +332,6 @@ print(piecharts)
 
 ```
 
-
 ```{r}
 #do the same for other continents
 
@@ -374,7 +370,6 @@ for(year_iter in unique(data_long_asia$year)){
 }
 print(piecharts_asia)
 ```
-
 
 ```{r}
 
@@ -415,7 +410,6 @@ for(year_iter in unique(data_long_europe$year)){
 print(piecharts_europe)
 ```
 
-
 ```{r}
 h1b_namerica <- h1b_country |>
   filter(Continent == 'North America') |>
@@ -452,6 +446,7 @@ for(year_iter in unique(data_long_namerica$year)){
 }
 print(piecharts_namerica)
 ```
+
 ```{r}
 h1b_samerica <- h1b_country |>
   filter(Continent == 'South America') |>
@@ -539,7 +534,9 @@ data_long_other
 
 
 
+
 =======
+
 ```{r}
 # Load libraries and dataset
 suppressPackageStartupMessages(library(tidyverse))
@@ -591,4 +588,6 @@ ggplot(data_long, aes(x = year, y = count_h1b, fill = Continent)) +
 
 
 
+
 >>>>>>> 5dcbcb76829b43c5323c8d54ece3b8995ca08211
+
