@@ -1,5 +1,10 @@
 <<<<<<< HEAD
 ```{r}
+library(viridis)
+
+```
+
+```{r}
 suppressPackageStartupMessages(library(tidyverse))
 #filename <- file.choose("cleaned_h1b_data.rds")
 #print(filename)
@@ -19,7 +24,7 @@ print(current_names)
 ```{r}
 colnames(h1b_country) <- c('Country','Continent','1997', '1998', '1999', '2000', '2001', '2002', '2003', '2004', '2005', '2006', '2007', '2008', '2009', '2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022') 
 
-h1b_country
+# h1b_country
 ```
 
 
@@ -51,6 +56,7 @@ library(lubridate)
 df <- readRDS("dataset/cleaned_disclosure.rds")
 head(df)
 ```
+
 ```{r}
 df_merged <- readRDS("dataset/final_merge.rds")
 ```
@@ -58,6 +64,10 @@ df_merged <- readRDS("dataset/final_merge.rds")
 ```{r}
 df_merged
 ```
+```{r}
+final_df <- readRDS("dataset/final_merge.rds")
+```
+
 #1. Group by company
 #2. Compare rates per company
 #3. Linear relationship between number of applications and wages, by company
@@ -100,7 +110,8 @@ final_df$DAY_BEGIN = day(final_df$BEGIN_DATE)
 
 ```{r}
 top_5_employer <- final_df |>
-  group_by(EMPLOYER_NAME)|>
+  group_by(EMPLOYER_NAME, YEAR_BEGIN)|>
+  
   count(EMPLOYER_NAME, sort = TRUE) |>
   top_n(5)
 head(top_5_employer)
@@ -108,27 +119,30 @@ head(top_5_employer)
 
 
 ```{r}
-top_5_summarise <- top_5_employer|>
+top_5_summarise <- top_5_employer |>
   group_by(YEAR_BEGIN, EMPLOYER_NAME) |>
   mutate(count_h1b = n())
 ```
+
 ```{r}
 head(top_5_summarise)
 ```
 
 ```{r}
-unique(top_5_summarise$EMPLOYER_NAME)
+# unique(top_5_summarise$EMPLOYER_NAME)
 ```
 
 
 
 ```{r}
-ggplot(top_5_summarise, aes(x = YEAR_BEGIN, y = count_h1b, fill = EMPLOYER_NAME)) +
-  geom_bar(stat = "identity", position = "stack") +
-  facet_wrap(~EMPLOYER_NAME)+
-  labs(title = "Total H1b Visas by Company Over the Years",
-       x = "Year", y = "Total Value") + theme(legend.position = "",
-        axis.text.x = element_text(angle = 45, hjust = 1))
+# comment for now, stuck in an infinite loop?
+
+#ggplot(top_5_summarise, aes(x = YEAR_BEGIN, y = count_h1b, fill = EMPLOYER_NAME)) +
+ # geom_bar(stat = "identity", position = "stack") +
+  #facet_wrap(~EMPLOYER_NAME)+
+  #labs(title = "Total H1b Visas by Company Over the Years",
+   #    x = "Year", y = "Total Value") + theme(legend.position = "",
+    #    axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
 ```{r}
@@ -215,120 +229,7 @@ ggplot(unknown_longer, aes(x = year, y = count_h1b, fill = Country)) +
 ```
 
 
-```{r}
-library(dplyr)
-library(tidyr)
-library(viridis)
-library(ggplot2)  # for ggplot (optional if you want to use ggplot for visualization)
 
-# Sample data manipulation assuming h1b_country is your dataset
-h1b_country_temp <- h1b_country %>%
-  select(-Continent)
-
-# Convert the data from wide to long format
-data_long_all <- pivot_longer(h1b_country_temp, cols=-Country, names_to = "year", values_to = "count_h1b")
-
-# Filter for only recent years 2022, 2021, 2020, etc.
-years_of_interest <- c("2022", "2021", "2020", "2019", "2018")
-data_filtered <- data_long_all %>%
-  filter(year %in% years_of_interest)
-
-# Initialize an empty list to store the pie charts
-piecharts_all <- list()
-
-# Loop only over the filtered years
-for (year_iter in years_of_interest) {
-  print(year_iter)
-  all_temp <- data_filtered %>% 
-    filter(year == year_iter)
-  
-  # Select the top 5 countries based on the count
-  top_countries <- all_temp %>%
-    group_by(Country) %>%
-    summarise(total_count = sum(count_h1b), .groups = "drop") %>%
-    arrange(desc(total_count)) %>%
-    slice_max(order_by = total_count, n = 5)  # Updated to use slice_max which is more explicit
-  
-  # Summarise the rest as 'Other'
-  other_countries <- all_temp %>%
-    anti_join(top_countries, by = "Country") %>%
-    filter(!is.na(count_h1b)) %>%
-    summarise(Country = "Other",
-              total_count = sum(count_h1b), .groups = "drop")
-  
-  # Combine the top countries and 'Other'
-  combined_data <- bind_rows(top_countries, other_countries)
-  # Create pie chart
-  pie_chart <- pie(combined_data$total_count, labels = combined_data$Country, main = paste("Top 5 Countries in", year_iter), col=viridis(length(combined_data$total_count)))
-  
-  # Store the pie chart in the list
-  piecharts_all[[year_iter]] <- pie_chart
-}
-
-# Print all pie charts stored in the list
-print(piecharts_all)
-```
-
-
-
-```{r}
-h1b_africa <- h1b_country |>
-  filter(Continent == 'Africa') |>
-  select(-Continent)
-  #summarize(across(where(is.numeric), sum, na.rm = TRUE))
-
-data_long_africa <- pivot_longer(h1b_africa, cols=-Country, names_to = "year", values_to = "count_h1b")
-```
-
-
-```{r}
-  africa_temp <- data_long_africa |> filter(year == 1997)
-  
-  #choose top 5
-  top_countries <- africa_temp |>
-  group_by(Country) |>
-  summarise(total_count = count_h1b) |>
-  arrange(desc(total_count)) |>
-  top_n(5)
-  
-  #summarise the rest
-  other_countries <- africa_temp |>
-  anti_join(top_countries, by = "Country") |>
-  filter(!is.na(count_h1b))|>
-  summarise(Country = "Other",total_count = sum(count_h1b))
-  
-  other_countries
-```
-
-```{r}
-
-piecharts <- list()
-for(year_iter in unique(data_long_africa$year)){
-  africa_temp <- data_long_africa |> filter(year == year_iter)
-  
-  #choose top 5
-  top_countries <- africa_temp |>
-  group_by(Country) |>
-  summarise(total_count = count_h1b) |>
-  arrange(desc(total_count)) |>
-  top_n(5)
-  
-  #summarise the rest
-  other_countries <- africa_temp |>
-  anti_join(top_countries, by = "Country") |>
-    filter(!is.na(count_h1b))|>
-  summarise(Country = "Other",
-            total_count = sum(count_h1b))
-  
-  combined_data <- bind_rows(top_countries, other_countries)
-  pie_chart <- pie(combined_data$total_count, labels = combined_data$Country, main = paste("Top 5 African Countries in", year_iter), col=viridis(length(combined_data$total_count)))
-  
-  piecharts[[year_iter]] <- pie_chart
-  
-}
-print(piecharts)
-
-```
 
 
 ```{r}
@@ -447,6 +348,7 @@ for(year_iter in unique(data_long_namerica$year)){
 }
 print(piecharts_namerica)
 ```
+
 ```{r}
 h1b_samerica <- h1b_country |>
   filter(Continent == 'South America') |>
