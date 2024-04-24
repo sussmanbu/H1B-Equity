@@ -135,6 +135,7 @@ ggplot(top_5_summarise, aes(x = YEAR_BEGIN, y = count_h1b, fill = EMPLOYER_NAME)
 summary_data <- final_df %>%
   group_by(EMPLOYER_NAME, YEAR_BEGIN, WAGE_UNIT_OF_PAY, WAGE_RATE_OF_PAY_FROM) %>%
   filter(!is.na(WAGE_RATE_OF_PAY_FROM))|>
+  filter(PW_UNIT_OF_PAY == 'Year')|>
   mutate(applications = n(), avg_wage = mean(WAGE_RATE_OF_PAY_FROM))
 ```
 
