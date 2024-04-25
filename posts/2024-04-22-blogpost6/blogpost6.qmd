@@ -66,6 +66,42 @@ ggplot(top_country, aes(x = reorder(COUNTRY_OF_CITIZENSHIP, -total_country), y =
 we see a same relationship from dataset2, we have majority of the H1B workers coming from the following country. India is the top population of H1B worker.
 
 
+
+```{r}
+# loading merge_df to visualize number applications vs years
+final_df <- readRDS("dataset/final_merge.rds")
+
+final_df$YEAR_BEGIN = as.integer(substr(final_df$BEGIN_DATE, 1, 4))
+final_df$MONTH_BEGIN = month(final_df$BEGIN_DATE)
+final_df$DAY_BEGIN = day(final_df$BEGIN_DATE)
+
+```
+
+```{r}
+summary_data <- final_df |>
+  group_by(YEAR_BEGIN, MONTH_BEGIN) |>
+  summarise(total_cases = n_distinct(CASE_NUMBER))
+
+# Creating a new combined column for plotting
+summary_data$YearMonth <- as.Date(paste(summary_data$YEAR_BEGIN, summary_data$MONTH_BEGIN, "01", sep="-"))
+
+
+# Plotting the data
+ggplot(summary_data, aes(x = YearMonth, y = log(total_cases) )) +
+  geom_line() +  # Use geom_line() for line plot
+  geom_point() + # Adding points to the line plot
+  scale_x_date(date_breaks = "3 months", date_labels = "%Y-%m") +
+  labs(title = "Total Log-Scale Cases Per Year in US",
+       x = "Year",
+       y = "Total Log Distinct Cases") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+This plot is showing employees actually getting hired and start employment.
+For instance, 2024-07 is into the future and it means: the beginning date of period of employment.
+
+It might be interesting to explore policies or recall a news called massive hire during covid period. 2022 - 2023.
+
+
 ```{r}
 # Split data into training and testing sets
 set.seed(123)
