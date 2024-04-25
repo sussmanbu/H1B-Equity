@@ -38,7 +38,33 @@ final_perm_df <- select(perm_df, "CASE_NUMBER", "CASE_STATUS", "RECEIVED_DATE", 
 
 final_perm_df <- final_perm_df %>%
   filter(PW_UNIT_OF_PAY == "Year")
+final_perm_df
 ```
+```{r}
+country_df <- final_perm_df |>
+  group_by(COUNTRY_OF_CITIZENSHIP) |>
+  summarise(
+    total_country = n(),
+    Approved_Applications = sum(CASE_STATUS == "Certified")
+  )
+
+# Sort by total country
+country_data_sorted_applicants <- country_df %>%
+  arrange(desc(total_country))
+
+top_country <- country_data_sorted_applicants |>
+  top_n(10, total_country)
+
+# visualizing
+# Plot for Total country
+ggplot(top_country, aes(x = reorder(COUNTRY_OF_CITIZENSHIP, -total_country), y = total_country)) +
+  geom_bar(stat = "identity") +
+  theme(axis.text.y = element_text(size = 6)) +  # Smaller text size for states
+  labs(title = "Total number of certified Applications", x = "Country Origin", y = "Number of certified cases") +
+  coord_flip()  # Flips the coordinates to make labels readable
+```
+we see a same relationship from dataset2, we have majority of the H1B workers coming from the following country. India is the top population of H1B worker.
+
 
 ```{r}
 # Split data into training and testing sets

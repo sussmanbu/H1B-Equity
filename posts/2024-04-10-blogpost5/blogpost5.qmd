@@ -200,7 +200,7 @@ state_data <- state_df |>
   group_by(EMPLOYER_STATE) |>
   summarise(
     Total_Applications = n(),
-    Approved_Applications = sum(CASE_STATUS == "Approved")
+    Approved_Applications = sum(CASE_STATUS == "Certified")
   )
 
 ```
