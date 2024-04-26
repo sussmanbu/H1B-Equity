@@ -453,9 +453,6 @@ head(filtered_df)
 ```
 Next, we will plot the log scale of prevailing_wage and wage_rate_of_pay_from.
 ```{r}
-
-# Assuming final_df is already loaded and available
-
 filtered_df <- final_df %>%
   filter(
          FULL_TIME_POSITION %in% c("Y", "N"),

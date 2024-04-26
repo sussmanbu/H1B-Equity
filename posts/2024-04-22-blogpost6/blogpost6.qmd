@@ -38,6 +38,116 @@ final_perm_df <- select(perm_df, "CASE_NUMBER", "CASE_STATUS", "RECEIVED_DATE", 
 
 final_perm_df <- final_perm_df %>%
   filter(PW_UNIT_OF_PAY == "Year")
+final_perm_df
+```
+```{r}
+country_df <- final_perm_df |>
+  group_by(COUNTRY_OF_CITIZENSHIP) |>
+  summarise(
+    total_country = n(),
+    Approved_Applications = sum(CASE_STATUS == "Certified")
+  )
+
+# Sort by total country
+country_data_sorted_applicants <- country_df %>%
+  arrange(desc(total_country))
+
+top_country <- country_data_sorted_applicants |>
+  top_n(10, total_country)
+
+# visualizing
+# Plot for Total country
+ggplot(top_country, aes(x = reorder(COUNTRY_OF_CITIZENSHIP, -total_country), y = total_country)) +
+  geom_bar(stat = "identity") +
+  theme(axis.text.y = element_text(size = 6)) +  # Smaller text size for states
+  labs(title = "Total number of certified Applications", x = "Country Origin", y = "Number of certified cases") +
+  coord_flip()  # Flips the coordinates to make labels readable
+```
+we see a same relationship from dataset2, we have majority of the H1B workers coming from the following country. India is the top population of H1B worker.
+
+
+
+```{r}
+# loading merge_df to visualize number applications vs years
+final_df <- readRDS("dataset/final_merge.rds")
+
+final_df$YEAR_BEGIN = as.integer(substr(final_df$BEGIN_DATE, 1, 4))
+final_df$MONTH_BEGIN = month(final_df$BEGIN_DATE)
+final_df$DAY_BEGIN = day(final_df$BEGIN_DATE)
+
+```
+
+```{r}
+summary_data <- final_df |>
+  group_by(YEAR_BEGIN, MONTH_BEGIN) |>
+  summarise(total_cases = n_distinct(CASE_NUMBER))
+
+# Creating a new combined column for plotting
+summary_data$YearMonth <- as.Date(paste(summary_data$YEAR_BEGIN, summary_data$MONTH_BEGIN, "01", sep="-"))
+
+# Plotting the data
+ggplot(summary_data, aes(x = YearMonth, y = log(total_cases) )) +
+  geom_line() +  # Use geom_line() for line plot
+  geom_point() + # Adding points to the line plot
+  scale_x_date(date_breaks = "3 months", date_labels = "%Y-%m") +
+  labs(title = "Total Log-Scale Cases Per Year in US",
+       x = "Year",
+       y = "Total Log Distinct Cases") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+This plot is showing employees actually getting hired and start employment.
+For instance, 2024-07 is into the future and it means: the beginning date of period of employment.
+
+It might be interesting to explore policies or recall a news called massive hire during covid period. 2022 - 2023.
+
+Let's try to do the same for older years when Trump got elected.
+```{r}
+df16 <- readRDS("dataset/2016H1B.rds")
+df16 <- df16 |>
+  select("CASE_NUMBER", "EMPLOYMENT_START_DATE")
+
+```
+```{r}
+df17 <- readRDS("dataset/2017H1B.rds")
+df17 <- df17 |>
+  select("CASE_NUMBER", "EMPLOYMENT_START_DATE")
+
+```
+
+```{r}
+df18 <- readRDS("dataset/2018H1B.rds")
+df18 <- df18 |>
+  select("CASE_NUMBER", "EMPLOYMENT_START_DATE")
+
+```
+```{r}
+combined_df <- rbind(df16, df17, df18)
+```
+
+```{r}
+combined_df$YEAR_BEGIN = as.integer(substr(combined_df$EMPLOYMENT_START_DATE, 1, 4))
+combined_df$MONTH_BEGIN = month(combined_df$EMPLOYMENT_START_DATE)
+
+```
+
+```{r}
+summary_data <- combined_df |>
+  group_by(YEAR_BEGIN, MONTH_BEGIN) |>
+  summarise(total_cases = n_distinct(CASE_NUMBER))
+
+# Creating a new combined column for plotting
+summary_data$YearMonth <- as.Date(paste(summary_data$YEAR_BEGIN, summary_data$MONTH_BEGIN, "01", sep="-"))
+
+# Plotting the data
+ggplot(summary_data, aes(x = YearMonth, y = log(total_cases) )) +
+  geom_line() +  # Use geom_line() for line plot
+  geom_point() + # Adding points to the line plot
+  scale_x_date(date_breaks = "6 months", date_labels = "%Y-%m") +
+  labs(title = "Total Log-Scale Cases Per Year in US",
+       x = "Year",
+       y = "Total Log Distinct Cases") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
 ```{r}
