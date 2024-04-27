@@ -127,7 +127,6 @@ df18 <- df18 |>
 
 ```{r}
 combined_df <- rbind(df16, df17, df18)
-save()
 ```
 
 ```{r}
@@ -169,10 +168,6 @@ model_df <- model_df %>%
 
 
 ```{r}
-model_df
-```
-
-```{r}
 library(prophet)
 
 # algorithm by facebook
@@ -204,7 +199,6 @@ gg <- ggplot() +
   labs(x = "Date", y = "Total Cases", title = "Forecast of Total Cases")
 
 print(gg)
-
 ```
 
 
