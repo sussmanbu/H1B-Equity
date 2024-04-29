@@ -13,6 +13,7 @@ library(tidyr)
 library(viridis)
 library(ggplot2)
 library(dplyr)
+library(forecast)
 library(ggfortify)
 library(tidymodels)
 library(readxl)
@@ -40,6 +41,7 @@ final_perm_df <- final_perm_df %>%
   filter(PW_UNIT_OF_PAY == "Year")
 final_perm_df
 ```
+
 ```{r}
 country_df <- final_perm_df |>
   group_by(COUNTRY_OF_CITIZENSHIP) |>
@@ -78,15 +80,15 @@ final_df$DAY_BEGIN = day(final_df$BEGIN_DATE)
 ```
 
 ```{r}
-summary_data <- final_df |>
+new_summary_data <- final_df |>
   group_by(YEAR_BEGIN, MONTH_BEGIN) |>
   summarise(total_cases = n_distinct(CASE_NUMBER))
 
 # Creating a new combined column for plotting
-summary_data$YearMonth <- as.Date(paste(summary_data$YEAR_BEGIN, summary_data$MONTH_BEGIN, "01", sep="-"))
+new_summary_data$YearMonth <- as.Date(paste(new_summary_data$YEAR_BEGIN, new_summary_data$MONTH_BEGIN, "01", sep="-"))
 
 # Plotting the data
-ggplot(summary_data, aes(x = YearMonth, y = log(total_cases) )) +
+ggplot(new_summary_data, aes(x = YearMonth, y = log(total_cases) )) +
   geom_line() +  # Use geom_line() for line plot
   geom_point() + # Adding points to the line plot
   scale_x_date(date_breaks = "3 months", date_labels = "%Y-%m") +
@@ -108,6 +110,7 @@ df16 <- df16 |>
   select("CASE_NUMBER", "EMPLOYMENT_START_DATE")
 
 ```
+
 ```{r}
 df17 <- readRDS("dataset/2017H1B.rds")
 df17 <- df17 |>
@@ -121,6 +124,7 @@ df18 <- df18 |>
   select("CASE_NUMBER", "EMPLOYMENT_START_DATE")
 
 ```
+
 ```{r}
 combined_df <- rbind(df16, df17, df18)
 ```
@@ -128,7 +132,6 @@ combined_df <- rbind(df16, df17, df18)
 ```{r}
 combined_df$YEAR_BEGIN = as.integer(substr(combined_df$EMPLOYMENT_START_DATE, 1, 4))
 combined_df$MONTH_BEGIN = month(combined_df$EMPLOYMENT_START_DATE)
-
 ```
 
 ```{r}
@@ -149,6 +152,57 @@ ggplot(summary_data, aes(x = YearMonth, y = log(total_cases) )) +
        y = "Total Log Distinct Cases") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
+
+```{r}
+library(timetk)
+library(modeltime)
+
+# Prepare the data
+model_df <- new_summary_data |>
+  ungroup() |>
+  select(YearMonth, total_cases)
+
+model_df <- model_df %>%
+  mutate(YearMonth = ymd(YearMonth))
+```
+
+
+```{r}
+library(prophet)
+
+# algorithm by facebook
+df <- data.frame(ds = model_df$YearMonth, y = model_df$total_cases)
+m <- prophet(df)
+future <- make_future_dataframe(m, periods = 365)
+forecast <- predict(m, future)
+plot(m, forecast)
+```
+
+```{r}
+# moving plot to ggplot
+
+# Setup your data and model
+df <- data.frame(ds = model_df$YearMonth, y = model_df$total_cases)
+m <- prophet(df)
+future <- make_future_dataframe(m, periods = 365)
+forecast <- predict(m, future)
+
+# Convert 'ds' to POSIXct if not already
+forecast$ds <- as.POSIXct(forecast$ds, format = "%Y-%m-%d")
+df$ds <- as.POSIXct(df$ds, format = "%Y-%m-%d")
+
+# Plot with ggplot2
+gg <- ggplot() +
+  geom_line(data = forecast, aes(x = ds, y = yhat), color = "blue") +
+  geom_ribbon(data = forecast, aes(x = ds, ymin = yhat_lower, ymax = yhat_upper), fill = "blue", alpha = 0.2) +
+  geom_point(data = df, aes(x = ds, y = y), color = "red") +
+  labs(x = "Date", y = "Total Cases", title = "Forecast of Total Cases")
+
+print(gg)
+```
+
+
+
 
 ```{r}
 # Split data into training and testing sets
@@ -184,6 +238,7 @@ test_results <- fitted_model %>%
 # Print results
 print(test_results)
 ```
+
 ```{r}
 # Extract the model fit and view the summary
 model_fit <- extract_fit_parsnip(fitted_model)
