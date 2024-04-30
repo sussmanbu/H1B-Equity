@@ -227,15 +227,15 @@ Supply arguments directly to `.fns` through an anonymous function instead.
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
 <span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidymodels)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>── Attaching packages ────────────────────────────────────── tidymodels 1.1.1 ──</code></pre>
+<pre><code>── Attaching packages ────────────────────────────────────── tidymodels 1.2.0 ──</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>✔ broom        1.0.5     ✔ rsample      1.2.0
-✔ dials        1.2.0     ✔ tune         1.1.2
-✔ infer        1.0.5     ✔ workflows    1.1.3
-✔ modeldata    1.2.0     ✔ workflowsets 1.0.1
-✔ parsnip      1.1.1     ✔ yardstick    1.2.0
-✔ recipes      1.0.9     </code></pre>
+<pre><code>✔ broom        1.0.5      ✔ rsample      1.2.1 
+✔ dials        1.2.1      ✔ tune         1.2.1 
+✔ infer        1.0.7      ✔ workflows    1.1.4 
+✔ modeldata    1.3.0      ✔ workflowsets 1.1.0 
+✔ parsnip      1.2.1      ✔ yardstick    1.3.1 
+✔ recipes      1.0.10     </code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>── Conflicts ───────────────────────────────────────── tidymodels_conflicts() ──
@@ -245,7 +245,7 @@ Supply arguments directly to `.fns` through an anonymous function instead.
 ✖ dplyr::lag()      masks stats::lag()
 ✖ yardstick::spec() masks readr::spec()
 ✖ recipes::step()   masks stats::step()
-• Use tidymodels_prefer() to resolve common conflicts.</code></pre>
+• Learn how to get started at https://www.tidymodels.org/start/</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(cluster)</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
@@ -43643,12 +43643,13 @@ Supply arguments directly to `.fns` through an anonymous function instead.
 <div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>summary_data <span class="ot">&lt;-</span> final_df <span class="sc">%&gt;%</span></span>
 <span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(EMPLOYER_NAME, YEAR_BEGIN, WAGE_UNIT_OF_PAY, WAGE_RATE_OF_PAY_FROM) <span class="sc">%&gt;%</span></span>
 <span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(WAGE_RATE_OF_PAY_FROM))<span class="sc">|&gt;</span></span>
-<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">applications =</span> <span class="fu">n</span>(), <span class="at">avg_wage =</span> <span class="fu">mean</span>(WAGE_RATE_OF_PAY_FROM))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(PW_UNIT_OF_PAY <span class="sc">==</span> <span class="st">'Year'</span>)<span class="sc">|&gt;</span></span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">applications =</span> <span class="fu">n</span>(), <span class="at">avg_wage =</span> <span class="fu">mean</span>(WAGE_RATE_OF_PAY_FROM))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(summary_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 149653</code></pre>
+<pre><code>[1] 138605</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(final_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -43680,47 +43681,47 @@ Supply arguments directly to `.fns` through an anonymous function instead.
 <div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(summary_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> CASE_NUMBER        CASE_STATUS        RECEIVED_DATE                   
- Length:149653      Length:149653      Min.   :2019-10-24 00:00:00.00  
+ Length:138605      Length:138605      Min.   :2019-10-24 00:00:00.00  
  Class :character   Class :character   1st Qu.:2023-10-06 00:00:00.00  
  Mode  :character   Mode  :character   Median :2023-10-31 00:00:00.00  
-                                       Mean   :2023-09-17 14:09:21.41  
+                                       Mean   :2023-09-15 13:05:28.06  
                                        3rd Qu.:2023-11-28 00:00:00.00  
                                        Max.   :2023-12-30 00:00:00.00  
                                                                        
  DECISION_DATE                     VISA_CLASS         JOB_TITLE        
- Min.   :2023-10-02 00:00:00.00   Length:149653      Length:149653     
+ Min.   :2023-10-02 00:00:00.00   Length:138605      Length:138605     
  1st Qu.:2023-10-18 00:00:00.00   Class :character   Class :character  
  Median :2023-11-13 00:00:00.00   Mode  :character   Mode  :character  
- Mean   :2023-11-11 17:14:25.88                                        
+ Mean   :2023-11-11 17:16:05.85                                        
  3rd Qu.:2023-12-06 00:00:00.00                                        
  Max.   :2023-12-31 00:00:00.00                                        
                                                                        
  FULL_TIME_POSITION   BEGIN_DATE                    
- Length:149653      Min.   :2019-10-24 00:00:00.00  
+ Length:138605      Min.   :2019-10-24 00:00:00.00  
  Class :character   1st Qu.:2023-10-25 00:00:00.00  
- Mode  :character   Median :2023-12-05 00:00:00.00  
-                    Mean   :2023-11-15 23:43:05.03  
-                    3rd Qu.:2024-02-19 00:00:00.00  
+ Mode  :character   Median :2023-12-06 00:00:00.00  
+                    Mean   :2023-11-15 23:30:10.97  
+                    3rd Qu.:2024-03-01 00:00:00.00  
                     Max.   :2024-06-28 00:00:00.00  
                                                     
     END_DATE                      EMPLOYER_NAME      EMPLOYER_STATE    
- Min.   :2021-06-18 00:00:00.00   Length:149653      Length:149653     
+ Min.   :2021-06-18 00:00:00.00   Length:138605      Length:138605     
  1st Qu.:2026-10-12 00:00:00.00   Class :character   Class :character  
- Median :2026-11-28 00:00:00.00   Mode  :character   Mode  :character  
- Mean   :2026-10-12 11:10:09.10                                        
- 3rd Qu.:2027-02-06 00:00:00.00                                        
+ Median :2026-11-29 00:00:00.00   Mode  :character   Mode  :character  
+ Mean   :2026-10-14 02:42:33.61                                        
+ 3rd Qu.:2027-02-19 00:00:00.00                                        
  Max.   :2027-06-27 00:00:00.00                                        
                                                                        
  AGENT_REPRESENTING_EMPLOYER WORKSITE_WORKERS  SECONDARY_ENTITY  
- Length:149653               Min.   :  1.000   Length:149653     
+ Length:138605               Min.   :  1.000   Length:138605     
  Class :character            1st Qu.:  1.000   Class :character  
  Mode  :character            Median :  1.000   Mode  :character  
-                             Mean   :  1.557                     
+                             Mean   :  1.489                     
                              3rd Qu.:  1.000                     
-                             Max.   :450.000                     
+                             Max.   :125.000                     
                                                                  
  SECONDARY_ENTITY_BUSINESS_NAME WORKSITE_ADDRESS1  WORKSITE_ADDRESS2 
- Length:149653                  Length:149653      Length:149653     
+ Length:138605                  Length:138605      Length:138605     
  Class :character               Class :character   Class :character  
  Mode  :character               Mode  :character   Mode  :character  
                                                                      
@@ -43728,77 +43729,77 @@ Supply arguments directly to `.fns` through an anonymous function instead.
                                                                      
                                                                      
  WORKSITE_CITY      WORKSITE_COUNTY    WORKSITE_STATE     WORKSITE_POSTAL_CODE
- Length:149653      Length:149653      Length:149653      Min.   :      223   
- Class :character   Class :character   Class :character   1st Qu.:    21231   
- Mode  :character   Mode  :character   Mode  :character   Median :    60089   
-                                                          Mean   :    66177   
-                                                          3rd Qu.:    90040   
+ Length:138605      Length:138605      Length:138605      Min.   :      223   
+ Class :character   Class :character   Class :character   1st Qu.:    22102   
+ Mode  :character   Mode  :character   Mode  :character   Median :    60504   
+                                                          Mean   :    61117   
+                                                          3rd Qu.:    90405   
                                                           Max.   :857210105   
-                                                          NA's   :588         
- WAGE_RATE_OF_PAY_FROM WAGE_RATE_OF_PAY_TO WAGE_UNIT_OF_PAY  
- Min.   :       7      Min.   :      10    Length:149653     
- 1st Qu.:   87762      1st Qu.:  106001    Class :character  
- Median :  115918      Median :  141750    Mode  :character  
- Mean   :  121989      Mean   :  151091                      
- 3rd Qu.:  153000      3rd Qu.:  187094                      
- Max.   :25304885      Max.   :17353440                      
-                       NA's   :101101                        
- PREVAILING_WAGE    PW_UNIT_OF_PAY     PW_TRACKING_NUMBER PW_WAGE_LEVEL     
- Min.   :     7.2   Length:149653      Length:149653      Length:149653     
- 1st Qu.: 78478.0   Class :character   Class :character   Class :character  
- Median :102294.0   Mode  :character   Mode  :character   Mode  :character  
- Mean   :103576.9                                                           
- 3rd Qu.:128502.0                                                           
- Max.   :584047.0                                                           
+                                                          NA's   :513         
+ WAGE_RATE_OF_PAY_FROM WAGE_RATE_OF_PAY_TO WAGE_UNIT_OF_PAY   PREVAILING_WAGE 
+ Min.   :   21530      Min.   :   23100    Length:138605      Min.   :    17  
+ 1st Qu.:   94000      1st Qu.:  114242    Class :character   1st Qu.: 83678  
+ Median :  120000      Median :  145200    Mode  :character   Median :104520  
+ Mean   :  130929      Mean   :  160178                       Mean   :111144  
+ 3rd Qu.:  156505      3rd Qu.:  191109                       3rd Qu.:131144  
+ Max.   :25304885      Max.   :17353440                       Max.   :584047  
+                       NA's   :93160                                          
+ PW_UNIT_OF_PAY     PW_TRACKING_NUMBER PW_WAGE_LEVEL      PW_OES_YEAR       
+ Length:138605      Length:138605      Length:138605      Length:138605     
+ Class :character   Class :character   Class :character   Class :character  
+ Mode  :character   Mode  :character   Mode  :character   Mode  :character  
                                                                             
- PW_OES_YEAR        PW_OTHER_SOURCE    PW_OTHER_YEAR    PW_SURVEY_PUBLISHER
- Length:149653      Length:149653      Min.   :1992     Length:149653      
- Class :character   Class :character   1st Qu.:2023     Class :character   
- Mode  :character   Mode  :character   Median :2023     Mode  :character   
-                                       Mean   :2023                        
-                                       3rd Qu.:2023                        
-                                       Max.   :2023                        
-                                       NA's   :138906                      
- PW_SURVEY_NAME     APPX_A_NO_OF_EXEMPT_WORKERS APPX_A_NAME_OF_INSTITUTION
- Length:149653      Min.   :1                   Length:149653             
- Class :character   1st Qu.:1                   Class :character          
- Mode  :character   Median :1                   Mode  :character          
-                    Mean   :1                                             
-                    3rd Qu.:1                                             
-                    Max.   :1                                             
-                    NA's   :149535                                        
- APPX_A_FIELD_OF_STUDY APPX_A_DATE_OF_DEGREE            YEAR_RECEIVED 
- Length:149653         Min.   :2000-04-29 00:00:00.00   Min.   :2019  
- Class :character      1st Qu.:2016-12-15 00:00:00.00   1st Qu.:2023  
- Mode  :character      Median :2020-05-15 00:00:00.00   Median :2023  
-                       Mean   :2018-04-20 03:03:03.04   Mean   :2023  
-                       3rd Qu.:2021-12-17 00:00:00.00   3rd Qu.:2023  
-                       Max.   :2023-10-03 00:00:00.00   Max.   :2023  
-                       NA's   :149535                                 
- MONTH_RECEIVED   DAY_RECEIVED      YEAR_END      MONTH_END     
- Min.   : 1.00   Min.   : 1.00   Min.   :2021   Min.   : 1.000  
- 1st Qu.:10.00   1st Qu.: 8.00   1st Qu.:2026   1st Qu.: 4.000  
- Median :11.00   Median :15.00   Median :2026   Median :10.000  
- Mean   :10.36   Mean   :15.74   Mean   :2026   Mean   : 7.858  
- 3rd Qu.:11.00   3rd Qu.:24.00   3rd Qu.:2027   3rd Qu.:11.000  
- Max.   :12.00   Max.   :31.00   Max.   :2027   Max.   :12.000  
-                                                                
-    DAY_END      YEAR_DECISION  MONTH_DECISION   DAY_DECISION     YEAR_BEGIN  
- Min.   : 1.00   Min.   :2023   Min.   :10.00   Min.   : 1.00   Min.   :2019  
- 1st Qu.: 9.00   1st Qu.:2023   1st Qu.:10.00   1st Qu.: 7.00   1st Qu.:2023  
- Median :17.00   Median :2023   Median :11.00   Median :16.00   Median :2023  
- Mean   :17.51   Mean   :2023   Mean   :10.89   Mean   :15.46   Mean   :2023  
- 3rd Qu.:28.00   3rd Qu.:2023   3rd Qu.:12.00   3rd Qu.:22.00   3rd Qu.:2024  
- Max.   :31.00   Max.   :2023   Max.   :12.00   Max.   :31.00   Max.   :2024  
+                                                                            
+                                                                            
+                                                                            
+ PW_OTHER_SOURCE    PW_OTHER_YEAR    PW_SURVEY_PUBLISHER PW_SURVEY_NAME    
+ Length:138605      Min.   :2003     Length:138605       Length:138605     
+ Class :character   1st Qu.:2023     Class :character    Class :character  
+ Mode  :character   Median :2023     Mode  :character    Mode  :character  
+                    Mean   :2023                                           
+                    3rd Qu.:2023                                           
+                    Max.   :2023                                           
+                    NA's   :128404                                         
+ APPX_A_NO_OF_EXEMPT_WORKERS APPX_A_NAME_OF_INSTITUTION APPX_A_FIELD_OF_STUDY
+ Min.   :1                   Length:138605              Length:138605        
+ 1st Qu.:1                   Class :character           Class :character     
+ Median :1                   Mode  :character           Mode  :character     
+ Mean   :1                                                                   
+ 3rd Qu.:1                                                                   
+ Max.   :1                                                                   
+ NA's   :138578                                                              
+ APPX_A_DATE_OF_DEGREE         YEAR_RECEIVED  MONTH_RECEIVED   DAY_RECEIVED  
+ Min.   :2003-12-15 00:00:00   Min.   :2019   Min.   : 1.00   Min.   : 1.00  
+ 1st Qu.:2011-09-10 00:00:00   1st Qu.:2023   1st Qu.:10.00   1st Qu.: 8.00  
+ Median :2018-05-06 00:00:00   Median :2023   Median :11.00   Median :15.00  
+ Mean   :2016-07-14 08:53:20   Mean   :2023   Mean   :10.35   Mean   :15.74  
+ 3rd Qu.:2021-08-27 00:00:00   3rd Qu.:2023   3rd Qu.:11.00   3rd Qu.:24.00  
+ Max.   :2023-06-30 00:00:00   Max.   :2023   Max.   :12.00   Max.   :31.00  
+ NA's   :138578                                                              
+    YEAR_END      MONTH_END         DAY_END     YEAR_DECISION  MONTH_DECISION 
+ Min.   :2021   Min.   : 1.000   Min.   : 1.0   Min.   :2023   Min.   :10.00  
+ 1st Qu.:2026   1st Qu.: 4.000   1st Qu.: 9.0   1st Qu.:2023   1st Qu.:10.00  
+ Median :2026   Median :10.000   Median :17.0   Median :2023   Median :11.00  
+ Mean   :2026   Mean   : 7.791   Mean   :17.4   Mean   :2023   Mean   :10.89  
+ 3rd Qu.:2027   3rd Qu.:11.000   3rd Qu.:27.0   3rd Qu.:2023   3rd Qu.:12.00  
+ Max.   :2027   Max.   :12.000   Max.   :31.0   Max.   :2023   Max.   :12.00  
                                                                               
-  MONTH_BEGIN       DAY_BEGIN      applications        avg_wage       
- Min.   : 1.000   Min.   : 1.00   Min.   :   1.00   Min.   :       7  
- 1st Qu.: 4.000   1st Qu.: 4.00   1st Qu.:   2.00   1st Qu.:   87762  
- Median :10.000   Median :13.00   Median :   2.00   Median :  115918  
- Mean   : 7.749   Mean   :13.32   Mean   :  14.47   Mean   :  121989  
- 3rd Qu.:11.000   3rd Qu.:21.00   3rd Qu.:   4.00   3rd Qu.:  153000  
- Max.   :12.000   Max.   :31.00   Max.   :1006.00   Max.   :25304885  
-                                                                      </code></pre>
+  DAY_DECISION     YEAR_BEGIN    MONTH_BEGIN       DAY_BEGIN    
+ Min.   : 1.00   Min.   :2019   Min.   : 1.000   Min.   : 1.00  
+ 1st Qu.: 7.00   1st Qu.:2023   1st Qu.: 4.000   1st Qu.: 5.00  
+ Median :16.00   Median :2023   Median :10.000   Median :13.00  
+ Mean   :15.44   Mean   :2023   Mean   : 7.686   Mean   :13.37  
+ 3rd Qu.:22.00   3rd Qu.:2024   3rd Qu.:11.000   3rd Qu.:21.00  
+ Max.   :31.00   Max.   :2024   Max.   :12.000   Max.   :31.00  
+                                                                
+  applications        avg_wage       
+ Min.   :  1.000   Min.   :   21530  
+ 1st Qu.:  2.000   1st Qu.:   94000  
+ Median :  2.000   Median :  120000  
+ Mean   :  7.989   Mean   :  130929  
+ 3rd Qu.:  4.000   3rd Qu.:  156505  
+ Max.   :575.000   Max.   :25304885  
+                                     </code></pre>
 </div>
 </div>
 <div class="cell">
@@ -43807,7 +43808,7 @@ Supply arguments directly to `.fns` through an anonymous function instead.
 <div class="cell">
 <div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>correlation</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] -0.110186</code></pre>
+<pre><code>[1] -0.05275011</code></pre>
 </div>
 </div>
 <p>Goal: Financial Info with countries</p>
