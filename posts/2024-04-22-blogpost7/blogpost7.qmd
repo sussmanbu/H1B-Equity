@@ -10,6 +10,7 @@ Our goal is to understand the labor conditions and work opportunities available 
 
 By gaining a comprehensive understanding of these aspects, we hope to better prepare ourselves for successful employment in the U.S. and contribute positively to the workforce.
 
+
 ```{r}
 library(dplyr)
 library(tsibble)
@@ -71,3 +72,10 @@ ggplot(education, aes(y = certified_count/total_count, x = yearmonth(year_month)
 ```
 
 From these figures, it can be concluded that applicants with higher degrees have better outcomes in the H1-B visa process. Additionally, while the acceptance rate across all education levels dropped during Covid, it is noted that the acceptance rate for applicants with a Bachelor's degree dropped lower than the acceptance rate for applicants with Doctorate's and Master's degrees.
+
+
+
+What is your tentative thesis? Note that a thesis is not a hypothesis or a question. It should in some ways answer a question. (Eg. rather than, "What are the patterns of housing prices in Boston?", something like, "Housing prices in Boston are rising rapidly, especially near T stations and along the water.") The rest of the project should work to support that thesis. That doesn’t mean there won’t be any caveats or uncertainty, but you should try to accurately  provide details that provide evidence for your thesis.
+
+
+How do you plan to polish your visualizations and tables? Think about titles, captions, annotations, highlights. Look into ggpubr for tools to improve your figures and look into some of the options for displaying tables using https://gallery.htmlwidgets.org/, for example the gt package we've used this semester.
