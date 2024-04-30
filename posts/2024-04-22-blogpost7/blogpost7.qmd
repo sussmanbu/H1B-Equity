@@ -75,4 +75,4 @@ ggplot(education, aes(y = certified_count/total_count, x = yearmonth(year_month)
 From these figures, it can be concluded that applicants with higher degrees have better outcomes in the H1-B visa process. Additionally, while the acceptance rate across all education levels dropped during Covid, it is noted that the acceptance rate for applicants with a Bachelor's degree dropped lower than the acceptance rate for applicants with Doctorate's and Master's degrees.
 
 As a tentative thesis, we hope to show that H1-B applications data is correlated to market trends related to education level, income, and geographical location.
-We plan to polish by limiting some redundant visualizations and making sure plots have consistent scales, etc.
+We plan to polish by limiting some redundant visualizations and making sure plots have consistent scales and labels.

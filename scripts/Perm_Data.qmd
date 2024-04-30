@@ -6,6 +6,9 @@ library(tidyr)
 library(ggplot2)
 library(forecast)
 library(zoo)
+library(readxl)
+library(lubridate)
+library(broom)
 ```
 
 #Loading Data:
@@ -253,13 +256,6 @@ autoplot(forecast_values) +
 ```{r}
 fy19_relevant
 ```
-```{r}
-fy19_relevant <- fy19_relevant |> rename(FOREIGN_WORKER_EDUCATION = FOREIGN_WORKER_INFO_EDUCATION)
-```
-```{r}
-fy23_relevant
-```
-
 
 ```{r}
 combined_19_23 <- rbind(fy19_relevant, fy20_relevant)
@@ -407,8 +403,6 @@ certified_counts <- combined_19_23 %>%
             total_count = n()) %>%
   mutate(non_certified_count = total_count - certified_count)
 ```
-
-
 ```{r}
 ggplot(certified_counts, aes(y = certified_count/total_count, x = yearmonth(year_month))) +
   geom_line() +
@@ -439,7 +433,6 @@ education <- combined_19_23 %>%
   summarise(certified_count = sum(CASE_STATUS %in% c("Certified", "Certified-Expired")),
             total_count = n()) %>%
   mutate(non_certified_count = total_count - certified_count)
-
 ```
 
 ```{r}
@@ -459,5 +452,13 @@ ggplot(education, aes(y = certified_count/total_count, x = yearmonth(year_month)
   facet_wrap(~FOREIGN_WORKER_EDUCATION) +
   labs(x = "Decision Date", y = "Accepted", title = "Accptance Rate and Education Levels")+
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+```{r}
+combined_19_23
+```
+
+```{r}
+write.csv(combined_19_23, file = "dataset/combined_perm_19_23.csv", row.names = FALSE)
 ```
 
