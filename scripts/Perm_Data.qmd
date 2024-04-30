@@ -1,8 +1,19 @@
+#Libraries
+```{r}
+library(dplyr)
+library(tsibble)
+library(tidyr)
+library(ggplot2)
+library(forecast)
+library(zoo)
+```
+
+#Loading Data:
+
 ```{r}
 filepath <- 'dataset/Perm_data/PERM_FY2019.xlsx'
 fy19 <- read_excel(filepath)
 ```
-
 
 ```{r}
 filepath <- 'dataset/Perm_data/PERM_Disclosure_Data_FY2020.xlsx'
@@ -18,12 +29,13 @@ fy21 <- read_excel(filepath)
 filepath <- 'dataset/Perm_data/PERM_Disclosure_Data_FY2022_Q4.xlsx'
 fy22 <- read_excel(filepath)
 ```
+
 ```{r}
 filepath <- 'dataset/Perm_data/PERM_Disclosure_Data_FY2023_Q4.xlsx'
 fy23 <- read_excel(filepath)
 ```
 
-
+#Filtering by H-1B:
 ```{r}
 fy19 <- fy19 |> 
   filter(CLASS_OF_ADMISSION == 'H-1B')
@@ -36,97 +48,115 @@ fy22 <- fy22 |>
 fy23 <- fy23 |> 
   filter(CLASS_OF_ADMISSION == 'H-1B')
 ```
+#List of columns
+Some years may differ, we will filter them out
 
 ```{r}
-fy19
+colnames(fy23)
 ```
+```{r}
+sum(is.na(fy19$FOREIGN_WORKER_INFO_EDUCATION))
+```
+#Extract Useful Information
 
 ```{r}
-fy20
+relevant_columns <- c("CASE_NUMBER", "CASE_STATUS", "DECISION_DATE", "EMPLOYER_NAME", "WAGE_OFFERED_FROM_9089", "COUNTRY_OF_CITIZENSHIP", "FOREIGN_WORKER_INFO_EDUCATION")
+fy19_relevant <- fy19[, relevant_columns]
+fy19_relevant <- fy19_relevant |> rename(WAGE_OFFER_FROM = WAGE_OFFERED_FROM_9089)
+fy19_relevant <- fy19_relevant |> rename(FOREIGN_WORKER_EDUCATION = FOREIGN_WORKER_INFO_EDUCATION)
+fy19_relevant$DECISION_DATE <- as.Date(fy19_relevant$DECISION_DATE)
+
+relevant_columns <- c("CASE_NUMBER", "CASE_STATUS", "DECISION_DATE", "EMPLOYER_NAME", "WAGE_OFFER_FROM", "COUNTRY_OF_CITIZENSHIP", "FOREIGN_WORKER_EDUCATION")
+fy20_relevant <- fy20[, relevant_columns]
+fy20_relevant$DECISION_DATE <- as.Date(fy20_relevant$DECISION_DATE)
+
+relevant_columns <- c("CASE_NUMBER", "CASE_STATUS", "DECISION_DATE", "EMPLOYER_NAME", "WAGE_OFFER_FROM", "COUNTRY_OF_CITIZENSHIP", "FOREIGN_WORKER_EDUCATION")
+fy21_relevant <- fy21[, relevant_columns]
+# fy21_relevant <- fy21_relevant |> rename(WAGE_OFFER_FROM = WAGE_OFFERED_FROM_9089)
+fy21_relevant$DECISION_DATE <- as.Date(fy21_relevant$DECISION_DATE)
+
+relevant_columns <- c("CASE_NUMBER", "CASE_STATUS", "DECISION_DATE", "EMPLOYER_NAME", "WAGE_OFFER_FROM", "COUNTRY_OF_CITIZENSHIP", "FOREIGN_WORKER_EDUCATION")
+fy22_relevant <- fy22[, relevant_columns]
+# fy21_relevant <- fy21_relevant |> rename(WAGE_OFFER_FROM = WAGE_OFFERED_FROM_9089)
+fy22_relevant$DECISION_DATE <- as.Date(fy22_relevant$DECISION_DATE)
+
+relevant_columns <- c("CASE_NUMBER", "CASE_STATUS", "DECISION_DATE", "EMPLOYER_NAME", "WAGE_OFFER_FROM", "COUNTRY_OF_CITIZENSHIP", "FOREIGN_WORKER_EDUCATION")
+fy23_relevant <- fy23[, relevant_columns]
+# fy21_relevant <- fy21_relevant |> rename(WAGE_OFFER_FROM = WAGE_OFFERED_FROM_9089)
+fy23_relevant$DECISION_DATE <- as.Date(fy23_relevant$DECISION_DATE)
 ```
+#Notes:
+Case_status : Certified, Certified-Expired, Denied, Withdrawn
+
+Foreign_worker_education: Master's, Bachelor's, Doctorate, Other, None, Associate's, High School
+
+#Select Numeric Values and see correlation:
 ```{r}
-fy21
-```
-```{r}
-fy22
-```
-```{r}
-fy23
+fy19_relevant$month <- month(fy19_relevant$DECISION_DATE)
+fy19_relevant$year <- year(fy19_relevant$DECISION_DATE)
+fy19_relevant$year_month <- paste(fy19_relevant$year, fy19_relevant$month, sep = "-")
+
+fy20_relevant$month <- month(fy20_relevant$DECISION_DATE)
+fy20_relevant$year <- year(fy20_relevant$DECISION_DATE)
+fy20_relevant$year_month <- paste(fy20_relevant$year, fy20_relevant$month, sep = "-")
+
+fy21_relevant$month <- month(fy21_relevant$DECISION_DATE)
+fy21_relevant$year <- year(fy21_relevant$DECISION_DATE)
+fy21_relevant$year_month <- paste(fy21_relevant$year, fy21_relevant$month, sep = "-")
+
+fy22_relevant$month <- month(fy22_relevant$DECISION_DATE)
+fy22_relevant$year <- year(fy22_relevant$DECISION_DATE)
+fy22_relevant$year_month <- paste(fy22_relevant$year, fy22_relevant$month, sep = "-")
+
+fy23_relevant$month <- month(fy23_relevant$DECISION_DATE)
+fy23_relevant$year <- year(fy23_relevant$DECISION_DATE)
+fy23_relevant$year_month <- paste(fy23_relevant$year, fy23_relevant$month, sep = "-")
 ```
 
+#Try Linear Regression, with number of applicants and number of applications certified
 ```{r}
-unique(fy19$CASE_STATUS) |> 
-```
-
-```{r}
-library(dplyr)
-
-applicants_count <- fy19 |>
+applicants_count <- fy23 |>
   group_by(COUNTRY_OF_CITIZENSHIP) |>
   summarise(num_applicants = n())
 
-fy19_certified <- fy19 |>
+fy23_certified <- fy23 |>
   filter(CASE_STATUS %in% c('Certified', 'Certified-Expired')) |>
   group_by(COUNTRY_OF_CITIZENSHIP) |>
   summarise(num_certified = n())
 
-prop_certified <- left_join(applicants_count, fy19_certified, by = "COUNTRY_OF_CITIZENSHIP")
-
-```
-
-
-```{r}
-prop_certified
+prop_certified <- left_join(applicants_count, fy23_certified, by = "COUNTRY_OF_CITIZENSHIP")
 ```
 
 ```{r}
-correlation_matrix <- cor(prop_certified |> select_if(is.numeric))
-print(correlation_matrix)
+ggplot(prop_certified, aes(x = num_applicants, y = num_certified)) +
+  geom_point(shape = 21, fill = "blue", color = "black", size = 3, alpha = 0.5) +
+  labs(x = "Number of Applicants", y = "Number Certified", title = "Scatter Plot of Applicants vs Certified, 2023")
 ```
+
 ```{r}
-summary(prop_certified)
-```
-```{r}
-# Calculate the quartiles and IQR of num_applicants
+#calculating q3 + 1.5*iqr and q1-1.5*iqr to remove outliers
 quantiles <- quantile(prop_certified$num_applicants, probs = c(0.25, 0.75))
 q1 <- quantiles[1]
 q3 <- quantiles[2]
 iqr <- q3 - q1
-
-# Define the threshold for outliers
 maxthreshold <- q3 + 1.5 * iqr
 minthreshold <- q1 -1.5*iqr
-
-# Identify rows with values of num_applicants above the threshold
 top_outliers <- prop_certified[prop_certified$num_applicants > maxthreshold, ]
 bottom_outliers <- prop_certified[prop_certified$num_applicants < minthreshold, ]
 
-# Remove outliers from the original dataset
+#removing outliers
 prop_certified_filtered <- prop_certified|> filter(num_applicants <= maxthreshold, num_applicants >= minthreshold)
 
-# Print or do further analysis on outliers_dataset if needed
-print(top_outliers)
-```
-```{r}
-bottom_outliers
-```
-
-
-```{r}
-prop_certified$num_applicants_log <- log(prop_certified$num_applicants)
-prop_certified$num_certified_log <- log(prop_certified$num_certified)
-
-# Linear regression on transformed variables
-linear_model <- lm(num_applicants_log ~ num_certified_log -1, data = prop_certified)
 ```
 
 ```{r}
 prop_certified_filtered$num_applicants_log <- log(prop_certified_filtered$num_applicants)
 prop_certified_filtered$num_certified_log <- log(prop_certified_filtered$num_certified)
 
-# Linear regression on transformed variables
-linear_model_filtered <- lm(num_applicants_log ~ num_certified_log, data = prop_certified)
+linear_model_filtered <- lm(num_applicants_log ~ num_certified_log -1, data = prop_certified_filtered)
+```
 
+```{r}
 summary(linear_model_filtered)
 ```
 
@@ -137,71 +167,16 @@ broom::tidy(linear_model_filtered)
 ```{r}
 predicted_log <- predict(linear_model_filtered)
 
-# Exponentiate the predictions to transform them back to the original scale
 predicted <- exp(predicted_log)
 
-# Augment the linear model object to get fitted values and residuals
 augmented_data <- augment(linear_model_filtered, newdata = data.frame(num_certified_log = prop_certified_filtered$num_certified_log, num_applicants_log = prop_certified_filtered$num_applicants_log))
 
-# Transform fitted values and residuals back to original scale
 augmented_data$exp_fitted <- exp(augmented_data$.fitted)
 augmented_data$exp_resid <- exp(augmented_data$.resid)
 
-# Plot residuals vs fitted values
 ggplot(augmented_data, aes(x = exp_fitted, y = exp_resid)) +
   geom_point(shape = 21, fill = "transparent", color = "black", size = 3, alpha = 0.5) +
-  labs(x = "Fitted Values", y = "Residuals", title = "Residual vs Fitted")
-```
-`
-
-
-
-```{r}
-top_outliers$num_applicants_log <- log(top_outliers$num_applicants)
-top_outliers$num_certified_log <- log(top_outliers$num_certified)
-
-# Linear regression on transformed variables
-linear_model_top_outliers <- lm(num_applicants_log ~ num_certified_log, data = prop_certified)
-
-summary(linear_model_top_outliers)
-```
-
-```{r}
-broom::tidy(linear_model_top_outliers)
-```
-
-```{r}
-predicted_log <- predict(linear_model_top_outliers)
-
-# Exponentiate the predictions to transform them back to the original scale
-predicted <- exp(predicted_log)
-
-# Augment the linear model object to get fitted values and residuals
-augmented_data <- augment(linear_model_top_outliers, newdata = data.frame(num_certified_log = top_outliers$num_certified_log, num_applicants_log = top_outliers$num_applicants_log))
-
-# Transform fitted values and residuals back to original scale
-augmented_data$exp_fitted <- exp(augmented_data$.fitted)
-augmented_data$exp_resid <- exp(augmented_data$.resid)
-
-# Plot residuals vs fitted values
-ggplot(augmented_data, aes(x = exp_fitted, y = exp_resid)) +
-  geom_point(shape = 21, fill = "transparent", color = "black", size = 3, alpha = 0.5) +
-  labs(x = "Fitted Values", y = "Residuals", title = "Residual vs Fitted")
-```
-
-
-
-
-```{r}
-ggplot(prop_certified, aes(x = num_applicants, y = num_certified)) +
-  geom_point(shape = 21, fill = "blue", color = "black", size = 3, alpha = 0.5) +
-  labs(x = "Number of Applicants", y = "Number Certified", title = "Scatter Plot of Applicants vs Certified")
-```
-
-```{r}
-ggplot(prop_certified, aes(x = num_applicants_log, y = num_certified_log)) +
-  geom_point(shape = 21, fill = "blue", color = "black", size = 3, alpha = 0.5) +
-  labs(x = "Number of Applicants", y = "Number Certified", title = "Scatter Plot of Applicants vs Certified")
+  labs(x = "Fitted Values", y = "Residuals", title = "Residual vs Fitted of Logged Linear Regression")
 ```
 
 ```{r}
@@ -212,408 +187,210 @@ summary(fy19$WAGE_OFFERED_FROM_9089)
 sum(is.na(fy19$WAGE_OFFERED_FROM_9089))
 sum(is.na(fy19$WAGE_OFFERED_TO_9089))
 ```
-
-
 ```{r}
-quantiles <- quantile(fy19$WAGE_OFFERED_FROM_9089, probs = c(0.25, 0.75), na.rm = TRUE)
+quantiles <- quantile(fy23_relevant$WAGE_OFFER_FROM, probs = c(0.25, 0.75), na.rm = TRUE)
 q1 <- quantiles[1]
 q3 <- quantiles[2]
 iqr <- q3 - q1
 
-# Define the threshold for outliers
 maxthreshold <- q3 + 1.5 * iqr
 minthreshold <- q1 -1.5*iqr
 
-# Identify rows with values of num_applicants above the threshold
-top_outliers <- fy19[fy19$WAGE_OFFERED_FROM_9089 > maxthreshold, ]
-bottom_outliers <- fy19[fy19$WAGE_OFFERED_FROM_9089 < minthreshold, ]
+top_outliers <- fy23_relevant[fy23_relevant$WAGE_OFFER_FROM > maxthreshold, ]
+bottom_outliers <- fy23_relevant[fy23_relevant$WAGE_OFFER_FROM < minthreshold, ]
 
 # Remove outliers from the original dataset
-fy19_filtered <- fy19|> filter(WAGE_OFFERED_FROM_9089 <= maxthreshold, WAGE_OFFERED_FROM_9089 >= minthreshold)
+fy23_wage <- fy23_relevant|> filter(WAGE_OFFER_FROM <= maxthreshold, WAGE_OFFER_FROM >= minthreshold)
 
-# Print or do further analysis on outliers_dataset if needed
-print(top_outliers)
 ```
 
 ```{r}
 # Define the number of bins and create bins for the 'WAGE_OFFERED_FROM_9089' variable
 num_bins <- 5  # You can adjust the number of bins as needed
-fy19_filtered <- fy19_filtered %>%
-  mutate(WAGE_BIN = cut(WAGE_OFFERED_FROM_9089, breaks = num_bins, labels = FALSE))
+fy23_wage <- fy23_wage %>%
+  mutate(WAGE_BIN = cut(WAGE_OFFER_FROM, breaks = num_bins, labels = FALSE))
 
 
 # Group by the bins and count the number of applicants for each bin
-applicant_counts <- fy19_filtered %>%
-  group_by(WAGE_BIN) %>%
-  summarise(num_applicants = n())
-
-# Check the structure of 'applicant_counts'
-str(applicant_counts)
-
-# View the first few rows of 'applicant_counts'
-head(applicant_counts)
-```
-```{r}
-num_bins <- 5  # You can adjust the number of bins as needed
-fy19_filtered <- fy19_filtered %>%
-  mutate(WAGE_BIN = cut(WAGE_OFFERED_FROM_9089, breaks = num_bins, labels = FALSE))|>
-  group_by(WAGE_BIN) %>%
+applicant_counts <- fy23_wage |>
+  group_by(WAGE_BIN) |>
   mutate(num_applicants = n())
+
 ```
 
 
 ```{r}
-# Check correlation between number of applicants and wage bins
-correlation <- cor(applicant_counts$num_applicants, as.numeric(as.character(applicant_counts$WAGE_BIN)))
-
-print(correlation)
-```
-
-```{r}
-fy19_filtered$WAGE_BIN
-```
-
-```{r}
-ggplot(fy19_filtered, aes(x = WAGE_BIN)) +
+ggplot(fy23_wage, aes(x = WAGE_BIN)) +
   geom_bar() +
-  labs(x = "Wage Bin", y = "Number of Applicants", title = "Scatter Plot of Applicants vs Certified")
+  labs(x = "Wage Bin", y = "Number of Applicants", title = "Wages of Applicants")
 ```
 
 ```{r}
-sum(is.na(fy19$DECISION_DATE))
-sum(is.na(fy19$CASE_RECEIVED_DATE))
-```
-
-```{r}
-sum(duplicated(fy19))
-```
-```{r}
-fy19_times <- fy19 |>
-  group_by(DECISION_DATE)|>
+fy23_times <- fy23_relevant |>
+  group_by(year_month)|>
   summarise(num_applicants = n())
 ```
 
-```{r}
-fy19_times
-```
-
 
 ```{r}
-library(tsibble)
-library(tidyr)
-library(dplyr)
-library(ggplot2)
-library(forecast)
-```
-
-
-```{r}
-ts_data <- fy19_times %>%
-  mutate(date = as.Date(fy19_times$DECISION_DATE)) %>%
+ts_data <- fy23_times |>
+  mutate(date = yearmonth(fy23_times$year_month)) |>
   as_tsibble(index = date)
 ```
 
-
 ```{r}
-# EDA: Plot time series
 ts_data_ts <- as.ts(ts_data$num_applicants)
 ```
 
-
-
 ```{r}
-# autoplot(ts_data, y = num_applicants) +
-#   labs(title = "Time Series Plot of Number of Applicants")
-
-# Modeling: Fit ARIMA model
-fit <- auto.arima(ts_data)
-
-# Print model summary
+fit <- auto.arima(ts_data_ts)
 summary(fit)
-
-# Forecasting: Make forecasts
 forecast_values <- forecast(fit, h = 12)  # Forecasting for the next 12 periods
-
 # Plot forecast
 autoplot(forecast_values) +
-  labs(title = "Forecast of Number of Applicants")
-```
-
-```{r}
-ts_data_ts <- as.ts(ts_data)
-
-# Fit a forecasting model (e.g., ARIMA)
-model <- auto.arima(ts_data_ts)
-
-# Make predictions for the next 'n' periods
-n_periods <- 12  # For example, predict for the next 12 months
-forecast_values <- forecast(model, h = n_periods)
-
-# Plot the forecast
-autoplot(forecast_values) +
-  labs(title = "Forecast of Number of Applicants")
-```
-
-```{r}
-ts_data_ts <- ts(ts_data$num_applicants, frequency = 8)  # Adjust the frequency accordingly
-
-# Fit a forecasting model (e.g., ARIMA)
-model <- auto.arima(ts_data_ts)
-
-# Make predictions for the next 'n' periods
-n_periods <- 12  # For example, predict for the next 12 months
-forecast_values <- forecast(model, h = n_periods)
-
-# Plot the forecast
-autoplot(forecast_values) +
-  labs(title = "Forecast of Number of Applicants")
-```
-
-```{r}
-library(forecast)
-
-# Assuming ts_data is your tsibble object with a column named num_applicants
-# Sort the data by the date variable (if not already sorted)
-ts_data <- ts_data %>%
-  arrange(date)
-
-# Convert tsibble to a ts object with appropriate start date and frequency
-ts_data_ts <- ts(ts_data$num_applicants, start = c(year(min(ts_data$date)), month(min(ts_data$date))), frequency = 12)  # Adjust the frequency accordingly
-
-# Fit a forecasting model (e.g., ARIMA)
-model <- auto.arima(ts_data_ts)
-
-# Make predictions for the next 'n' periods
-n_periods <- 12  # For example, predict for the next 12 months
-forecast_values <- forecast(model, h = n_periods)
-
-autoplot(forecast_values) +
-  labs(title = "Forecast of Number of Applicants")
+  labs(title = "Forecast of Number of Applicants from 2023 data")
 ```
 ```{r}
-sum(is.na(fy20$COUNTRY_OF_CITIZENSHIP))
-
-```
-
-
-```{r}
-relevant_columns <- c("CASE_NUMBER", "CASE_STATUS", "DECISION_DATE", "EMPLOYER_NAME", "WAGE_OFFER_FROM", "COUNTRY_OF_CITIZENSHIP")
-fy20_relevant <- fy20[, relevant_columns]
-fy20_relevant$DECISION_DATE <- as.Date(fy20_relevant$DECISION_DATE)
-```
-
-
-```{r}
-relevant_columns <- c("CASE_NUMBER", "CASE_STATUS", "DECISION_DATE", "EMPLOYER_NAME", "WAGE_OFFERED_FROM_9089", "COUNTRY_OF_CITIZENSHIP")
-fy19_relevant <- fy19[, relevant_columns]
-fy19_relevant <- fy19_relevant |> rename(WAGE_OFFER_FROM = WAGE_OFFERED_FROM_9089)
-fy19_relevant$DECISION_DATE <- as.Date(fy19_relevant$DECISION_DATE)
-```
-
-```{r}
-combined_perm_data <- rbind(fy19_relevant, fy20_relevant)
-```
-
-```{r}
-combined_times <- combined_perm_data |>
-  group_by(DECISION_DATE)|>
-  summarise(num_applicants = n())
-```
-
-
-
-```{r}
-ts_data <- combined_times %>%
-  mutate(date = combined_times$DECISION_DATE) %>%
-  as_tsibble(index = date)
-```
-
-```{r}
-ts_data_ts <- ts(ts_data$num_applicants, frequency = 30)  # Adjust the frequency accordingly
-
-# Fit a forecasting model (e.g., ARIMA)
-model <- auto.arima(ts_data_ts)
-
-# Make predictions for the next 'n' periods
-n_periods <- 12  # For example, predict for the next 12 months
-forecast_values <- forecast(model, h = n_periods)
-
-# Plot the forecast
-autoplot(forecast_values) +
-  labs(title = "Forecast of Number of Applicants")
+fy19_relevant
 ```
 ```{r}
-relevant_columns <- c("CASE_NUMBER", "CASE_STATUS", "DECISION_DATE", "EMPLOYER_NAME", "WAGE_OFFER_FROM", "COUNTRY_OF_CITIZENSHIP")
-fy21_relevant <- fy21[, relevant_columns]
-# fy21_relevant <- fy21_relevant |> rename(WAGE_OFFER_FROM = WAGE_OFFERED_FROM_9089)
-fy21_relevant$DECISION_DATE <- as.Date(fy21_relevant$DECISION_DATE)
+fy19_relevant <- fy19_relevant |> rename(FOREIGN_WORKER_EDUCATION = FOREIGN_WORKER_INFO_EDUCATION)
 ```
-
-```{r}
-relevant_columns <- c("CASE_NUMBER", "CASE_STATUS", "DECISION_DATE", "EMPLOYER_NAME", "WAGE_OFFER_FROM", "COUNTRY_OF_CITIZENSHIP")
-fy22_relevant <- fy22[, relevant_columns]
-# fy21_relevant <- fy21_relevant |> rename(WAGE_OFFER_FROM = WAGE_OFFERED_FROM_9089)
-fy22_relevant$DECISION_DATE <- as.Date(fy22_relevant$DECISION_DATE)
-```
-
-```{r}
-relevant_columns <- c("CASE_NUMBER", "CASE_STATUS", "DECISION_DATE", "EMPLOYER_NAME", "WAGE_OFFER_FROM", "COUNTRY_OF_CITIZENSHIP")
-fy23_relevant <- fy23[, relevant_columns]
-# fy21_relevant <- fy21_relevant |> rename(WAGE_OFFER_FROM = WAGE_OFFERED_FROM_9089)
-fy23_relevant$DECISION_DATE <- as.Date(fy23_relevant$DECISION_DATE)
-```
-
 ```{r}
 fy23_relevant
 ```
 
 
-
 ```{r}
-combined_perm_data <- rbind(fy19_relevant, fy20_relevant)
-combined_perm_data <- rbind(combined_perm_data, fy21_relevant)
-combined_perm_data <- rbind(combined_perm_data, fy22_relevant)
-combined_perm_data <- rbind(combined_perm_data, fy23_relevant)
+combined_19_23 <- rbind(fy19_relevant, fy20_relevant)
+combined_19_23 <- rbind(combined_19_23, fy21_relevant)
+combined_19_23 <- rbind(combined_19_23, fy22_relevant)
+combined_19_23 <- rbind(combined_19_23, fy23_relevant)
 ```
 
-
 ```{r}
-combined_perm_data <- combined_perm_data |>
-  group_by(DECISION_DATE)|>
+combined_19_23_grouped <- combined_19_23 |>
+  group_by(year_month)|>
   summarise(num_applicants = n()) |>
   filter(num_applicants > 0)
 ```
 
 ```{r}
-ts_data <- combined_perm_data %>%
-  mutate(date = combined_perm_data$DECISION_DATE) %>%
+ts_data <- combined_19_23_grouped |>
+  mutate(date = yearmonth(combined_19_23_grouped$year_month)) |>
   as_tsibble(index = date)
 ```
 
 ```{r}
 ts_data_ts <- ts(ts_data$num_applicants, frequency = 30)  # Adjust the frequency accordingly
-
-# Fit a forecasting model (e.g., ARIMA)
 model <- auto.arima(ts_data_ts)
-
-# Make predictions for the next 'n' periods
 n_periods <- 12  # For example, predict for the next 12 months
 forecast_values <- forecast(model, h = n_periods)
-
-# Plot the forecast
 autoplot(forecast_values) +
-  labs(title = "Forecast of Number of Applicants")
+  labs(title = "Forecast of Number of Applicants, using 2019-2023")
 ```
 ```{r}
-combined_perm_data
+combined_19_23
 ```
 
+
 ```{r}
-combined_perm_data_ <- combined_perm_data  %>%
-  select(DECISION_DATE, WAGE_OFFER_FROM) %>%
-  group_by(DECISION_DATE) %>%
+combined_wage <- combined_19_23  |>
+  select(year_month, WAGE_OFFER_FROM) |>
+  group_by(year_month) |>
   summarise(avg_wage = mean(WAGE_OFFER_FROM, na.rm = TRUE)) %>%
   filter(!is.na(avg_wage))
 ```
 
-```{r}
-combined_perm_data_
-```
 
 ```{r}
-ts_data <- combined_perm_data_ %>%
-  mutate(date = combined_perm_data_$DECISION_DATE) %>%
+ts_data <- combined_wage |>
+  mutate(date = yearmonth(combined_wage$year_month)) |>
   as_tsibble(index = date)
 ```
 
 ```{r}
 ts_data_ts <- ts(ts_data$avg_wage, frequency = 30)  # Adjust the frequency accordingly
-
-# Fit a forecasting model (e.g., ARIMA)
 model <- auto.arima(ts_data_ts)
-
-# Make predictions for the next 'n' periods
-n_periods <- 12  # For example, predict for the next 12 months
+n_periods <- 12 
 forecast_values <- forecast(model, h = n_periods)
-
 # Plot the forecast
 autoplot(forecast_values) +
   labs(title = "Forecast of Wage")
 ```
 
 ```{r}
-top5_countries <- combined_perm_data |>
+top5_countries <- combined_19_23 |>
   group_by(COUNTRY_OF_CITIZENSHIP) |>
   summarise(num_applicants = n()) |>
   top_n(5)
 
-bottom5_countries <- combined_perm_data |>
+bottom5_countries <- combined_19_23 |>
   group_by(COUNTRY_OF_CITIZENSHIP) |>
   summarise(num_applicants = n()) |>
   filter(num_applicants > 0) |>
   top_n(-5)
 ```
+
 ```{r}
 top5_countries
 ```
 
 
 ```{r}
-top5_applicants <- combined_perm_data %>%
+top5_applicants <- combined_19_23 %>%
   filter(COUNTRY_OF_CITIZENSHIP %in% top5_countries$COUNTRY_OF_CITIZENSHIP)|>
-  group_by(COUNTRY_OF_CITIZENSHIP, DECISION_DATE) %>%
+  group_by(COUNTRY_OF_CITIZENSHIP, year_month) %>%
   summarise(total_applicants = n())
 
 
 # Step 2: Calculate the number of certified or certified-expired applicants for each country
-top5_certified <- combined_perm_data %>%
+top5_certified <- combined_19_23 %>%
   filter(COUNTRY_OF_CITIZENSHIP %in% top5_countries$COUNTRY_OF_CITIZENSHIP)|>
   filter(CASE_STATUS %in% c("Certified", "Certified-Expired")) %>%
-  group_by(COUNTRY_OF_CITIZENSHIP, DECISION_DATE) %>%
+  group_by(COUNTRY_OF_CITIZENSHIP, year_month) %>%
   summarise(certified_applicants = n())
 ```
 
 
 ```{r}
-# Step 3: Merge the datasets
-merged_data <- left_join(top5_applicants, top5_certified, by = c("COUNTRY_OF_CITIZENSHIP", "DECISION_DATE"))
+merged_data <- left_join(top5_applicants, top5_certified, by = c("COUNTRY_OF_CITIZENSHIP", "year_month"))
 ```
 
-
 ```{r}
-merged_data<- merged_data
+merged_data
 ```
 
-
 ```{r}
-# Step 4: Create the line graph
-ggplot(merged_data, aes(y = total_applicants, x = DECISION_DATE, color = COUNTRY_OF_CITIZENSHIP)) +
+ggplot(merged_data, aes(y = total_applicants, x = yearmonth(year_month), color = COUNTRY_OF_CITIZENSHIP)) +
   geom_line() +
   geom_line(aes(y = certified_applicants), linetype = "dotted") +
-  labs(x = "Total Number of Applicants", y = "Decision Date", title = "Number of Applicants by Country")
+  labs(x = "Total Number of Applicants", y = "Decision Date", title = "Number of Applicants by Country for Top 5 Countries")
 ```
 
 ```{r}
-average_applicants <- combined_perm_data %>%
-  group_by(DECISION_DATE, COUNTRY_OF_CITIZENSHIP) %>%
+average_applicants <- combined_19_23 |>
+  group_by(year_month, COUNTRY_OF_CITIZENSHIP) |>
   summarise(sum_for_day = n())
 
-average_certified <- combined_perm_data %>%
-  filter(CASE_STATUS %in% c("Certified", "Certified-Expired")) %>%
-  group_by(DECISION_DATE, COUNTRY_OF_CITIZENSHIP) %>%
+average_certified <- combined_19_23 |>
+  filter(CASE_STATUS %in% c("Certified", "Certified-Expired")) |>
+  group_by(year_month, COUNTRY_OF_CITIZENSHIP) |>
   summarise(sum_certified = n())
 
 average_merged_data2 <- left_join(average_applicants, average_certified, by = c("DECISION_DATE", "COUNTRY_OF_CITIZENSHIP"))
 
 average_merged_data2 |> filter(sum_certified > sum_for_day)
 ```
+
+
 ```{r}
 average_applicants <- average_applicants %>%
-  group_by(DECISION_DATE) %>%
+  group_by(year_month) %>%
   summarise(average_for_day = mean(sum_for_day))
 
 average_certified <- average_certified %>%
-  group_by(DECISION_DATE) %>%
+  group_by(year_month) %>%
   summarise(certified_for_day = mean(sum_certified))
 
 average_merged_data2 <- left_join(average_applicants, average_certified, by = "DECISION_DATE")
@@ -635,6 +412,7 @@ average_applicants <- average_applicants %>%
   group_by(DECISION_DATE) %>%
   summarise(average_for_day = mean(sum_for_day))
 ```
+
 ```{r}
 average_certified <- combined_perm_data %>%
   filter(CASE_STATUS %in% c("Certified", "Certified-Expired")) %>%
@@ -669,57 +447,56 @@ average_merged_data <- left_join(average_applicants, average_certified, by = "DE
 ```{r}
 average_merged_data |> filter(certified_for_day > average_for_day)
 ```
+
 ```{r}
-certified_counts <- combined_perm_data %>%
-  group_by(DECISION_DATE, COUNTRY_OF_CITIZENSHIP) %>%
+certified_counts <- combined_19_23 %>%
+  group_by(year_month, COUNTRY_OF_CITIZENSHIP) %>%
   summarise(certified_count = sum(CASE_STATUS %in% c("Certified", "Certified-Expired")),
             total_count = n()) %>%
   mutate(non_certified_count = total_count - certified_count)
 ```
+
 ```{r}
 average_applicants <- certified_counts %>%
-  group_by(DECISION_DATE) %>%
+  group_by(year_month) %>%
   summarise(average_for_day = mean(total_count))
 
 average_certified <- certified_counts %>%
-  group_by(DECISION_DATE) %>%
+  group_by(year_month) %>%
   summarise(certified_for_day = mean(certified_count))
 ```
  
 
 ```{r}
-# Left join with average_applicants data
-average_merged_data <- left_join(average_applicants, average_certified, by = "DECISION_DATE")
+average_merged_data <- left_join(average_applicants, average_certified, by = "year_month")
+```
 
-# Replace NA values with 0
-average_merged_data[is.na(average_merged_data)] <- 0
+```{r}
+average_merged_data
 ```
 
 
 ```{r}
-ggplot(average_merged_data, aes(y = certified_for_day/average_for_day, x = DECISION_DATE)) +
+ggplot(average_merged_data, aes(y = average_for_day, x = yearmonth(year_month))) +
   geom_line() +
-  labs(x = "Decision Date", y = "Certified/Total", title = "Total Average of Applicants")
-```
-```{r}
-top5_
+  geom_line(aes(y = certified_for_day), linetype = "dotted") +
+  labs(x = "Average Number of Applicants", y = "Decision Date", title = "Average number of applicants")
 ```
 
 
 ```{r}
-certified_counts <- combined_perm_data %>%
+certified_counts <- combined_19_23 %>%
   filter(COUNTRY_OF_CITIZENSHIP %in% top5_countries$COUNTRY_OF_CITIZENSHIP)|>
-  group_by(DECISION_DATE, COUNTRY_OF_CITIZENSHIP) %>%
+  group_by(year_month, COUNTRY_OF_CITIZENSHIP) %>%
   summarise(certified_count = sum(CASE_STATUS %in% c("Certified", "Certified-Expired")),
             total_count = n()) %>%
   mutate(non_certified_count = total_count - certified_count)
 ```
 
 
-
-
 ```{r}
-ggplot(certified_counts, aes(y = certified_count/total_count, x = DECISION_DATE, color=COUNTRY_OF_CITIZENSHIP)) +
+ggplot(certified_counts, aes(y = certified_count/total_count, x = yearmonth(year_month))) +
   geom_line() +
-  labs(x = "Decision Date", y = "Certified/Total", title = "Total Average of Applicants for top 5 Countries")
+  facet_wrap(~COUNTRY_OF_CITIZENSHIP)+
+  labs(x = "Decision Date", y = "Certified/Total", title = "Acceptance Rate for the top 5 Countries")
 ```
