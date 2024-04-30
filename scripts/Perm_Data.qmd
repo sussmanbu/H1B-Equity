@@ -434,14 +434,30 @@ ggplot(combined_19_23_accepted, aes(x = yearmonth(year_month), y = log(WAGE_OFFE
        title = "Scatter Plot of Wage vs Year Month")
 ```
 ```{r}
-education <- combined_19_23 |>
-  group_by(FOREIGN_WORKER_EDUCATION, year_month)|>
-  summarise(sum_accepted = n())
+education <- combined_19_23 %>%
+  group_by(FOREIGN_WORKER_EDUCATION, year_month) %>%
+  summarise(certified_count = sum(CASE_STATUS %in% c("Certified", "Certified-Expired")),
+            total_count = n()) %>%
+  mutate(non_certified_count = total_count - certified_count)
+
 ```
 
 ```{r}
-ggplot(education, aes(y = sum_accepted, x = yearmonth(year_month), color = FOREIGN_WORKER_EDUCATION)) +
+ggplot(education, aes(y = total_count, x = yearmonth(year_month), color = FOREIGN_WORKER_EDUCATION)) +
   geom_line() +
-  labs(x = "Decision Date", y = "Sum Accepted", title = "Applicants and Education Levels")
+  labs(x = "Decision Date", y = "Applied", title = "Applicants and Education Levels")
+```
+```{r}
+ggplot(education, aes(y = certified_count, x = yearmonth(year_month), color = FOREIGN_WORKER_EDUCATION)) +
+  geom_line() +
+  labs(x = "Decision Date", y = "Accepted", title = "Accepted Applicants and Education Levels")
+```
+
+```{r}
+ggplot(education, aes(y = certified_count/total_count, x = yearmonth(year_month))) +
+  geom_line() +
+  facet_wrap(~FOREIGN_WORKER_EDUCATION) +
+  labs(x = "Decision Date", y = "Accepted", title = "Accptance Rate and Education Levels")+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
