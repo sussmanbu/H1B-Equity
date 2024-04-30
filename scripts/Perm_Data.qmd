@@ -369,94 +369,12 @@ ggplot(merged_data, aes(y = total_applicants, x = yearmonth(year_month), color =
 ```
 
 ```{r}
-average_applicants <- combined_19_23 |>
-  group_by(year_month, COUNTRY_OF_CITIZENSHIP) |>
-  summarise(sum_for_day = n())
-
-average_certified <- combined_19_23 |>
-  filter(CASE_STATUS %in% c("Certified", "Certified-Expired")) |>
-  group_by(year_month, COUNTRY_OF_CITIZENSHIP) |>
-  summarise(sum_certified = n())
-
-average_merged_data2 <- left_join(average_applicants, average_certified, by = c("DECISION_DATE", "COUNTRY_OF_CITIZENSHIP"))
-
-average_merged_data2 |> filter(sum_certified > sum_for_day)
-```
-
-
-```{r}
-average_applicants <- average_applicants %>%
-  group_by(year_month) %>%
-  summarise(average_for_day = mean(sum_for_day))
-
-average_certified <- average_certified %>%
-  group_by(year_month) %>%
-  summarise(certified_for_day = mean(sum_certified))
-
-average_merged_data2 <- left_join(average_applicants, average_certified, by = "DECISION_DATE")
-```
-
-
-```{r}
-average_merged_data2 |> filter(certified_for_day > average_for_day)
-```
-
-
-
-```{r}
-average_applicants <- combined_perm_data %>%
-  group_by(DECISION_DATE, COUNTRY_OF_CITIZENSHIP) %>%
-  summarise(sum_for_day = n())
-
-average_applicants <- average_applicants %>%
-  group_by(DECISION_DATE) %>%
-  summarise(average_for_day = mean(sum_for_day))
-```
-
-```{r}
-average_certified <- combined_perm_data %>%
-  filter(CASE_STATUS %in% c("Certified", "Certified-Expired")) %>%
-  group_by(DECISION_DATE, COUNTRY_OF_CITIZENSHIP) %>%
-  summarise(sum_certified = n())
-
-average_certified <- average_certified %>%
-  group_by(DECISION_DATE) %>%
-  summarise(certified_for_day = mean(sum_for_day))
-```
-
-
-
-
-```{r}
-# Step 2: Calculate the number of certified or certified-expired applicants for each country
-average_certified <- combined_perm_data %>%
-  filter(CASE_STATUS %in% c("Certified", "Certified-Expired")) %>%
-  group_by(COUNTRY_OF_CITIZENSHIP, DECISION_DATE) %>%
-  summarise(average_certified = mean(n()))
-```
-```{r}
-average_applicants
-```
-
-
-
-```{r}
-average_merged_data <- left_join(average_applicants, average_certified, by = "DECISION_DATE")
-```
-
-```{r}
-average_merged_data |> filter(certified_for_day > average_for_day)
-```
-
-```{r}
 certified_counts <- combined_19_23 %>%
   group_by(year_month, COUNTRY_OF_CITIZENSHIP) %>%
   summarise(certified_count = sum(CASE_STATUS %in% c("Certified", "Certified-Expired")),
             total_count = n()) %>%
   mutate(non_certified_count = total_count - certified_count)
-```
 
-```{r}
 average_applicants <- certified_counts %>%
   group_by(year_month) %>%
   summarise(average_for_day = mean(total_count))
@@ -471,9 +389,6 @@ average_certified <- certified_counts %>%
 average_merged_data <- left_join(average_applicants, average_certified, by = "year_month")
 ```
 
-```{r}
-average_merged_data
-```
 
 
 ```{r}
@@ -500,3 +415,33 @@ ggplot(certified_counts, aes(y = certified_count/total_count, x = yearmonth(year
   facet_wrap(~COUNTRY_OF_CITIZENSHIP)+
   labs(x = "Decision Date", y = "Certified/Total", title = "Acceptance Rate for the top 5 Countries")
 ```
+#Now, look at correlation between education level and wage
+
+```{r}
+combined_19_23
+```
+
+```{r}
+combined_19_23_accepted <- combined_19_23 |>
+  filter(CASE_STATUS %in% c("Certified", "Certified-Expired"))
+```
+
+```{r}
+#scatter plot: x = time, y = wage, color = education level
+ggplot(combined_19_23_accepted, aes(x = yearmonth(year_month), y = log(WAGE_OFFER_FROM), color = FOREIGN_WORKER_EDUCATION)) +
+  geom_point(alpha = 0.5) +
+  labs(x = "Year Month", y = "Wage", color = "Education Level",
+       title = "Scatter Plot of Wage vs Year Month")
+```
+```{r}
+education <- combined_19_23 |>
+  group_by(FOREIGN_WORKER_EDUCATION, year_month)|>
+  summarise(sum_accepted = n())
+```
+
+```{r}
+ggplot(education, aes(y = sum_accepted, x = yearmonth(year_month), color = FOREIGN_WORKER_EDUCATION)) +
+  geom_line() +
+  labs(x = "Decision Date", y = "Sum Accepted", title = "Applicants and Education Levels")
+```
+
