@@ -106,7 +106,7 @@ head(h1b_country)
 ```
 
 The following code shortens the dimension of our dataframe to 3 columns specially the years columns. Having many years column can make the dataset hard to analysis or explore. 
-```{r}
+```{r, results='hide'}
 h1b_continent <- h1b_country |>
   group_by(Continent)|>
   select(-Country)|>
@@ -314,7 +314,7 @@ Our direction is to start initial progress on LCA_Program_data to testify if H1B
 ## Cleaning Dataset
 The following steps would be describing how we load our dataset and merge additional columns.
 
-```{r}
+```{r, results='hide'}
 df <- readRDS("dataset/cleaned_disclosure.rds")
 head(df)
 ```
@@ -332,14 +332,14 @@ This is the line of code of how to read xlsx files and convert into rds. We comm
 # saveRDS(df3, "dataset/LCA_appendix.rds")
 ```
 
-```{r}
+```{r, results='hide'}
 # read in df2
 
 df2 <- readRDS("dataset/LCA_worksite.rds")
 head(df2)
 ```
 
-```{r}
+```{r, results='hide'}
 # read in df3
 
 df3 <- readRDS("dataset/appendix.rds")
@@ -365,12 +365,12 @@ To merge the dataset together, we can find matching case numbers. The additional
 
 
 ## EDA version 2
-```{r}
+```{r, results='hide'}
 final_df <- readRDS("dataset/final_merge.rds")
 head(final_df)
 ```
 
-```{r}
+```{r, results='hide'}
 # filter the dataset which jobs have most frequency and applicant get full time position
 filtered_data <- final_df |>
   filter(FULL_TIME_POSITION == "Y") |>
@@ -514,12 +514,12 @@ Commented it out since this is one time operation
 # saveRDS(perm_data, "dataset/perm_data.rds")
 ```
 
-```{r}
+```{r, results='hide'}
 perm_df <- readRDS("dataset/perm_data.rds")
 head(perm_df)
 ```
 
-```{r}
+```{r, results='hide'}
 # let's check missing values
 print(colSums(is.na(perm_df)))
 ```
@@ -530,7 +530,7 @@ dim(perm_df)
 ```
 
 ## EDA version 3
-```{r}
+```{r, results='hide'}
 final_perm_df <- select(perm_df, "CASE_NUMBER", "CASE_STATUS", "RECEIVED_DATE", "DECISION_DATE", "EMPLOYER_NAME",
                         "EMPLOYER_NUM_EMPLOYEES", "AGENT_ATTORNEY_FIRM_NAME", "PW_WAGE", "PW_SKILL_LEVEL", "WORKSITE_STATE", "JOB_TITLE", "PW_UNIT_OF_PAY", "WAGE_OFFER_FROM", "WAGE_OFFER_UNIT_OF_PAY",
                         , "MINIMUM_EDUCATION", "REQUIRED_EXPERIENCE", "COUNTRY_OF_CITIZENSHIP", "CLASS_OF_ADMISSION"
