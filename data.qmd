@@ -7,66 +7,6 @@ draft: false
 
 ![](images/data-import-cheatsheet-thumbs.png)
 
-
-This comes from the file `data.qmd`.
-
-Your first steps in this project will be to find data to work on.
-
-I recommend trying to find data that interests you and that you are knowledgeable about. A bad example would be if you have no interest in video games but your data set is about video games. I also recommend finding data that is related to current events, social justice, and other areas that have an impact.
-
-
-Initially, you will study _one dataset_ but later you will need to combine that data with another dataset. For this reason, I recommend finding data that has some date and/or location components. These types of data are conducive to interesting visualizations and analysis and you can also combine this data with other data that also has a date or location variable.
-Data from the census, weather data, economic data, are all relatively easy to combine with other data with time/location components.
-
-
-## What makes a good data set?
-
-* Data you are interested in and care about.
-* Data where there are a lot of potential questions that you can explore.
-* A data set that isn't completely cleaned already.
-* Multiple sources for data that you can combine.
-* Some type of time and/or location component.
-
-
-## Where to keep data?
-
-
-Below 50mb: In `dataset` folder
-
-Above 50mb: In `dataset_ignore` folder. This folder will be ignored by `git` so you'll have to manually sync these files across your team.
-
-### Sharing your data
-
-
-For small datasets (<50mb), you can use the `dataset` folder that is tracked by github. Add the files just like you would any other file.
-
-If you create a folder named `data` this will cause problems.
-
-For larger datasets, you'll need to create a new folder in the project root directory named `dataset-ignore`. This will be ignored by git (based off the `.gitignore` file in the project root directory) which will help you avoid issues with Github's size limits. Your team will have to manually make sure the data files in `dataset-ignore` are synced across team members.
-
-Your [load_and_clean_data.R](/scripts/load_and_clean_data.R) file is how you will load and clean your data.
-
-```{r}
-# run this to load the dataset from the rds
-data <- readRDS(file = "dataset/cleaned_h1b_data.rds")
-# your code here
-head(data)
-```
-
-You should never use absolute paths (eg. `/Users/danielsussman/path/to/project/` or `C:\MA415\\Final_Project\`).
-
-You might consider using the `here` function from the [`here` package](https://here.r-lib.org/articles/here.html) to avoid path problems.
-
-### Load and clean data script
-
-The idea behind this file is that someone coming to your website could largely replicate your analyses after running this script on the original data sets to clean them.
-This file might create a derivative data set that you then use for your subsequent analysis.
-Note that you don't need to run this script from every post/page.
-Instead, you can load in the results of this script, which could be plain text files or `.RData` files. In your data page you'll describe how these results were created. If you have a very large data set, you might save smaller data sets that you can use for exploration purposes.
-To link to this file, you can use `[cleaning script](/scripts/load_and_clean_data.R)` wich appears as [cleaning script](/scripts/load_and_clean_data.R). 
-
-----
-
 ## Rubric: On this page
 
 You will
@@ -85,7 +25,8 @@ You will
   * Some repetition of what you do in your `load_and_clean_data.R` file is fine and encouraged if it helps explain what you did.
 * Organization, clarity, cleanliness of the page
   * Make sure to remove excessive warnings, use clean easy-to-read code (without side scrolling), organize with sections, use bullets and other organization tools, etc.
-  
+
+
 # Dependencies Used For Data.qmd
 ```{r}
 suppressPackageStartupMessages(library(tidyverse))
@@ -105,13 +46,13 @@ library(lubridate)
   The Report of the Visa Office is an annual report providing statistical information on immigrant and non-immigrant visa issuance by consular offices, including information visa allocation in numerically limited categories. The main part of this dataset we want to focus on is the country of origin of visa recipients for H1B-type visas. Years covered range from Fiscal Year 1997 to F.Y. 2022 inclusively.
 
   
-The original dataset comes with the following features/columns
+The original dataset comes with the following features/columns:
 
-country: origin of country
+* country: origin of country
 
-H1B: H1B approval count
+* H1B: H1B approval count
 
-FY97 - FY22: represent year 1997 till 2022
+* FY97 - FY22: represents year 1997 till 2022
 
 Essentially, this dataset contains information of H1B approval from year 1997 till 2022 and its originate country.
 
@@ -120,15 +61,15 @@ Essentially, this dataset contains information of H1B approval from year 1997 ti
 
 The original dataset is in dataset directory as .xlsx file. It contains pivot tables for each year that describe various U.S travel approvals such as H1B. To transform the dataset into the current one, we did the following operation
 
-read in excel files
+* read in excel files
 
-filter out null values(continents, .., etc)
+* filter out null values(continents, .., etc)
 
-group country
+* group country
 
-filter out other columns and keep H1B column
+* filter out other columns and keep H1B column
 
-create columns for each year (1977-2022)
+* create columns for each year (1977-2022)
 
 
 The script to transform the dataset is in scripts directory `load_and_clean_data.R` file.
@@ -142,7 +83,7 @@ h1b_country <-
   read_rds('dataset/cleaned_h1b_data.rds')
 ```
 
-```{r}
+```{r, results='hide'}
 #changing the year to numerical values
 current_names <- names(h1b_country)
 print(current_names)
@@ -151,7 +92,7 @@ print(current_names)
 ```
 
 The code below is to rename the columns to understandable years format.
-```{r}
+```{r, results='hide'}
 colnames(h1b_country) <- c(
   'Country', 'Continent', 
   '1997', '1998', '1999', '2000', '2001', '2002', 
@@ -165,7 +106,7 @@ head(h1b_country)
 ```
 
 The following code shortens the dimension of our dataframe to 3 columns specially the years columns. Having many years column can make the dataset hard to analysis or explore. 
-```{r}
+```{r, results='hide'}
 h1b_continent <- h1b_country |>
   group_by(Continent)|>
   select(-Country)|>
@@ -373,7 +314,7 @@ Our direction is to start initial progress on LCA_Program_data to testify if H1B
 ## Cleaning Dataset
 The following steps would be describing how we load our dataset and merge additional columns.
 
-```{r}
+```{r, results='hide'}
 df <- readRDS("dataset/cleaned_disclosure.rds")
 head(df)
 ```
@@ -391,14 +332,14 @@ This is the line of code of how to read xlsx files and convert into rds. We comm
 # saveRDS(df3, "dataset/LCA_appendix.rds")
 ```
 
-```{r}
+```{r, results='hide'}
 # read in df2
 
 df2 <- readRDS("dataset/LCA_worksite.rds")
 head(df2)
 ```
 
-```{r}
+```{r, results='hide'}
 # read in df3
 
 df3 <- readRDS("dataset/appendix.rds")
@@ -424,12 +365,12 @@ To merge the dataset together, we can find matching case numbers. The additional
 
 
 ## EDA version 2
-```{r}
+```{r, results='hide'}
 final_df <- readRDS("dataset/final_merge.rds")
 head(final_df)
 ```
 
-```{r}
+```{r, results='hide'}
 # filter the dataset which jobs have most frequency and applicant get full time position
 filtered_data <- final_df |>
   filter(FULL_TIME_POSITION == "Y") |>
@@ -573,12 +514,12 @@ Commented it out since this is one time operation
 # saveRDS(perm_data, "dataset/perm_data.rds")
 ```
 
-```{r}
+```{r, results='hide'}
 perm_df <- readRDS("dataset/perm_data.rds")
 head(perm_df)
 ```
 
-```{r}
+```{r, results='hide'}
 # let's check missing values
 print(colSums(is.na(perm_df)))
 ```
@@ -589,7 +530,7 @@ dim(perm_df)
 ```
 
 ## EDA version 3
-```{r}
+```{r, results='hide'}
 final_perm_df <- select(perm_df, "CASE_NUMBER", "CASE_STATUS", "RECEIVED_DATE", "DECISION_DATE", "EMPLOYER_NAME",
                         "EMPLOYER_NUM_EMPLOYEES", "AGENT_ATTORNEY_FIRM_NAME", "PW_WAGE", "PW_SKILL_LEVEL", "WORKSITE_STATE", "JOB_TITLE", "PW_UNIT_OF_PAY", "WAGE_OFFER_FROM", "WAGE_OFFER_UNIT_OF_PAY",
                         , "MINIMUM_EDUCATION", "REQUIRED_EXPERIENCE", "COUNTRY_OF_CITIZENSHIP", "CLASS_OF_ADMISSION"

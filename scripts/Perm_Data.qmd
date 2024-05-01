@@ -1,4 +1,5 @@
 #Libraries
+
 ```{r}
 library(dplyr)
 library(tsibble)
@@ -9,34 +10,40 @@ library(zoo)
 library(readxl)
 library(lubridate)
 library(broom)
+library(stringr)
 ```
 
 #Loading Data:
 
 ```{r}
-filepath <- 'dataset/Perm_data/PERM_FY2019.xlsx'
-fy19 <- read_excel(filepath)
+#filepath <- 'dataset/Perm_data/PERM_FY2019.xlsx'
+#fy19 <- read_excel(filepath)
 ```
 
 ```{r}
-filepath <- 'dataset/Perm_data/PERM_Disclosure_Data_FY2020.xlsx'
-fy20 <- read_excel(filepath)
+#filepath <- 'dataset/Perm_data/PERM_Disclosure_Data_FY2020.xlsx'
+#fy20 <- read_excel(filepath)
 ```
 
 ```{r}
-filepath <- 'dataset/Perm_data/PERM_Disclosure_Data_FY2021.xlsx'
-fy21 <- read_excel(filepath)
+#filepath <- 'dataset/Perm_data/PERM_Disclosure_Data_FY2021.xlsx'
+#fy21 <- read_excel(filepath)
 ```
 
 ```{r}
-filepath <- 'dataset/Perm_data/PERM_Disclosure_Data_FY2022_Q4.xlsx'
-fy22 <- read_excel(filepath)
+#filepath <- 'dataset/Perm_data/PERM_Disclosure_Data_FY2022_Q4.xlsx'
+#fy22 <- read_excel(filepath)
 ```
 
 ```{r}
-filepath <- 'dataset/Perm_data/PERM_Disclosure_Data_FY2023_Q4.xlsx'
-fy23 <- read_excel(filepath)
+#filepath <- 'dataset/Perm_data/PERM_Disclosure_Data_FY2023_Q4.xlsx'
+#fy23 <- read_excel(filepath)
 ```
+
+```{r}
+combined_19_23 <- read.csv("dataset/combined_perm_19_23.csv")
+```
+
 
 #Filtering by H-1B:
 ```{r}
@@ -460,5 +467,108 @@ combined_19_23
 
 ```{r}
 write.csv(combined_19_23, file = "dataset/combined_perm_19_23.csv", row.names = FALSE)
+```
+
+
+#Goals:
+-see if we can do linear regression once things are normalized by population
+
+```{r}
+population_data <- read.csv("dataset/population_2019-2023.csv", header=TRUE)
+colnames(population_data) <- population_data[1, ]
+population_data <- population_data[-1, ]
+```
+
+
+
+```{r}
+population_data
+```
+```{r}
+pattern <- "(2019|2020|2021|2022|2023)"
+
+population_data <- population_data %>%
+  mutate(year = as.numeric(str_extract(Region, pattern)))
+```
+
+```{r}
+population_data
+```
+```{r}
+population_data$Year = as.numeric(population_data$Year)
+```
+
+```{r}
+combined_19_23
+```
+
+#Group combined data by year and country of citizenship
+```{r}
+combined_19_23_pop <- combined_19_23 |>
+  group_by(year, COUNTRY_OF_CITIZENSHIP)|>
+  summarise(num_applicants = n(), num_certified = sum(CASE_STATUS %in% c("Certified", "Certified-Expired")), avg_wage = mean(WAGE_OFFER_FROM))
+  
+```
+
+```{r}
+#make sure both datasets have lower case values for country before merging
+combined_19_23_pop <- combined_19_23_pop |>
+  mutate(COUNTRY_OF_CITIZENSHIP = toupper(COUNTRY_OF_CITIZENSHIP))
+
+population_data <- population_data |>
+  mutate(Name = toupper(Name))
+
+mergetry <- left_join(population_data, combined_19_23_pop, by = c("Year" = "year", "Name" = "COUNTRY_OF_CITIZENSHIP"))
+```
+
+We need total population to be a numerical value. This will only introduce NA in the empty rows that indicate a new year is starting, so we can ignore the warning.
+```{r}
+mergetry$`Total Population` <- as.numeric(gsub(",", "", mergetry$`Total Population`))
+```
+
+```{r}
+mergetry
+```
+
+```{r}
+mergetry_2023 <- mergetry |> filter(Year == 2023)
+```
+
+
+```{r}
+ggplot(mergetry_2023, aes(x = num_applicants/`Total Population`, y = num_certified/`Total Population`)) +
+  geom_point(shape = 21, fill = "blue", color = "black", size = 3, alpha = 0.5) +
+  labs(x = "Number of Applicants", y = "Number Certified", title = "Scatter Plot of Applicants vs Certified 2023, normalized by population")
+```
+
+```{r}
+linear_model_pop <- lm(num_applicants/`Total Population` ~ num_certified/`Total Population` -1, data = mergetry_2023)
+```
+```{r}
+summary(linear_model_pop)
+```
+
+```{r}
+broom::tidy(linear_model_pop)
+```
+```{r}
+ggplot(linear_model_pop, aes(x = .fitted, y = .resid)) +
+  geom_point(shape = 21, fill = "transparent", color = "black", size = 3, alpha = 0.5) +
+  labs(x = "Fitted Values", y = "Residuals", title = "Residual vs Fitted of Linear Regression of Number of applicants and number of certifications, normed by population ")
+```
+#look at the scale, this looks like a good model.
+
+#Now, see if population can predict number of applicants
+```{r}
+ggplot(mergetry_2023, aes(x = `Total Population`, y = num_applicants)) +
+  geom_point(shape = 21, fill = "blue", color = "black", size = 3, alpha = 0.5) +
+  labs(x = "Total Population", y = "Number of Applicants", title = "Scatter Plot of population vs applicants 2023")
+```
+soooo, doesn't look like a good candidate for linear regression
+
+```{r}
+ggplot(mergetry_2023, aes(x = `Total Population`, y = num_certified/num_applicants)) +
+  geom_point(shape = 21, fill = "blue", color = "black", size = 3, alpha = 0.5) +
+  labs(x = "Total Population", y = "Acceptance Rate", title = "Scatter Plot of Total Population vs Acceptance Rate 2023")
 ```
 
