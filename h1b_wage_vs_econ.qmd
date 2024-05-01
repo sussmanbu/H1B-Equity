@@ -1,0 +1,157 @@
+#Libraries
+```{r}
+library(dplyr)
+library(tibble)
+library(tidyr)
+library(readxl)
+library(purrr)
+library(stringr)
+library(corrplot)
+library(fastDummies)
+library(car)
+```
+
+#Loading Data:
+```{r message = FALSE, warning = FALSE}
+filepath <- 'dataset/Perm_data/PERM_Disclosure_Data_FY2022_Q4.xlsx'
+fy22 <- read_excel(filepath)
+```
+
+```{r message = FALSE, warning = FALSE}
+filepath <- 'dataset/Perm_data/PERM_Disclosure_Data_FY2023_Q4.xlsx'
+fy23 <- read_excel(filepath)
+```
+
+# START OF PHIL'S CODE
+```{r}
+process_data <- function(df, relevant_columns, categorical_vars) {
+  df <- df %>%
+        filter(CLASS_OF_ADMISSION == 'H-1B', CASE_STATUS == 'Certified') %>%
+        select(all_of(relevant_columns)) %>%
+        dummy_cols(select_columns = categorical_vars, remove_selected_columns = TRUE) %>%
+        mutate(Count = 1) %>%
+        group_by(COUNTRY_OF_CITIZENSHIP) %>%
+        summarise(across(where(is.numeric), sum, na.rm = TRUE))
+  return (df)
+}
+relevant_columns <- c("WAGE_OFFER_FROM", "COUNTRY_OF_CITIZENSHIP", "FOREIGN_WORKER_EDUCATION")
+categorical_vars <- c("FOREIGN_WORKER_EDUCATION")
+fy22_cleaned <- process_data(fy22, relevant_columns, categorical_vars)
+fy23_cleaned <- process_data(fy23, relevant_columns, categorical_vars)
+h1b_cleaned <- inner_join(fy22_cleaned, fy23_cleaned, by = "COUNTRY_OF_CITIZENSHIP") %>%
+  group_by(COUNTRY_OF_CITIZENSHIP) %>%
+  summarise(
+    Total_Wage = sum(WAGE_OFFER_FROM.x, WAGE_OFFER_FROM.y, na.rm = TRUE),
+    Total_Count = sum(Count.x, Count.y, na.rm = TRUE),
+    Education_Associates = sum(`FOREIGN_WORKER_EDUCATION_Associate's.x`, `FOREIGN_WORKER_EDUCATION_Associate's.y`, na.rm = TRUE),
+    Education_Bachelors = sum(`FOREIGN_WORKER_EDUCATION_Bachelor's.x`, `FOREIGN_WORKER_EDUCATION_Bachelor's.y`, na.rm = TRUE),
+    Education_Doctorate = sum(`FOREIGN_WORKER_EDUCATION_Doctorate.x`, `FOREIGN_WORKER_EDUCATION_Doctorate.y`, na.rm = TRUE),
+    Education_HighSchool = sum(`FOREIGN_WORKER_EDUCATION_High School.x`, `FOREIGN_WORKER_EDUCATION_High School.y`, na.rm = TRUE),
+    Education_Masters = sum(`FOREIGN_WORKER_EDUCATION_Master's.x`, `FOREIGN_WORKER_EDUCATION_Master's.y`, na.rm = TRUE),
+    Education_None = sum(`FOREIGN_WORKER_EDUCATION_None.x`, `FOREIGN_WORKER_EDUCATION_None.y`, na.rm = TRUE),
+    Education_Other = sum(`FOREIGN_WORKER_EDUCATION_Other.x`, `FOREIGN_WORKER_EDUCATION_Other.y`, na.rm = TRUE)
+  ) %>%
+  mutate(Avg_Wage = Total_Wage / Total_Count) %>%
+  select(
+    Country = COUNTRY_OF_CITIZENSHIP,
+    Avg_Wage,
+    Total_Count,
+    Education_Associates,
+    Education_Bachelors,
+    Education_Doctorate,
+    Education_HighSchool,
+    Education_Masters,
+    Education_None,
+    Education_Other
+  )
+h1b_cleaned
+```
+
+#Notes:
+Case_status : Certified, Certified-Expired, Denied, Withdrawn
+
+Foreign_worker_education: Master's, Bachelor's, Doctorate, Other, None, Associate's, High School
+
+
+```{r}
+imf_gdpc_usd <- read_excel('dataset/IMF_data/imf_gdp_per_capita_usd.xls')
+imf_gdpc_ppp <- read_excel('dataset/IMF_data/imf_gdp_per_capita_ppp.xls')
+imf_inflation <- read_excel('dataset/IMF_data/imf_inflation.xls')
+imf_unemployment <- read_excel('dataset/IMF_data/imf_unemployment.xls')
+imf_population <- read_excel('dataset/IMF_data/imf_population.xls')
+```
+```{r warning=FALSE}
+dataframes <- list(imf_gdpc_usd, imf_gdpc_ppp, imf_inflation, imf_unemployment, imf_population)
+
+new_column_names <- c("GDPC_usd", "GDPC_ppp", "Inflation", "Unemployment", "Population")
+
+processed_dfs <- map2(dataframes, new_column_names, ~ {
+  .x %>%
+    rename(Country = 1) %>%
+    select(Country, `2022`, `2023`) %>%
+    mutate(across(c(`2022`, `2023`), ~ ifelse(. == "no data" | is.na(.), NA, as.numeric(as.character(.))))) %>%
+    drop_na() %>%
+    transmute(Country, !! .y := (`2022` + `2023`) / 2)
+})
+imf_joined <- reduce(processed_dfs, inner_join, by = "Country") |>
+  mutate(Population = log10(Population*1000000))
+```
+```{r}
+imf_joined
+```
+```{r}
+imf_cleaned <- slice(imf_joined, 1:(nrow(imf_joined) - 3))
+standardize_country_names <- function(country) {
+  country %>%
+    tolower() %>%  # Convert to lowercase
+    str_trim() %>%  # Trim whitespace
+    gsub("the ", "", .) %>%  # Remove leading "the"
+    gsub(", the", "", .) %>%  # Remove trailing ", the"
+    gsub("republic of", "", .) %>%  # Remove "republic of"
+    gsub("s.a.r.", "", .) %>%  # Specific cases like "Hong Kong SAR"
+    str_replace("bosnia and herzegovina", "bosnia") %>%  # Specific name simplifications
+    str_replace("russian federation", "russia") %>%
+    str_replace("taiwan province of china", "taiwan") %>%
+    str_replace("iran, islamic republic of", "iran") %>%
+    str_replace("korea, republic of", "south korea") %>%
+    str_replace("viet nam", "vietnam") %>%
+    str_replace("united states of america", "united states") %>%
+    str_replace("türkiye, republic of", "turkey") %>%
+    str_replace("macao sar", "macau")
+}
+h1b_cleaned$Country <- standardize_country_names(h1b_cleaned$Country)
+imf_cleaned$Country <- standardize_country_names(imf_cleaned$Country)
+final_cleaned <- inner_join(h1b_cleaned, imf_cleaned, by = "Country") |>
+  select(-ends_with("ppp"), -Education_Associates, -Education_HighSchool) #Tweak to remove what covariates are not useful for the model and just overfit
+final_cleaned
+```
+```{r}
+data_for_heatmap <- final_cleaned %>%
+  select(-Country) %>%
+  na.omit()
+cor_matrix <- cor(data_for_heatmap)
+corrplot(cor_matrix, method = "color", type = "upper", order = "hclust",
+         tl.col = "black", tl.srt = 45, title = "Correlation Heatmap", addCoef.col = "black", number.cex=0.4)
+```
+
+```{r}
+final_cleaned
+```
+
+
+```{r}
+variables <- setdiff(names(final_cleaned), c("Avg_Wage", "Country"))
+formula <- as.formula(paste("Avg_Wage ~", paste(variables, collapse = " + ")))
+model <- lm(formula, data = final_cleaned)
+summary(model)
+```
+```{r}
+formula
+```
+```{r}
+vif(model)  # High VIF values indicate multicollinearity
+
+# Plot diagnostics
+par(mfrow = c(2, 2))
+plot(model)
+```
