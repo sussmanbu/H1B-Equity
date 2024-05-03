@@ -17,6 +17,11 @@ filepath <- 'dataset/Perm_data/PERM_Disclosure_Data_FY2022_Q4.xlsx'
 fy22 <- read_excel(filepath)
 ```
 
+```{r}
+unique(fy22$COUNTRY_OF_CITIZENSHIP)
+```
+
+
 ```{r message = FALSE, warning = FALSE}
 filepath <- 'dataset/Perm_data/PERM_Disclosure_Data_FY2023_Q4.xlsx'
 fy23 <- read_excel(filepath)
@@ -24,46 +29,32 @@ fy23 <- read_excel(filepath)
 
 # START OF PHIL'S CODE
 ```{r}
-process_data <- function(df, relevant_columns, categorical_vars) {
+process_data <- function(df, relevant_columns) {
   df <- df %>%
         filter(CLASS_OF_ADMISSION == 'H-1B', CASE_STATUS == 'Certified') %>%
         select(all_of(relevant_columns)) %>%
-        dummy_cols(select_columns = categorical_vars, remove_selected_columns = TRUE) %>%
         mutate(Count = 1) %>%
         group_by(COUNTRY_OF_CITIZENSHIP) %>%
-        summarise(across(where(is.numeric), sum, na.rm = TRUE))
+        summarise(across(where(is.numeric), sum, na.rm = FALSE))
   return (df)
 }
-relevant_columns <- c("WAGE_OFFER_FROM", "COUNTRY_OF_CITIZENSHIP", "FOREIGN_WORKER_EDUCATION")
-categorical_vars <- c("FOREIGN_WORKER_EDUCATION")
-fy22_cleaned <- process_data(fy22, relevant_columns, categorical_vars)
-fy23_cleaned <- process_data(fy23, relevant_columns, categorical_vars)
-h1b_cleaned <- inner_join(fy22_cleaned, fy23_cleaned, by = "COUNTRY_OF_CITIZENSHIP") %>%
+relevant_columns <- c("WAGE_OFFER_FROM", "COUNTRY_OF_CITIZENSHIP")
+fy22_cleaned <- process_data(fy22, relevant_columns)
+fy23_cleaned <- process_data(fy23, relevant_columns)
+fy22_cleaned
+fy23_cleaned
+h1b_cleaned <- full_join(fy22_cleaned, fy23_cleaned, by = "COUNTRY_OF_CITIZENSHIP") %>%
   group_by(COUNTRY_OF_CITIZENSHIP) %>%
   summarise(
     Total_Wage = sum(WAGE_OFFER_FROM.x, WAGE_OFFER_FROM.y, na.rm = TRUE),
-    Total_Count = sum(Count.x, Count.y, na.rm = TRUE),
-    Education_Associates = sum(`FOREIGN_WORKER_EDUCATION_Associate's.x`, `FOREIGN_WORKER_EDUCATION_Associate's.y`, na.rm = TRUE),
-    Education_Bachelors = sum(`FOREIGN_WORKER_EDUCATION_Bachelor's.x`, `FOREIGN_WORKER_EDUCATION_Bachelor's.y`, na.rm = TRUE),
-    Education_Doctorate = sum(`FOREIGN_WORKER_EDUCATION_Doctorate.x`, `FOREIGN_WORKER_EDUCATION_Doctorate.y`, na.rm = TRUE),
-    Education_HighSchool = sum(`FOREIGN_WORKER_EDUCATION_High School.x`, `FOREIGN_WORKER_EDUCATION_High School.y`, na.rm = TRUE),
-    Education_Masters = sum(`FOREIGN_WORKER_EDUCATION_Master's.x`, `FOREIGN_WORKER_EDUCATION_Master's.y`, na.rm = TRUE),
-    Education_None = sum(`FOREIGN_WORKER_EDUCATION_None.x`, `FOREIGN_WORKER_EDUCATION_None.y`, na.rm = TRUE),
-    Education_Other = sum(`FOREIGN_WORKER_EDUCATION_Other.x`, `FOREIGN_WORKER_EDUCATION_Other.y`, na.rm = TRUE)
+    Total_Count = sum(Count.x, Count.y, na.rm = TRUE)
   ) %>%
   mutate(Avg_Wage = Total_Wage / Total_Count) %>%
   select(
     Country = COUNTRY_OF_CITIZENSHIP,
     Avg_Wage,
-    Total_Count,
-    Education_Associates,
-    Education_Bachelors,
-    Education_Doctorate,
-    Education_HighSchool,
-    Education_Masters,
-    Education_None,
-    Education_Other
-  )
+    Count = Total_Count
+    )
 h1b_cleaned
 ```
 
@@ -74,16 +65,47 @@ Foreign_worker_education: Master's, Bachelor's, Doctorate, Other, None, Associat
 
 
 ```{r}
-imf_gdpc_usd <- read_excel('dataset/IMF_data/imf_gdp_per_capita_usd.xls')
-imf_gdpc_ppp <- read_excel('dataset/IMF_data/imf_gdp_per_capita_ppp.xls')
-imf_inflation <- read_excel('dataset/IMF_data/imf_inflation.xls')
-imf_unemployment <- read_excel('dataset/IMF_data/imf_unemployment.xls')
-imf_population <- read_excel('dataset/IMF_data/imf_population.xls')
+backfill_leftward <- function(df) {
+  names(df)[1] <- "Country"
+  df <- df %>% filter(!is.na(Country))
+  df_long <- df %>%
+    pivot_longer(
+      !Country,  # Excludes the Country column from pivoting
+      names_to = "Year",
+      values_to = "Value"
+    )
+  head(df_long)
+  df_filled <- df_long %>%
+    group_by(Country) %>%
+    fill(Value, .direction = "down") %>%
+    ungroup()
+  head(df_filled)
+  df_wide <- df_filled %>%
+    pivot_wider(
+      names_from = Year,
+      values_from = Value
+    )
+  head(df_wide)
+  return(df_wide)
+}
+imf_gdpc_usd <- read_excel('dataset/IMF_data/imf_gdp_per_capita_usd.xls') %>%
+  slice(1:(nrow(.)-34)) %>%
+  backfill_leftward()
+imf_unemployment <- read_excel('dataset/IMF_data/imf_unemployment.xls') %>%
+  slice(1:(nrow(.)-6)) %>%
+  backfill_leftward()
+imf_population <- read_excel('dataset/IMF_data/imf_population.xls') %>%
+  slice(1:(nrow(.)-34)) %>%
+  backfill_leftward()
+imf_gdpc_usd
+imf_unemployment
+imf_population
 ```
-```{r warning=FALSE}
-dataframes <- list(imf_gdpc_usd, imf_gdpc_ppp, imf_inflation, imf_unemployment, imf_population)
 
-new_column_names <- c("GDPC_usd", "GDPC_ppp", "Inflation", "Unemployment", "Population")
+```{r warning=FALSE}
+dataframes <- list(imf_gdpc_usd, imf_population)
+
+new_column_names <- c("GDPC_usd", "Population")
 
 processed_dfs <- map2(dataframes, new_column_names, ~ {
   .x %>%
@@ -93,64 +115,89 @@ processed_dfs <- map2(dataframes, new_column_names, ~ {
     drop_na() %>%
     transmute(Country, !! .y := (`2022` + `2023`) / 2)
 })
-imf_joined <- reduce(processed_dfs, inner_join, by = "Country") |>
+imf_cleaned <- reduce(processed_dfs, inner_join, by = "Country") |>
   mutate(Population = log10(Population*1000000))
+imf_cleaned
 ```
 ```{r}
-imf_joined
-```
-```{r}
-imf_cleaned <- slice(imf_joined, 1:(nrow(imf_joined) - 3))
 standardize_country_names <- function(country) {
   country %>%
-    tolower() %>%  # Convert to lowercase
-    str_trim() %>%  # Trim whitespace
-    gsub("the ", "", .) %>%  # Remove leading "the"
-    gsub(", the", "", .) %>%  # Remove trailing ", the"
-    gsub("republic of", "", .) %>%  # Remove "republic of"
-    gsub("s.a.r.", "", .) %>%  # Specific cases like "Hong Kong SAR"
-    str_replace("bosnia and herzegovina", "bosnia") %>%  # Specific name simplifications
-    str_replace("russian federation", "russia") %>%
-    str_replace("taiwan province of china", "taiwan") %>%
-    str_replace("iran, islamic republic of", "iran") %>%
-    str_replace("korea, republic of", "south korea") %>%
-    str_replace("viet nam", "vietnam") %>%
-    str_replace("united states of america", "united states") %>%
-    str_replace("türkiye, republic of", "turkey") %>%
-    str_replace("macao sar", "macau")
+    tolower() %>%
+    str_replace_all("burma", "myanmar") %>%
+    str_replace_all("cape verde", "cabo verde") %>%
+    str_replace_all("hong kong sar", "hong kong") %>%
+    str_replace_all("islamic republic of iran", "iran") %>%
+    str_replace_all("kyrgyz republic", "kyrgyzstan") %>%
+    str_replace_all("lao p.d.r.", "laos") %>%
+    str_replace_all("macao sar", "macau") %>%
+    str_replace_all("north macedonia", "macedonia") %>%
+    str_replace_all("russian federation", "russia") %>%
+    str_replace_all("korea, republic of", "south korea") %>%
+    str_replace_all("taiwan province of china", "taiwan") %>%
+    str_replace_all("united republic of tanzania", "tanzania") %>%
+    str_replace_all("türkiye, republic of", "turkey") %>%
+    str_replace_all("united kingdom", "great britain") %>%
+    str_replace_all("bolivarian republic of venezuela", "venezuela") %>%
+    str_replace_all("congo, dem. rep. of the", "democratic republic of congo") %>%
+    str_replace_all("slovak republic", "slovakia") %>%
+    str_replace_all("st lucia", "saint lucia") %>%
+    str_replace_all("st vincent", "saint vincent and the grenadines") %>%
+    str_replace_all("sri lanka", "sri lanka") %>%
+    str_replace_all("syria", "syria") %>%
+    str_replace_all("bahamas, the", "bahamas") %>%
+    str_replace_all("gambia, the", "gambia") %>%
+    str_replace_all("myanmar \\(myanmar\\)", "myanmar") %>%
+    str_replace_all("united states of america", "united states") %>%
+    str_replace_all("china, people's republic of", "china") %>%
+    str_replace_all("cote d'ivoire", "côte d'ivoire" )
 }
-h1b_cleaned$Country <- standardize_country_names(h1b_cleaned$Country)
-imf_cleaned$Country <- standardize_country_names(imf_cleaned$Country)
-final_cleaned <- inner_join(h1b_cleaned, imf_cleaned, by = "Country") |>
-  select(-ends_with("ppp"), -Education_Associates, -Education_HighSchool) #Tweak to remove what covariates are not useful for the model and just overfit
+
+h1b_standardized <- h1b_cleaned
+imf_standardized <- imf_cleaned
+h1b_standardized$Country <- standardize_country_names(h1b_standardized$Country)
+imf_standardized$Country <- standardize_country_names(imf_standardized$Country)
+final_cleaned_full <- full_join(h1b_standardized, imf_standardized, by = "Country")
+final_cleaned <- inner_join(h1b_standardized, imf_standardized, by = "Country")
+h1b_standardized
+imf_standardized
+final_cleaned_full
 final_cleaned
+print(paste("Total countries in final dataset:", length(unique(final_cleaned$Country))))
+print("Countries that may still need matching:")
+print(setdiff(h1b_standardized$Country, imf_standardized$Country))
+print(setdiff(imf_standardized$Country, h1b_standardized$Country))
 ```
+```{r}
+h1b_cleaned$Country
+imf_cleaned$Country
+```
+
+
 ```{r}
 data_for_heatmap <- final_cleaned %>%
   select(-Country) %>%
   na.omit()
 cor_matrix <- cor(data_for_heatmap)
 corrplot(cor_matrix, method = "color", type = "upper", order = "hclust",
-         tl.col = "black", tl.srt = 45, title = "Correlation Heatmap", addCoef.col = "black", number.cex=0.4)
+         tl.col = "black", tl.srt = 45, title = "Correlation Heatmap", addCoef.col = "black", number.cex=0.8)
 ```
 
 ```{r}
-final_cleaned
-```
-
-
-```{r}
-variables <- setdiff(names(final_cleaned), c("Avg_Wage", "Country"))
+variables <- setdiff(names(final_cleaned), c("Avg_Wage", "Country", "Count", "Population"))
 formula <- as.formula(paste("Avg_Wage ~", paste(variables, collapse = " + ")))
 model <- lm(formula, data = final_cleaned)
 summary(model)
 ```
+
 ```{r}
 formula
 ```
+
 ```{r}
 vif(model)  # High VIF values indicate multicollinearity
+```
 
+```{r}
 # Plot diagnostics
 par(mfrow = c(2, 2))
 plot(model)
