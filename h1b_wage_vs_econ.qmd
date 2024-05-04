@@ -9,6 +9,7 @@ library(corrplot)
 library(ggplot2)
 library(car)
 library(caret)
+library(fastDummies)
 ```
 
 # Load H1b data: 2022 and 2023
@@ -83,9 +84,10 @@ standardize_country_names <- function(countries) {
 process_data <- function(df, relevant_columns) {
   df <- df %>%
     filter(CLASS_OF_ADMISSION == 'H-1B', CASE_STATUS == 'Certified') %>%
-    select(all_of(relevant_columns))
+    select(all_of(relevant_columns)) %>%
+    dummy_cols("FOREIGN_WORKER_EDUCATION", remove_selected_columns = TRUE)
   df$Country_Standardized <- standardize_country_names(df$COUNTRY_OF_CITIZENSHIP)
-  df <- select(df, -COUNTRY_OF_CITIZENSHIP)
+  df <- select(df, -COUNTRY_OF_CITIZENSHIP, -FOREIGN_WORKER_EDUCATION_Other)
   return (df)
 }
 relevant_columns <- c("WAGE_OFFER_FROM", "COUNTRY_OF_CITIZENSHIP", "FOREIGN_WORKER_EDUCATION")
@@ -144,14 +146,14 @@ h1b_final <- h1b_stacked %>%
   left_join(imf_gdpc_usd, by = "Country_Standardized") %>%
   left_join(imf_unemployment, by = "Country_Standardized") %>%
   na.omit() %>%
-  setNames(c("Wage", "Education", "Country", "GDP per capita", "Unemployment"))
+  setNames(c("Wage", "Associate's", "Bachelor's", "Doctorate", "High School", "Master's", "None", "Country", "GDP per capita", "Unemployment"))
 h1b_final
 ```
 
 # Correlation heatmap
 ```{r}
 data_for_heatmap <- h1b_final %>%
-  select(-Country, -Education) %>%
+  select(-Country) %>%
   na.omit()
 cor_matrix <- cor(data_for_heatmap)
 corrplot(cor_matrix, method = "color", type = "upper", order = "hclust",
@@ -160,7 +162,7 @@ corrplot(cor_matrix, method = "color", type = "upper", order = "hclust",
 
 # Inital linear regression model of Wage ~ GDP per capita + Unemployment
 ```{r}
-model_full <- lm(Wage ~ `GDP per capita` + Unemployment, data = h1b_final)
+model_full <- lm(Wage ~ `GDP per capita` + Unemployment + None + `High School` + `Associate's` + `Bachelor's` + `Master's` + Doctorate, data = h1b_final)
 summary(model_full)
 ```
 
@@ -190,7 +192,7 @@ test_data <- h1b_final_no_outlier[-training_rows, ]
 
 # Repeat model on training set only
 ```{r}
-model_train <- lm(Wage ~ `GDP per capita` + Unemployment, data = train_data)
+model_train <- lm(Wage ~ `GDP per capita` + Unemployment + None + `High School` + `Associate's` + `Bachelor's` + `Master's` + Doctorate, data = train_data)
 summary(model_train)
 ```
 
