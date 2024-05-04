@@ -1,4 +1,4 @@
-#Libraries
+# Libraries
 ```{r}
 library(dplyr)
 library(tibble)
@@ -8,13 +8,17 @@ library(stringr)
 library(corrplot)
 library(ggplot2)
 library(car)
+library(caret)
 ```
 
-# Load H1b 2022 and 2023:
+# Load H1b data: 2022 and 2023
 ```{r message = FALSE, warning = FALSE}
 fy22 <- read_excel('dataset/Perm_data/PERM_Disclosure_Data_FY2022_Q4.xlsx')
 fy23 <- read_excel('dataset/Perm_data/PERM_Disclosure_Data_FY2023_Q4.xlsx')
 ```
+#Notes:
+Case_status : Certified, Certified-Expired, Denied, Withdrawn
+Foreign_worker_education: Master's, Bachelor's, Doctorate, Other, None, Associate's, High School
 
 # Load IMF data: GDP per capita and Unemployment
 ```{r}
@@ -93,12 +97,7 @@ fy23_cleaned
 h1b_stacked
 ```
 
-#Notes:
-Case_status : Certified, Certified-Expired, Denied, Withdrawn
-Foreign_worker_education: Master's, Bachelor's, Doctorate, Other, None, Associate's, High School
-
-
-# Clean and backfill IMF data: GDP per capita and Unemployment
+# Clean and backfill IMF GDP per capita and Unemployment
 ```{r}
 backfill_leftward <- function(df) {
   names(df)[1] <- "Country"
@@ -159,46 +158,79 @@ corrplot(cor_matrix, method = "color", type = "upper", order = "hclust",
          tl.col = "black", tl.srt = 45, title = "Correlation Heatmap", addCoef.col = "black", number.cex=0.8)
 ```
 
-# Linear regression model 1: Wage ~ GDP per capita + Unemployment (without outlier treatment)
+# Inital linear regression model of Wage ~ GDP per capita + Unemployment
 ```{r}
-model <- lm(Wage ~ `GDP per capita` + Unemployment, data = h1b_final)
-summary(model)
+model_full <- lm(Wage ~ `GDP per capita` + Unemployment, data = h1b_final)
+summary(model_full)
 ```
 
-# Visualization of linreg 1
+# Diagnostics for inital model
 ```{r}
-ggplot(h1b_final, aes(x = independent_var, y = dependent_var)) +
-  geom_point() +  # Add points
-  geom_smooth(method = "lm", se = TRUE, color = "red") +  # Add regression line with standard error
-  labs(title = "Regression Analysis", x = "Independent Variable", y = "Dependent Variable")
-```
-
-# Model diagnostics for linreg 1
-```{r}
-vif(model)
+vif(model_full)
 par(mfrow = c(2, 2))
-plot(model)
+plot(model_full)
 ```
 
-# Treating linreg 1 outlier
+# Finding and removing outlier
 ```{r}
 cooks_distances <- cooks.distance(model)
-outliers <- which(cooks_distances > 0.5)
-print(outliers)
-print(h1b_final[outliers, ]) # 6.5 million usd is likely to be an outlier
+threshold <- 0.5 # OR: 4 / (nrow(h1b_final) - length(coef(model)) - 1)
+outliers <- which(cooks_distances > threshold)
 h1b_final_no_outlier <- h1b_final[-outliers, ]
+h1b_final[outliers, ]
 ```
 
-# Linear regression model 2: Wage ~ GDP per capita + Unemployment (with outlier treatment)
+# Split h1b_final_no_outlier into training and testing set (9:1)
 ```{r}
-model <- lm(Wage ~ `GDP per capita` + Unemployment, data = h1b_final_no_outlier)
-summary(model)
+set.seed(123)  # for reproducibility
+training_rows <- createDataPartition(h1b_final_no_outlier$Wage, p = 0.9, list = FALSE)
+train_data <- h1b_final_no_outlier[training_rows, ]
+test_data <- h1b_final_no_outlier[-training_rows, ]
 ```
 
-# Model diagnostics for linreg 2
+# Repeat model on training set only
 ```{r}
-vif(model)
+model_train <- lm(Wage ~ `GDP per capita` + Unemployment, data = train_data)
+summary(model_train)
+```
+
+# Diagnostics for training model
+```{r}
+vif(model_train)
 par(mfrow = c(2, 2))
-plot(model)
+plot(model_train)
+```
+
+# Evaluating model's predictive performance on testing set
+```{r}
+predictions <- predict(model_train, newdata = test_data)
+test_data$Predicted_Wage <- predictions
+model_rmse <- sqrt(mean((test_data$Wage - test_data$Predicted_Wage)^2))
+print(paste("RMSE on Test Data: ", model_rmse))
+```
+
+# Finding baseline RMSE's (mean & median) to benchmark model
+```{r}
+mean_wage <- mean(h1b_final_no_outlier$Wage, na.rm = TRUE)
+mean_predictions <- rep(mean_wage, nrow(h1b_final_no_outlier))
+mean_rmse <- sqrt(mean((h1b_final_no_outlier$Wage - mean_predictions)^2, na.rm = TRUE))
+print(paste("Baseline RMSE using mean: ", mean_rmse))
+
+median_wage <- median(h1b_final_no_outlier$Wage, na.rm = TRUE)
+median_predictions <- rep(median_wage, nrow(h1b_final_no_outlier))
+median_rmse <- sqrt(mean((h1b_final_no_outlier$Wage - median_predictions)^2, na.rm = TRUE))
+print(paste("Baseline RMSE using median: ", median_rmse))
+
+print(paste("Model RMSE: ", model_rmse))
+print(paste("Improvement over mean baseline: ", mean_rmse - model_rmse))
+print(paste("Improvement over median baseline: ", median_rmse - model_rmse))
+```
+
+# Visualizing actual vs predicted wages
+```{r}
+ggplot(test_data, aes(x = Wage, y = Predicted_Wage)) +
+  geom_point() +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "red") +
+  labs(title = "Actual vs Predicted Wages", x = "Actual Wage", y = "Predicted Wage")
 ```
 
