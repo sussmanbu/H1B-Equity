@@ -4,124 +4,30 @@ library(dplyr)
 library(tibble)
 library(tidyr)
 library(readxl)
-library(purrr)
 library(stringr)
 library(corrplot)
-library(fastDummies)
+library(ggplot2)
 library(car)
 ```
 
-#Loading Data:
+# Load H1b 2022 and 2023:
 ```{r message = FALSE, warning = FALSE}
-filepath <- 'dataset/Perm_data/PERM_Disclosure_Data_FY2022_Q4.xlsx'
-fy22 <- read_excel(filepath)
+fy22 <- read_excel('dataset/Perm_data/PERM_Disclosure_Data_FY2022_Q4.xlsx')
+fy23 <- read_excel('dataset/Perm_data/PERM_Disclosure_Data_FY2023_Q4.xlsx')
 ```
 
+# Load IMF data: GDP per capita and Unemployment
 ```{r}
-unique(fy22$COUNTRY_OF_CITIZENSHIP)
+imf_gdpc_usd_raw <- read_excel('dataset/IMF_data/imf_gdp_per_capita_usd.xls')
+imf_unemployment_raw <- read_excel('dataset/IMF_data/imf_unemployment.xls')
+names(imf_gdpc_usd_raw)[1] <- "Country"
+names(imf_unemployment_raw)[1] <- "Country"
 ```
 
-
-```{r message = FALSE, warning = FALSE}
-filepath <- 'dataset/Perm_data/PERM_Disclosure_Data_FY2023_Q4.xlsx'
-fy23 <- read_excel(filepath)
-```
-
-# START OF PHIL'S CODE
+# Country name standardization function
 ```{r}
-process_data <- function(df, relevant_columns) {
-  df <- df %>%
-        filter(CLASS_OF_ADMISSION == 'H-1B', CASE_STATUS == 'Certified') %>%
-        select(all_of(relevant_columns)) %>%
-        mutate(Count = 1) %>%
-        group_by(COUNTRY_OF_CITIZENSHIP) %>%
-        summarise(across(where(is.numeric), sum, na.rm = FALSE))
-  return (df)
-}
-relevant_columns <- c("WAGE_OFFER_FROM", "COUNTRY_OF_CITIZENSHIP")
-fy22_cleaned <- process_data(fy22, relevant_columns)
-fy23_cleaned <- process_data(fy23, relevant_columns)
-fy22_cleaned
-fy23_cleaned
-h1b_cleaned <- full_join(fy22_cleaned, fy23_cleaned, by = "COUNTRY_OF_CITIZENSHIP") %>%
-  group_by(COUNTRY_OF_CITIZENSHIP) %>%
-  summarise(
-    Total_Wage = sum(WAGE_OFFER_FROM.x, WAGE_OFFER_FROM.y, na.rm = TRUE),
-    Total_Count = sum(Count.x, Count.y, na.rm = TRUE)
-  ) %>%
-  mutate(Avg_Wage = Total_Wage / Total_Count) %>%
-  select(
-    Country = COUNTRY_OF_CITIZENSHIP,
-    Avg_Wage,
-    Count = Total_Count
-    )
-h1b_cleaned
-```
-
-#Notes:
-Case_status : Certified, Certified-Expired, Denied, Withdrawn
-
-Foreign_worker_education: Master's, Bachelor's, Doctorate, Other, None, Associate's, High School
-
-
-```{r}
-backfill_leftward <- function(df) {
-  names(df)[1] <- "Country"
-  df <- df %>% filter(!is.na(Country))
-  df_long <- df %>%
-    pivot_longer(
-      !Country,  # Excludes the Country column from pivoting
-      names_to = "Year",
-      values_to = "Value"
-    )
-  head(df_long)
-  df_filled <- df_long %>%
-    group_by(Country) %>%
-    fill(Value, .direction = "down") %>%
-    ungroup()
-  head(df_filled)
-  df_wide <- df_filled %>%
-    pivot_wider(
-      names_from = Year,
-      values_from = Value
-    )
-  head(df_wide)
-  return(df_wide)
-}
-imf_gdpc_usd <- read_excel('dataset/IMF_data/imf_gdp_per_capita_usd.xls') %>%
-  slice(1:(nrow(.)-34)) %>%
-  backfill_leftward()
-imf_unemployment <- read_excel('dataset/IMF_data/imf_unemployment.xls') %>%
-  slice(1:(nrow(.)-6)) %>%
-  backfill_leftward()
-imf_population <- read_excel('dataset/IMF_data/imf_population.xls') %>%
-  slice(1:(nrow(.)-34)) %>%
-  backfill_leftward()
-imf_gdpc_usd
-imf_unemployment
-imf_population
-```
-
-```{r warning=FALSE}
-dataframes <- list(imf_gdpc_usd, imf_population)
-
-new_column_names <- c("GDPC_usd", "Population")
-
-processed_dfs <- map2(dataframes, new_column_names, ~ {
-  .x %>%
-    rename(Country = 1) %>%
-    select(Country, `2022`, `2023`) %>%
-    mutate(across(c(`2022`, `2023`), ~ ifelse(. == "no data" | is.na(.), NA, as.numeric(as.character(.))))) %>%
-    drop_na() %>%
-    transmute(Country, !! .y := (`2022` + `2023`) / 2)
-})
-imf_cleaned <- reduce(processed_dfs, inner_join, by = "Country") |>
-  mutate(Population = log10(Population*1000000))
-imf_cleaned
-```
-```{r}
-standardize_country_names <- function(country) {
-  country %>%
+standardize_country_names <- function(countries) {
+  countries %>%
     tolower() %>%
     str_replace_all("burma", "myanmar") %>%
     str_replace_all("cape verde", "cabo verde") %>%
@@ -143,7 +49,6 @@ standardize_country_names <- function(country) {
     str_replace_all("st lucia", "saint lucia") %>%
     str_replace_all("st vincent", "saint vincent and the grenadines") %>%
     str_replace_all("sri lanka", "sri lanka") %>%
-    str_replace_all("syria", "syria") %>%
     str_replace_all("bahamas, the", "bahamas") %>%
     str_replace_all("gambia, the", "gambia") %>%
     str_replace_all("myanmar \\(myanmar\\)", "myanmar") %>%
@@ -151,54 +56,149 @@ standardize_country_names <- function(country) {
     str_replace_all("china, people's republic of", "china") %>%
     str_replace_all("cote d'ivoire", "côte d'ivoire" )
 }
+# TESTING
 
-h1b_standardized <- h1b_cleaned
-imf_standardized <- imf_cleaned
-h1b_standardized$Country <- standardize_country_names(h1b_standardized$Country)
-imf_standardized$Country <- standardize_country_names(imf_standardized$Country)
-final_cleaned_full <- full_join(h1b_standardized, imf_standardized, by = "Country")
-final_cleaned <- inner_join(h1b_standardized, imf_standardized, by = "Country")
-h1b_standardized
-imf_standardized
-final_cleaned_full
-final_cleaned
-print(paste("Total countries in final dataset:", length(unique(final_cleaned$Country))))
-print("Countries that may still need matching:")
-print(setdiff(h1b_standardized$Country, imf_standardized$Country))
-print(setdiff(imf_standardized$Country, h1b_standardized$Country))
-```
-```{r}
-h1b_cleaned$Country
-imf_cleaned$Country
+# h1b_countries <- unique(h1b_stacked$COUNTRY_OF_CITIZENSHIP)
+# imf_countries <- union(imf_gdpc_usd_raw$Country, imf_unemployment_raw$Country)
+# 
+# h1b_countries_standardized <- standardize_country_names(h1b_countries)
+# imf_countries_standardized <- standardize_country_names(imf_countries)
+# 
+# countries_matched_inner <- intersect(h1b_countries_standardized, imf_countries_standardized)
+# countries_matched_full <- union(h1b_countries_standardized, imf_countries_standardized)
+# countries_h1b_left <- setdiff(h1b_countries_standardized, imf_countries_standardized)
+# countries_imf_left <- setdiff(imf_countries_standardized, h1b_countries_standardized)
+# print(length(countries_matched_inner))
+# print(length(countries_matched_full))
+# print(countries_h1b_left)
+# print(countries_imf_left)
 ```
 
-
+# Clean and stack H1b 2022 and 2023
 ```{r}
-data_for_heatmap <- final_cleaned %>%
-  select(-Country) %>%
+process_data <- function(df, relevant_columns) {
+  df <- df %>%
+    filter(CLASS_OF_ADMISSION == 'H-1B', CASE_STATUS == 'Certified') %>%
+    select(all_of(relevant_columns))
+  df$Country_Standardized <- standardize_country_names(df$COUNTRY_OF_CITIZENSHIP)
+  df <- select(df, -COUNTRY_OF_CITIZENSHIP)
+  return (df)
+}
+relevant_columns <- c("WAGE_OFFER_FROM", "COUNTRY_OF_CITIZENSHIP", "FOREIGN_WORKER_EDUCATION")
+fy22_cleaned <- process_data(fy22, relevant_columns)
+fy23_cleaned <- process_data(fy23, relevant_columns)
+h1b_stacked <- rbind(fy22_cleaned, fy23_cleaned)
+fy22_cleaned
+fy23_cleaned
+h1b_stacked
+```
+
+#Notes:
+Case_status : Certified, Certified-Expired, Denied, Withdrawn
+Foreign_worker_education: Master's, Bachelor's, Doctorate, Other, None, Associate's, High School
+
+
+# Clean and backfill IMF data: GDP per capita and Unemployment
+```{r}
+backfill_leftward <- function(df) {
+  names(df)[1] <- "Country"
+  df[df == "no data"] <- NA
+  df <- df %>% filter(!is.na(Country))
+  df_long <- df %>%
+    pivot_longer(
+      !Country, 
+      names_to = "Year",
+      values_to = "Value"
+    )
+  df_filled <- df_long %>%
+    group_by(Country) %>%
+    fill(Value, .direction = "down") %>%
+    ungroup()
+  df_wide <- df_filled %>%
+    pivot_wider(
+      names_from = Year,
+      values_from = Value
+    )
+  df_wide <- mutate(df_wide, across(c("2022", "2023"), as.numeric))
+  if("2022" %in% names(df_wide) && "2023" %in% names(df_wide)) {
+    df_wide <- df_wide %>%
+      mutate(Average_2022_2023 = rowMeans(select(., c("2022", "2023")), na.rm = TRUE))
+  }
+  df_wide <- df_wide %>%
+    mutate(Country_Standardized = standardize_country_names(Country)) %>%
+    select(Country_Standardized, Average_2022_2023)
+  return(df_wide)
+}
+imf_gdpc_usd <- imf_gdpc_usd_raw %>%
+  slice(1:(nrow(.)-34)) %>%
+  backfill_leftward()
+imf_unemployment <- imf_unemployment_raw %>%
+  slice(1:(nrow(.)-6)) %>%
+  backfill_leftward()
+imf_gdpc_usd
+imf_unemployment
+```
+
+# Mutate IMF columns into H1b
+```{r warning=FALSE}
+h1b_final <- h1b_stacked %>%
+  left_join(imf_gdpc_usd, by = "Country_Standardized") %>%
+  left_join(imf_unemployment, by = "Country_Standardized") %>%
+  na.omit() %>%
+  setNames(c("Wage", "Education", "Country", "GDP per capita", "Unemployment"))
+h1b_final
+```
+
+# Correlation heatmap
+```{r}
+data_for_heatmap <- h1b_final %>%
+  select(-Country, -Education) %>%
   na.omit()
 cor_matrix <- cor(data_for_heatmap)
 corrplot(cor_matrix, method = "color", type = "upper", order = "hclust",
          tl.col = "black", tl.srt = 45, title = "Correlation Heatmap", addCoef.col = "black", number.cex=0.8)
 ```
 
+# Linear regression model 1: Wage ~ GDP per capita + Unemployment (without outlier treatment)
 ```{r}
-variables <- setdiff(names(final_cleaned), c("Avg_Wage", "Country", "Count", "Population"))
-formula <- as.formula(paste("Avg_Wage ~", paste(variables, collapse = " + ")))
-model <- lm(formula, data = final_cleaned)
+model <- lm(Wage ~ `GDP per capita` + Unemployment, data = h1b_final)
 summary(model)
 ```
 
+# Visualization of linreg 1
 ```{r}
-formula
+ggplot(h1b_final, aes(x = independent_var, y = dependent_var)) +
+  geom_point() +  # Add points
+  geom_smooth(method = "lm", se = TRUE, color = "red") +  # Add regression line with standard error
+  labs(title = "Regression Analysis", x = "Independent Variable", y = "Dependent Variable")
 ```
 
+# Model diagnostics for linreg 1
 ```{r}
-vif(model)  # High VIF values indicate multicollinearity
-```
-
-```{r}
-# Plot diagnostics
+vif(model)
 par(mfrow = c(2, 2))
 plot(model)
 ```
+
+# Treating linreg 1 outlier
+```{r}
+cooks_distances <- cooks.distance(model)
+outliers <- which(cooks_distances > 0.5)
+print(outliers)
+print(h1b_final[outliers, ]) # 6.5 million usd is likely to be an outlier
+h1b_final_no_outlier <- h1b_final[-outliers, ]
+```
+
+# Linear regression model 2: Wage ~ GDP per capita + Unemployment (with outlier treatment)
+```{r}
+model <- lm(Wage ~ `GDP per capita` + Unemployment, data = h1b_final_no_outlier)
+summary(model)
+```
+
+# Model diagnostics for linreg 2
+```{r}
+vif(model)
+par(mfrow = c(2, 2))
+plot(model)
+```
+
