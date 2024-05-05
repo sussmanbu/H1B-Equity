@@ -558,6 +558,8 @@ ggplot(linear_model_pop, aes(x = .fitted, y = .resid)) +
 ```
 #look at the scale, this looks like a good model.
 
+train test split, mse
+
 #Now, see if population can predict number of applicants
 ```{r}
 ggplot(mergetry_2023, aes(x = `Total Population`, y = num_applicants)) +
