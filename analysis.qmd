@@ -83,3 +83,7 @@ This forecast holds significant implications for potential H1B applicants. Under
 1.  The Prophet time series model is well-suited to analyze this dataset as it focuses on univariate time series data. However, it's worth noting that the model may not effectively account for multiple correlated time series.
 
 2.  The year 2021 stands out as an outlier due to the unprecedented impact of the COVID-19. This global event significantly disrupted normal hiring patterns and economic activity, influencing the performance of forecasting models.
+
+**Reference to Meta's algorithm**
+
+https://facebook.github.io/prophet/
