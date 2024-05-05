@@ -175,7 +175,7 @@ plot(model_full)
 
 # Finding and removing outlier
 ```{r}
-cooks_distances <- cooks.distance(model)
+cooks_distances <- cooks.distance(model_full)
 threshold <- 0.5 # OR: 4 / (nrow(h1b_final) - length(coef(model)) - 1)
 outliers <- which(cooks_distances > threshold)
 h1b_final_no_outlier <- h1b_final[-outliers, ]
