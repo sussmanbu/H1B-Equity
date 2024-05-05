@@ -15,7 +15,7 @@ Our data analysis seeks to achieve an understanding of how and why H1-B applicat
     -   The page will include some kind of formal statistical model. This could be a linear regression, logistic regression, or another modeling framework.
     -   Explain the ideas and techniques you used to choose the predictors for your model. (Think about including interaction terms and other transformations of your variables.)
 
-We joined the Perm Disclosure datasets with IMF GDP and Unemployment rates for each country. Grouped by country, we find a correlation matrix, where the education level is made into a categorical variable.
+The Perm Disclosure datasets are joined with IMF GDP and Unemployment rates for each country. Grouped by country, the data has the following correlation matrix, where the education level is made into a categorical variable.
 
 ```{r}
 data_for_heatmap <- read.csv('dataset/data_for_heatmap.csv')
@@ -27,13 +27,13 @@ corrplot(cor_matrix, method = "color", type = "upper", order = "hclust",
          tl.col = "black", tl.srt = 45, title = "Correlation Heatmap", addCoef.col = "black", number.cex=0.8)
 ```
 
-With the information from this correlation matrix, we can build an initial linear regression model of Wage ~ GDP per Capita + Unemployment. THis linear model has the following statistics:
+With the information from this correlation matrix, an initial linear regression model of Wage ~ GDP per Capita + Unemployment can be built. This linear model has the following statistics:
 
 Residual standard error: 72550 on 14964 degrees of freedom
 Multiple R-squared:  0.09498,	Adjusted R-squared:  0.09449 
 F-statistic: 196.3 on 8 and 14964 DF,  p-value: < 2.2e-16
 
-By plotting the diagnostics, we can see a clear outlier that is affecting the strength of the model:
+By plotting the diagnostics, a clear outlier that is affecting the strength of the model:
 
 ```{r}
 model_full <- lm(Wage ~ `GDP per capita` + Unemployment + None + `High School` + `Associate's` + `Bachelor's` + `Master's` + Doctorate, data = h1b_final)
@@ -42,8 +42,8 @@ par(mfrow = c(2, 2))
 plot(model_full)
 ```
 
-Using Cook's Distance, we can see that this outlier represents Nigeria, which has an average H1-B applicant wage of $6,524,999, a GDP of 1945.012,	and an unemployment rate of 22.6.
-After removing this outlier, we can splot the dataset 90/10 into training and test sets, and build the linear regression model on the training set.
+Using Cook's Distance, it can be seen that this outlier represents Nigeria, which has an average H1-B applicant wage of $6,524,999, a GDP of 1945.012,	and an unemployment rate of 22.6.
+After removing this outlier, the dataset is split 90/10 into training and test sets, and the linear regression model is built on the training set.
 The model's predictive performance of the testing set has a RSME of 48892.1392815258. and the following:
 [1] "Baseline RMSE using mean:  55500.5606201905"
 [1] "Baseline RMSE using median:  55665.7830713718"
