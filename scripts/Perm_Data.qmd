@@ -16,28 +16,28 @@ library(stringr)
 #Loading Data:
 
 ```{r}
-#filepath <- 'dataset/Perm_data/PERM_FY2019.xlsx'
-#fy19 <- read_excel(filepath)
+filepath <- 'dataset/Perm_data/PERM_FY2019.xlsx'
+fy19 <- read_excel(filepath)
 ```
 
 ```{r}
-#filepath <- 'dataset/Perm_data/PERM_Disclosure_Data_FY2020.xlsx'
-#fy20 <- read_excel(filepath)
+filepath <- 'dataset/Perm_data/PERM_Disclosure_Data_FY2020.xlsx'
+fy20 <- read_excel(filepath)
 ```
 
 ```{r}
-#filepath <- 'dataset/Perm_data/PERM_Disclosure_Data_FY2021.xlsx'
-#fy21 <- read_excel(filepath)
+filepath <- 'dataset/Perm_data/PERM_Disclosure_Data_FY2021.xlsx'
+fy21 <- read_excel(filepath)
 ```
 
 ```{r}
-#filepath <- 'dataset/Perm_data/PERM_Disclosure_Data_FY2022_Q4.xlsx'
-#fy22 <- read_excel(filepath)
+filepath <- 'dataset/Perm_data/PERM_Disclosure_Data_FY2022_Q4.xlsx'
+fy22 <- read_excel(filepath)
 ```
 
 ```{r}
-#filepath <- 'dataset/Perm_data/PERM_Disclosure_Data_FY2023_Q4.xlsx'
-#fy23 <- read_excel(filepath)
+filepath <- 'dataset/Perm_data/PERM_Disclosure_Data_FY2023_Q4.xlsx'
+fy23 <- read_excel(filepath)
 ```
 
 ```{r}
@@ -64,6 +64,7 @@ Some years may differ, we will filter them out
 ```{r}
 colnames(fy23)
 ```
+
 ```{r}
 sum(is.na(fy19$FOREIGN_WORKER_INFO_EDUCATION))
 ```

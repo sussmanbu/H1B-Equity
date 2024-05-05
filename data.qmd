@@ -5,29 +5,8 @@ toc: true
 draft: false
 ---
 
-![](images/data-import-cheatsheet-thumbs.png)
-
-## Rubric: On this page
-
-You will
-
-* Describe where/how to find data.
-  * You must include a link to the original data source(s). Make sure to provide attribution to those who collected the data.
-  * Why was the data collected/curated? Who put it together? (This is important, if you don't know why it was collected then that might not be a good dataset to look at.
-  * Describe the different data files used and what each variable means. 
-  * If you have many variables then only describe the most relevant ones and summarize the rest.
-  
-* Describe any cleaning you had to do for your data.
-  * You *must* include a link to your `load_and_clean_data.R` file.
-  * Rrename variables and recode factors to make data more clear.
-  * Also, describe any additional R packages you used outside of those covered in class.
-  * Describe and show code for how you combined multiple data files and any cleaning that was necessary for that.
-  * Some repetition of what you do in your `load_and_clean_data.R` file is fine and encouraged if it helps explain what you did.
-* Organization, clarity, cleanliness of the page
-  * Make sure to remove excessive warnings, use clean easy-to-read code (without side scrolling), organize with sections, use bullets and other organization tools, etc.
-
-
 # Dependencies Used For Data.qmd
+Below is a list of packages that we use for our dataset
 ```{r}
 suppressPackageStartupMessages(library(tidyverse))
 library(tidyr)
@@ -73,6 +52,9 @@ The original dataset is in dataset directory as .xlsx file. It contains pivot ta
 
 
 The script to transform the dataset is in scripts directory `load_and_clean_data.R` file.
+#### Procedure in load_and_clean_data.R
+
+Essentially, the dataset is a large excel file that contains multiple sheets, processes the data from the 'FY22' sheet to assign continents to countries, and then aggregates H-1B visa statistics from each sheet by country, storing the results in a data frame called 'processed_data'. Next we save the cleaned dataset as cleaned_h1b_data.rds
 
 This is an example of how to load our cleaned dataset from dataset directory:
 ```{r}
@@ -160,10 +142,6 @@ for (year_iter in years_of_interest) {
   combined_data <- bind_rows(top_countries, other_countries)
   
   # Assuming combined_data is your data frame with the top 5 countries and 'Other'
-
-# Load necessary libraries
-library(ggplot2)
-library(dplyr)
 
 # Create a pie chart using ggplot2
 pie_chart <- ggplot(combined_data, aes(x = "", y = total_count, fill = Country)) +
