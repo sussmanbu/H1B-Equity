@@ -26973,6 +26973,7 @@ F-statistic: 15.45 on 2 and 137 DF,  p-value: 8.928e-07</code></pre>
 </div>
 </div>
 <p>#look at the scale, this looks like a good model.</p>
+<p>train test split, mse</p>
 <p>#Now, see if population can predict number of applicants</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb124"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb124-1"><a href="#cb124-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(mergetry_2023, <span class="fu">aes</span>(<span class="at">x =</span> <span class="st">`</span><span class="at">Total Population</span><span class="st">`</span>, <span class="at">y =</span> num_applicants)) <span class="sc">+</span></span>
