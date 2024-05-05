@@ -15,37 +15,37 @@ library(stringr)
 
 #Loading Data:
 
-```{r}
+```{r message = FALSE, warning = FALSE}
 filepath <- 'dataset/Perm_data/PERM_FY2019.xlsx'
 fy19 <- read_excel(filepath)
 ```
 
-```{r}
+```{r message = FALSE, warning = FALSE}
 filepath <- 'dataset/Perm_data/PERM_Disclosure_Data_FY2020.xlsx'
 fy20 <- read_excel(filepath)
 ```
 
-```{r}
+```{r message = FALSE, warning = FALSE}
 filepath <- 'dataset/Perm_data/PERM_Disclosure_Data_FY2021.xlsx'
 fy21 <- read_excel(filepath)
 ```
 
-```{r}
+```{r message = FALSE, warning = FALSE}
 filepath <- 'dataset/Perm_data/PERM_Disclosure_Data_FY2022_Q4.xlsx'
 fy22 <- read_excel(filepath)
 ```
 
-```{r}
+```{r message = FALSE, warning = FALSE}
 filepath <- 'dataset/Perm_data/PERM_Disclosure_Data_FY2023_Q4.xlsx'
 fy23 <- read_excel(filepath)
 ```
 
-```{r}
+```{r message = FALSE, warning = FALSE}
 combined_19_23 <- read.csv("dataset/combined_perm_19_23.csv")
 ```
 
-
 #Filtering by H-1B:
+
 ```{r}
 fy19 <- fy19 |> 
   filter(CLASS_OF_ADMISSION == 'H-1B')
@@ -58,16 +58,9 @@ fy22 <- fy22 |>
 fy23 <- fy23 |> 
   filter(CLASS_OF_ADMISSION == 'H-1B')
 ```
-#List of columns
-Some years may differ, we will filter them out
 
-```{r}
-colnames(fy23)
-```
+#List of columns Some years may differ, we will filter them out
 
-```{r}
-sum(is.na(fy19$FOREIGN_WORKER_INFO_EDUCATION))
-```
 #Extract Useful Information
 
 ```{r}
@@ -96,12 +89,13 @@ fy23_relevant <- fy23[, relevant_columns]
 # fy21_relevant <- fy21_relevant |> rename(WAGE_OFFER_FROM = WAGE_OFFERED_FROM_9089)
 fy23_relevant$DECISION_DATE <- as.Date(fy23_relevant$DECISION_DATE)
 ```
-#Notes:
-Case_status : Certified, Certified-Expired, Denied, Withdrawn
+
+#Notes: Case_status : Certified, Certified-Expired, Denied, Withdrawn
 
 Foreign_worker_education: Master's, Bachelor's, Doctorate, Other, None, Associate's, High School
 
 #Select Numeric Values and see correlation:
+
 ```{r}
 fy19_relevant$month <- month(fy19_relevant$DECISION_DATE)
 fy19_relevant$year <- year(fy19_relevant$DECISION_DATE)
@@ -125,6 +119,7 @@ fy23_relevant$year_month <- paste(fy23_relevant$year, fy23_relevant$month, sep =
 ```
 
 #Try Linear Regression, with number of applicants and number of applications certified
+
 ```{r}
 applicants_count <- fy23 |>
   group_by(COUNTRY_OF_CITIZENSHIP) |>
@@ -198,6 +193,7 @@ summary(fy19$WAGE_OFFERED_FROM_9089)
 sum(is.na(fy19$WAGE_OFFERED_FROM_9089))
 sum(is.na(fy19$WAGE_OFFERED_TO_9089))
 ```
+
 ```{r}
 quantiles <- quantile(fy23_relevant$WAGE_OFFER_FROM, probs = c(0.25, 0.75), na.rm = TRUE)
 q1 <- quantiles[1]
@@ -229,7 +225,6 @@ applicant_counts <- fy23_wage |>
 
 ```
 
-
 ```{r}
 ggplot(fy23_wage, aes(x = WAGE_BIN)) +
   geom_bar() +
@@ -241,7 +236,6 @@ fy23_times <- fy23_relevant |>
   group_by(year_month)|>
   summarise(num_applicants = n())
 ```
-
 
 ```{r}
 ts_data <- fy23_times |>
@@ -261,6 +255,7 @@ forecast_values <- forecast(fit, h = 12)  # Forecasting for the next 12 periods
 autoplot(forecast_values) +
   labs(title = "Forecast of Number of Applicants from 2023 data")
 ```
+
 ```{r}
 fy19_relevant
 ```
@@ -293,10 +288,10 @@ forecast_values <- forecast(model, h = n_periods)
 autoplot(forecast_values) +
   labs(title = "Forecast of Number of Applicants, using 2019-2023")
 ```
+
 ```{r}
 combined_19_23
 ```
-
 
 ```{r}
 combined_wage <- combined_19_23  |>
@@ -305,7 +300,6 @@ combined_wage <- combined_19_23  |>
   summarise(avg_wage = mean(WAGE_OFFER_FROM, na.rm = TRUE)) %>%
   filter(!is.na(avg_wage))
 ```
-
 
 ```{r}
 ts_data <- combined_wage |>
@@ -340,7 +334,6 @@ bottom5_countries <- combined_19_23 |>
 top5_countries
 ```
 
-
 ```{r}
 top5_applicants <- combined_19_23 %>%
   filter(COUNTRY_OF_CITIZENSHIP %in% top5_countries$COUNTRY_OF_CITIZENSHIP)|>
@@ -355,7 +348,6 @@ top5_certified <- combined_19_23 %>%
   group_by(COUNTRY_OF_CITIZENSHIP, year_month) %>%
   summarise(certified_applicants = n())
 ```
-
 
 ```{r}
 merged_data <- left_join(top5_applicants, top5_certified, by = c("COUNTRY_OF_CITIZENSHIP", "year_month"))
@@ -387,13 +379,10 @@ average_certified <- certified_counts %>%
   group_by(year_month) %>%
   summarise(certified_for_day = mean(certified_count))
 ```
- 
 
 ```{r}
 average_merged_data <- left_join(average_applicants, average_certified, by = "year_month")
 ```
-
-
 
 ```{r}
 ggplot(average_merged_data, aes(y = average_for_day, x = yearmonth(year_month))) +
@@ -401,7 +390,6 @@ ggplot(average_merged_data, aes(y = average_for_day, x = yearmonth(year_month)))
   geom_line(aes(y = certified_for_day), linetype = "dotted") +
   labs(x = "Average Number of Applicants", y = "Decision Date", title = "Average number of applicants")
 ```
-
 
 ```{r}
 certified_counts <- combined_19_23 %>%
@@ -411,12 +399,14 @@ certified_counts <- combined_19_23 %>%
             total_count = n()) %>%
   mutate(non_certified_count = total_count - certified_count)
 ```
+
 ```{r}
 ggplot(certified_counts, aes(y = certified_count/total_count, x = yearmonth(year_month))) +
   geom_line() +
   facet_wrap(~COUNTRY_OF_CITIZENSHIP)+
   labs(x = "Decision Date", y = "Certified/Total", title = "Acceptance Rate for the top 5 Countries")
 ```
+
 #Now, look at correlation between education level and wage
 
 ```{r}
@@ -435,6 +425,7 @@ ggplot(combined_19_23_accepted, aes(x = yearmonth(year_month), y = log(WAGE_OFFE
   labs(x = "Year Month", y = "Wage", color = "Education Level",
        title = "Scatter Plot of Wage vs Year Month")
 ```
+
 ```{r}
 education <- combined_19_23 %>%
   group_by(FOREIGN_WORKER_EDUCATION, year_month) %>%
@@ -448,6 +439,7 @@ ggplot(education, aes(y = total_count, x = yearmonth(year_month), color = FOREIG
   geom_line() +
   labs(x = "Decision Date", y = "Applied", title = "Applicants and Education Levels")
 ```
+
 ```{r}
 ggplot(education, aes(y = certified_count, x = yearmonth(year_month), color = FOREIGN_WORKER_EDUCATION)) +
   geom_line() +
@@ -470,9 +462,7 @@ combined_19_23
 write.csv(combined_19_23, file = "dataset/combined_perm_19_23.csv", row.names = FALSE)
 ```
 
-
-#Goals:
--see if we can do linear regression once things are normalized by population
+#Goals: -see if we can do linear regression once things are normalized by population
 
 ```{r}
 population_data <- read.csv("dataset/population_2019-2023.csv", header=TRUE)
@@ -480,11 +470,10 @@ colnames(population_data) <- population_data[1, ]
 population_data <- population_data[-1, ]
 ```
 
-
-
 ```{r}
 population_data
 ```
+
 ```{r}
 pattern <- "(2019|2020|2021|2022|2023)"
 
@@ -495,6 +484,7 @@ population_data <- population_data %>%
 ```{r}
 population_data
 ```
+
 ```{r}
 population_data$Year = as.numeric(population_data$Year)
 ```
@@ -504,6 +494,7 @@ combined_19_23
 ```
 
 #Group combined data by year and country of citizenship
+
 ```{r}
 combined_19_23_pop <- combined_19_23 |>
   group_by(year, COUNTRY_OF_CITIZENSHIP)|>
@@ -523,6 +514,7 @@ mergetry <- left_join(population_data, combined_19_23_pop, by = c("Year" = "year
 ```
 
 We need total population to be a numerical value. This will only introduce NA in the empty rows that indicate a new year is starting, so we can ignore the warning.
+
 ```{r}
 mergetry$`Total Population` <- as.numeric(gsub(",", "", mergetry$`Total Population`))
 ```
@@ -535,7 +527,6 @@ mergetry
 mergetry_2023 <- mergetry |> filter(Year == 2023)
 ```
 
-
 ```{r}
 ggplot(mergetry_2023, aes(x = num_applicants/`Total Population`, y = num_certified/`Total Population`)) +
   geom_point(shape = 21, fill = "blue", color = "black", size = 3, alpha = 0.5) +
@@ -545,6 +536,7 @@ ggplot(mergetry_2023, aes(x = num_applicants/`Total Population`, y = num_certifi
 ```{r}
 linear_model_pop <- lm(num_applicants/`Total Population` ~ num_certified/`Total Population` -1, data = mergetry_2023)
 ```
+
 ```{r}
 summary(linear_model_pop)
 ```
@@ -552,19 +544,23 @@ summary(linear_model_pop)
 ```{r}
 broom::tidy(linear_model_pop)
 ```
+
 ```{r}
 ggplot(linear_model_pop, aes(x = .fitted, y = .resid)) +
   geom_point(shape = 21, fill = "transparent", color = "black", size = 3, alpha = 0.5) +
   labs(x = "Fitted Values", y = "Residuals", title = "Residual vs Fitted of Linear Regression of Number of applicants and number of certifications, normed by population ")
 ```
+
 #look at the scale, this looks like a good model.
 
 #Now, see if population can predict number of applicants
+
 ```{r}
 ggplot(mergetry_2023, aes(x = `Total Population`, y = num_applicants)) +
   geom_point(shape = 21, fill = "blue", color = "black", size = 3, alpha = 0.5) +
   labs(x = "Total Population", y = "Number of Applicants", title = "Scatter Plot of population vs applicants 2023")
 ```
+
 soooo, doesn't look like a good candidate for linear regression
 
 ```{r}
@@ -572,4 +568,3 @@ ggplot(mergetry_2023, aes(x = `Total Population`, y = num_certified/num_applican
   geom_point(shape = 21, fill = "blue", color = "black", size = 3, alpha = 0.5) +
   labs(x = "Total Population", y = "Acceptance Rate", title = "Scatter Plot of Total Population vs Acceptance Rate 2023")
 ```
-

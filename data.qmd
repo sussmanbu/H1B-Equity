@@ -11,6 +11,7 @@ Below is a list of packages that we use for our dataset
 suppressPackageStartupMessages(library(tidyverse))
 library(tidyr)
 library(viridis)
+library(fastDummies)
 library(ggplot2)
 library(dplyr)
 library(readxl)
@@ -102,7 +103,7 @@ head(h1b_country)
 ```
 
 The following code shortens the dimension of our dataframe to 3 columns specially the years columns. Having many years column can make the dataset hard to analysis or explore. 
-```{r, results='hide'}
+```{r, results='hide', warning = FALSE}
 h1b_continent <- h1b_country |>
   group_by(Continent)|>
   select(-Country)|>
@@ -245,7 +246,9 @@ final_df$DAY_BEGIN = day(final_df$BEGIN_DATE)
 
 # Economic Dataset
 
-**source dataset**: https://www.imf.org/external/datamapper/NGDPDPC@WEO/OEMDC/ADVEC/WEOWORLD
+**source dataset**:
+
+https://www.imf.org/external/datamapper/NGDPDPC@WEO/OEMDC/ADVEC/WEOWORLD
 
 **Why collected**
 
@@ -256,6 +259,7 @@ The International Monetary Fund (IMF) data is collected by the IMF itself. It ga
 The format of the IMF data can vary depending on the specific dataset, but it often includes structured data tables, time series data, and reports. IMF includes Excel spreadsheets, CSV files, databases, and interactive online tools, to accommodate different user needs and preferences.
 
 **Cleaning**
+
 To clean and process H1B visa data, we need to filters the data where CLASS_OF_ADMISSION is 'H-1B' and CASE_STATUS is 'Certified'.
 
 1. selects relevant columns specified in relevant_columns
@@ -275,23 +279,6 @@ imf_gdpc_usd_raw <- read_excel('dataset/IMF_data/imf_gdp_per_capita_usd.xls')
 imf_unemployment_raw <- read_excel('dataset/IMF_data/imf_unemployment.xls')
 names(imf_gdpc_usd_raw)[1] <- "Country"
 names(imf_unemployment_raw)[1] <- "Country"
-```
-
-
-```{r}
-process_data <- function(df, relevant_columns) {
-  df <- df %>%
-    filter(CLASS_OF_ADMISSION == 'H-1B', CASE_STATUS == 'Certified') %>%
-    select(all_of(relevant_columns)) %>%
-    dummy_cols("FOREIGN_WORKER_EDUCATION", remove_selected_columns = TRUE)
-  df$Country_Standardized <- standardize_country_names(df$COUNTRY_OF_CITIZENSHIP)
-  df <- select(df, -COUNTRY_OF_CITIZENSHIP, -FOREIGN_WORKER_EDUCATION_Other)
-  return (df)
-}
-relevant_columns <- c("WAGE_OFFER_FROM", "COUNTRY_OF_CITIZENSHIP", "FOREIGN_WORKER_EDUCATION")
-fy22_cleaned <- process_data(fy22, relevant_columns)
-fy23_cleaned <- process_data(fy23, relevant_columns)
-h1b_stacked <- rbind(fy22_cleaned, fy23_cleaned)
 ```
 
 
