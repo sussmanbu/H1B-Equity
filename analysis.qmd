@@ -5,20 +5,15 @@ toc: true
 draft: false
 ---
 
-
 This comes from the file `analysis.qmd`.
 
 We describe here our detailed data analysis. This page will provide an overview of what questions you addressed, illustrations of relevant aspects of the data with tables and figures, and a statistical model that attempts to answer part of the question. You'll also reflect on next steps and further analysis.
 
-The audience for this page is someone like your class mates, so you can expect that they have some level of statistical and quantitative sophistication and understand ideas like linear and logistic regression, coefficients, confidence intervals, overfitting, etc. 
+The audience for this page is someone like your class mates, so you can expect that they have some level of statistical and quantitative sophistication and understand ideas like linear and logistic regression, coefficients, confidence intervals, overfitting, etc.
 
-While the exact number of figures and tables will vary and depend on your analysis, you should target around 5 to 6. An overly long analysis could lead to losing points.
-If you want you can link back to your blog posts or create separate pages with more details.
+While the exact number of figures and tables will vary and depend on your analysis, you should target around 5 to 6. An overly long analysis could lead to losing points. If you want you can link back to your blog posts or create separate pages with more details.
 
-The style of this paper should aim to be that of an academic paper. 
-I don't expect this to be of publication quality but you should keep that aim in mind.
-Avoid using "we" too frequently, for example "We also found that ...". Describe your methodology and your findings but don't describe your whole process.
-
+The style of this paper should aim to be that of an academic paper. I don't expect this to be of publication quality but you should keep that aim in mind. Avoid using "we" too frequently, for example "We also found that ...". Describe your methodology and your findings but don't describe your whole process.
 
 ## Note on Attribution
 
@@ -58,7 +53,33 @@ You will
 -   Organization and cleanliness.
     -   Make sure to remove excessive warnings, hide most or all code, organize with sections or multiple pages, use bullets, etc.
     -   This page should be self-contained, i.e. provide a description of the relevant data.
-    
-    
 
-# Forcasting
+# Motivation for Data Analysis
+
+#### Table of Content
+
+1.  Linear Modeling
+
+2.  Forecasting number of H1B applications
+
+# Linear Models
+
+# Time Series Forcasting
+
+![Total number of H1B applications in 2020-2024](images/applications.png)
+
+The graph illustrates the total number of H1B applications from 2020 to 2024, providing valuable insights for prospective H1B applicants regarding near-future trends.
+
+To project the volume of H1B applications for the year 2025, Prophet time series model was used. This approach was chosen due to its effectiveness in capturing data with inherent seasonality, which is common in industries where companies often undergo significant hiring cycles, typically peaking in the fall when budget allocations are highest. ![Total number of H1B applications in 2020-2024](images/total_cases.png)
+
+### Interpretation
+
+The forecast plot reveals promising prospects for prospective applicants, indicating the potential for a surge in hiring activities. The shaded regions delineate the upper and lower bounds of the forecast, offering a range within which the actual number of applications may fall.
+
+This forecast holds significant implications for potential H1B applicants. Understanding these anticipated trends can inform strategic decision-making processes, ensuring proactive measures are taken to address potential challenges or capitalize on emerging opportunities.
+
+#### Limitation
+
+1.  The Prophet time series model is well-suited to analyze this dataset as it focuses on univariate time series data. However, it's worth noting that the model may not effectively account for multiple correlated time series.
+
+2.  The year 2021 stands out as an outlier due to the unprecedented impact of the COVID-19. This global event significantly disrupted normal hiring patterns and economic activity, influencing the performance of forecasting models.
