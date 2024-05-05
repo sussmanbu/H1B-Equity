@@ -19,16 +19,16 @@ The following libraries will be used for analysis:
 #| code-fold: true
 #| code-summary: "Libraries"
 #| echo: false
-library(dplyr)
-library(tibble)
-library(tidyr)
-library(readxl)
-library(stringr)
-library(corrplot)
-library(ggplot2)
-library(car)
-library(caret)
-library(fastDummies)
+suppressMessages(library(dplyr))
+suppressMessages(library(tibble))
+suppressMessages(library(tidyr))
+suppressMessages(library(readxl))
+suppressMessages(library(stringr))
+suppressMessages(library(corrplot))
+suppressMessages(library(ggplot2))
+suppressMessages(library(car))
+suppressMessages(library(caret))
+suppressMessages(library(fastDummies))
 ```
 
 First, the Perm Disclosure datasets for 2023 and 2024 are joined with IMF GDP and Unemployment rates by country. Thee education level of an applicant is made into a categorical variable, and the correlation between variables can be represented in the following correlation matrix.
