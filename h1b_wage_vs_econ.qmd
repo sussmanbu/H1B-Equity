@@ -1,4 +1,5 @@
 # Libraries
+
 ```{r}
 library(dplyr)
 library(tibble)
@@ -13,15 +14,16 @@ library(fastDummies)
 ```
 
 # Load H1b data: 2022 and 2023
+
 ```{r message = FALSE, warning = FALSE}
 fy22 <- read_excel('dataset/Perm_data/PERM_Disclosure_Data_FY2022_Q4.xlsx')
 fy23 <- read_excel('dataset/Perm_data/PERM_Disclosure_Data_FY2023_Q4.xlsx')
 ```
-#Notes:
-Case_status : Certified, Certified-Expired, Denied, Withdrawn
-Foreign_worker_education: Master's, Bachelor's, Doctorate, Other, None, Associate's, High School
+
+#Notes: Case_status : Certified, Certified-Expired, Denied, Withdrawn Foreign_worker_education: Master's, Bachelor's, Doctorate, Other, None, Associate's, High School
 
 # Load IMF data: GDP per capita and Unemployment
+
 ```{r}
 imf_gdpc_usd_raw <- read_excel('dataset/IMF_data/imf_gdp_per_capita_usd.xls')
 imf_unemployment_raw <- read_excel('dataset/IMF_data/imf_unemployment.xls')
@@ -30,6 +32,7 @@ names(imf_unemployment_raw)[1] <- "Country"
 ```
 
 # Country name standardization function
+
 ```{r}
 standardize_country_names <- function(countries) {
   countries %>%
@@ -80,6 +83,7 @@ standardize_country_names <- function(countries) {
 ```
 
 # Clean and stack H1b 2022 and 2023
+
 ```{r}
 process_data <- function(df, relevant_columns) {
   df <- df %>%
@@ -100,6 +104,7 @@ h1b_stacked
 ```
 
 # Clean and backfill IMF GDP per capita and Unemployment
+
 ```{r}
 backfill_leftward <- function(df) {
   names(df)[1] <- "Country"
@@ -141,6 +146,7 @@ imf_unemployment
 ```
 
 # Mutate IMF columns into H1b
+
 ```{r warning=FALSE}
 h1b_final <- h1b_stacked %>%
   left_join(imf_gdpc_usd, by = "Country_Standardized") %>%
@@ -151,6 +157,7 @@ h1b_final
 ```
 
 # Correlation heatmap
+
 ```{r}
 data_for_heatmap <- h1b_final %>%
   select(-Country) %>%
@@ -160,13 +167,15 @@ corrplot(cor_matrix, method = "color", type = "upper", order = "hclust",
          tl.col = "black", tl.srt = 45, title = "Correlation Heatmap", addCoef.col = "black", number.cex=0.8)
 ```
 
-# Inital linear regression model of Wage ~ GDP per capita + Unemployment
+# Inital linear regression model of Wage \~ GDP per capita + Unemployment
+
 ```{r}
 model_full <- lm(Wage ~ `GDP per capita` + Unemployment + None + `High School` + `Associate's` + `Bachelor's` + `Master's` + Doctorate, data = h1b_final)
 summary(model_full)
 ```
 
 # Diagnostics for inital model
+
 ```{r}
 vif(model_full)
 par(mfrow = c(2, 2))
@@ -174,6 +183,7 @@ plot(model_full)
 ```
 
 # Finding and removing outlier
+
 ```{r}
 cooks_distances <- cooks.distance(model_full)
 threshold <- 0.5 # OR: 4 / (nrow(h1b_final) - length(coef(model)) - 1)
@@ -183,6 +193,7 @@ h1b_final[outliers, ]
 ```
 
 # Split h1b_final_no_outlier into training and testing set (9:1)
+
 ```{r}
 set.seed(123)  # for reproducibility
 training_rows <- createDataPartition(h1b_final_no_outlier$Wage, p = 0.9, list = FALSE)
@@ -191,12 +202,14 @@ test_data <- h1b_final_no_outlier[-training_rows, ]
 ```
 
 # Repeat model on training set only
+
 ```{r}
 model_train <- lm(Wage ~ `GDP per capita` + Unemployment + None + `High School` + `Associate's` + `Bachelor's` + `Master's` + Doctorate, data = train_data)
 summary(model_train)
 ```
 
 # Diagnostics for training model
+
 ```{r}
 vif(model_train)
 par(mfrow = c(2, 2))
@@ -204,6 +217,7 @@ plot(model_train)
 ```
 
 # Evaluating model's predictive performance on testing set
+
 ```{r}
 predictions <- predict(model_train, newdata = test_data)
 test_data$Predicted_Wage <- predictions
@@ -212,6 +226,7 @@ print(paste("RMSE on Test Data: ", model_rmse))
 ```
 
 # Finding baseline RMSE's (mean & median) to benchmark model
+
 ```{r}
 mean_wage <- mean(h1b_final_no_outlier$Wage, na.rm = TRUE)
 mean_predictions <- rep(mean_wage, nrow(h1b_final_no_outlier))
@@ -229,10 +244,10 @@ print(paste("Improvement over median baseline: ", median_rmse - model_rmse))
 ```
 
 # Visualizing actual vs predicted wages
+
 ```{r}
 ggplot(test_data, aes(x = Wage, y = Predicted_Wage)) +
   geom_point() +
   geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "red") +
   labs(title = "Actual vs Predicted Wages", x = "Actual Wage", y = "Predicted Wage")
 ```
-
