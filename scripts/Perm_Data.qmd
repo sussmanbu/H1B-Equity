@@ -465,28 +465,198 @@ write.csv(combined_19_23, file = "dataset/combined_perm_19_23.csv", row.names = 
 #Goals: -see if we can do linear regression once things are normalized by population
 
 ```{r}
-population_data <- read.csv("dataset/population_2019-2023.csv", header=TRUE)
+library(ggplot2)
+library(gganimate)
+library(maps)
+
+mergetry$Year <- as.factor(mergetry$Year)
+world_map <- map_data("world")
+
+
+population_data <- read.csv("dataset/population_1997-2023.csv", header=TRUE)
 colnames(population_data) <- population_data[1, ]
 population_data <- population_data[-1, ]
-```
 
-```{r}
-population_data
-```
-
-```{r}
-pattern <- "(2019|2020|2021|2022|2023)"
+pattern <- "(1997|1998|1999|2000|2001|2002|2003|2004|2005|2006|2007|2008|2009|2010|2011|2012|2013|2014|2015|2016|2017|2018|2019|2020|2021|2022|2023)"
 
 population_data <- population_data %>%
-  mutate(year = as.numeric(str_extract(Region, pattern)))
+  mutate(year = as.numeric(str_extract(Region, pattern))) %>%
+  filter(Year != '1996')
+#population_data$Year = as.numeric(population_data$Year)
+
+h1b_country <- 
+  read_rds('dataset/cleaned_h1b_data.rds')
+colnames(h1b_country) <- c('Country','Continent','1997', '1998', '1999', '2000', '2001', '2002', '2003', '2004', '2005', '2006', '2007', '2008', '2009', '2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022')
+h1b_long <- pivot_longer(h1b_country, cols = -c("Continent", "Country"), names_to = "year", values_to = "count_h1b")
 ```
 
 ```{r}
-population_data
+standardize_country_names <- function(countries) {
+  countries %>%
+    tolower() %>%
+    str_replace_all("china - mainland", "china") %>%
+    str_replace_all("congo, democratic republic of the", "democratic replublic of congo") %>%
+    str_replace_all("congo, republic of the", "republic of congo") %>%
+    str_replace_all("congo (brazzaville)", "republic of congo") %>%
+    str_replace_all("congo (kinshasa)", "democratic republic of congo") %>%
+    str_replace_all("hong kong s.a.r.", "hong kong") %>%
+    str_replace_all("cape verde", "cabo verde") %>%
+    str_replace_all("cape verde", "cabo verde") %>%
+    str_replace_all("hong kong sar", "hong kong") %>%
+    str_replace_all("islamic republic of iran", "iran") %>%
+    str_replace_all("kyrgyz republic", "kyrgyzstan") %>%
+    str_replace_all("lao p.d.r.", "laos") %>%
+    str_replace_all("macao sar", "macau") %>%
+    str_replace_all("north macedonia", "macedonia") %>%
+    str_replace_all("russian federation", "russia") %>%
+    str_replace_all("korea, republic of", "south korea") %>%
+    str_replace_all("taiwan province of china", "taiwan") %>%
+    str_replace_all("united republic of tanzania", "tanzania") %>%
+    str_replace_all("türkiye, republic of", "turkey") %>%
+    str_replace_all("united kingdom", "great britain") %>%
+    str_replace_all("bolivarian republic of venezuela", "venezuela") %>%
+    str_replace_all("congo, dem. rep. of the", "democratic republic of congo") %>%
+    str_replace_all("slovak republic", "slovakia") %>%
+    str_replace_all("st lucia", "saint lucia") %>%
+    str_replace_all("st vincent", "saint vincent and the grenadines") %>%
+    str_replace_all("sri lanka", "sri lanka") %>%
+    str_replace_all("bahamas, the", "bahamas") %>%
+    str_replace_all("gambia, the", "gambia") %>%
+    str_replace_all("myanmar \\(myanmar\\)", "myanmar") %>%
+    str_replace_all("united states of america", "united states") %>%
+    str_replace_all("china, people's republic of", "china") %>%
+    str_replace_all("cote d'ivoire", "côte d'ivoire" )
+}
+
+population_data$Country_Standardized <- standardize_country_names(population_data$Name)
+h1b_long$Country_Standardized <- standardize_country_names(h1b_long$Country)
+world_map$Country_Standardized <- standardize_country_names(world_map$region)
 ```
 
 ```{r}
-population_data$Year = as.numeric(population_data$Year)
+mergetry <- left_join(population_data, h1b_long, by = c("Year" = "year", "Country_Standardized" = "Country_Standardized"))
+mergetry <- mergetry |>
+  mutate(Population = as.numeric(gsub(",", "", `Total Population`)))
+
+merge_continent <- mergetry |>
+  group_by(Continent, Year)|>
+  select(c(Continent, count_h1b, Population, Year))|>
+  summarize(across(everything(), sum, na.rm = TRUE)) |>
+  filter(Continent != 'NA')
+```
+
+
+```{r}
+ggplot(merge_continent, aes(x = Year, y = count_h1b, fill = Continent)) +
+  geom_bar(stat = "identity", position = "stack") +
+  facet_wrap(~Continent, scales='free_y') + 
+  labs(title = "Total Values by Continent Over the Years",
+       x = "Year", y = "Number of Applications") + theme(legend.position = "none",
+        axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_x_discrete(guide=guide_axis(check.overlap=TRUE))
+
+ggplot(merge_continent, aes(x = Year, y = count_h1b/Population, fill = Continent)) +
+  geom_bar(stat = "identity", position = "stack") +
+  facet_wrap(~Continent, scales='free_y') + 
+  labs(title = "Total Values by Continent Over the Years, Normalized by Population",
+       x = "Year", y = "Number of Applications/Population") + theme(legend.position = "none",
+        axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_x_discrete(guide=guide_axis(check.overlap=TRUE))
+
+```
+
+
+
+```{r}
+# Merge world map data with your dataset
+
+map_data <- merge(world_map, mergetry, by.x = 'region', by.y='Country_Standardized')
+```
+
+
+
+```{r}
+# Create the basic plot
+p <- ggplot() +
+  geom_map(data = map_data, map = map_data,
+           aes(x = long, y = lat, map_id = region, fill = count_h1b)) +
+  expand_limits(x = world_map$long, y = world_map$lat) +
+  coord_map() +
+  theme_void() +
+  scale_fill_gradient(low = "lightblue", high = "darkblue", name = "H1B Count") +
+  labs(title = "H1B Visa Distribution by Country") +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+
+
+
+```{r}
+# Merge world map data with your filtered dataset
+h1b_data_2022 <- subset(mergetry, year == 2016)
+map_data <- inner_join(world_map, h1b_data_2022, by = "Country_Standardized")
+map_data <- map_data[order(map_data$order), ]
+map_data <- subset(map_data, year == 2016)
+```
+
+
+
+
+```{r}
+world_map$region <- world_map$Country_Standardized
+# Create the basic plot
+p <- ggplot() +
+  geom_map(data = map_data, map = map_data,
+           aes(map_id = region, fill = log(count_h1b/Population))) +
+  expand_limits(x = c(min(map_data$long), max(map_data$long)), 
+              y = c(min(map_data$lat), max(map_data$lat)))+
+  coord_fixed(ratio=1.3) +
+  theme_void() +
+  #scale_fill_continuous(name = "H1B Count") + 
+  scale_fill_viridis_c()+
+  labs(title = "H1B Visa Distribution by Country")
+  theme(plot.title = element_text(hjust = 0.5))
+
+# Print plot
+print(p)
+```
+```{r}
+# Merge world map data with your dataset
+map_data <- inner_join(world_map, mergetry, by = "Country_Standardized")
+map_data <- map_data[order(map_data$order), ]
+world_map$region <- world_map$Country_Standardized
+# Create the basic plot
+p <- ggplot() +
+  geom_map(data = map_data, map = map_data,
+           aes(x = long, y = lat, map_id = region, fill = count_h1b)) +
+  expand_limits(x = world_map$long, y = world_map$lat) +
+  coord_fixed(1.3) +
+  theme_void() +
+  scale_fill_gradient(low = "lightblue", high = "darkblue", name = "H1B Count") +
+  labs(title = "H1B Visa Distribution by Country") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+# Animate the plot by year
+animated_plot <- p + 
+  transition_states(year, transition_length = 2, state_length = 1) +
+  enter_fade() +
+  exit_fade()
+
+# Render the animation
+animate(animated_plot, fps = 10, width = 800, height = 500)
+```
+
+
+```{r}
+temp1 <- population_data |> filter(Name == "Afghanistan")
+
+temp2<-h1b_long |> filter(Country == "Afghanistan")
+
+mergetry <- left_join(temp1, temp2, by = c("Year" = "year", "Name" = "Country"))
+```
+
+```{r}
+mergetry
 ```
 
 ```{r}
