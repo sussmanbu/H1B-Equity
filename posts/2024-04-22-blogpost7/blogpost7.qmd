@@ -26,6 +26,7 @@ Load the combined datasets for yars 2019-2023
 combined_19_23 <- read.csv("dataset/combined_perm_19_23.csv")
 ```
 
+
 We can look at correlation between education level and wage:
 ```{r}
 combined_19_23_accepted <- combined_19_23 |>
@@ -35,7 +36,8 @@ combined_19_23_accepted <- combined_19_23 |>
 ggplot(combined_19_23_accepted, aes(x = yearmonth(year_month), y = log(WAGE_OFFER_FROM), color = FOREIGN_WORKER_EDUCATION)) +
   geom_point(alpha = 0.5) +
   labs(x = "Year Month", y = "Wage", color = "Education Level",
-       title = "Scatter Plot of Wage vs Year Month")
+       title = "Scatter Plot of Wage vs Year Month") +
+  theme(plot.title = element_text(hjust=0.5))
 
 ```
 

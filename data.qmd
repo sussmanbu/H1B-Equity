@@ -4,79 +4,51 @@ description: We describe the sources of our data and the cleaning process.
 toc: true
 draft: false
 ---
+![](images/analysis.png){width="900"}
+### Datasets Overview
 
-![](images/data-import-cheatsheet-thumbs.png)
+We explore three datasets:
 
-## Rubric: On this page
+1. **Travel Data**: From U.S Department of State.
+2. **Labor Data**: From U.S Department of Labor (H1B Worker Conditions).
+3. **Economic Data**: Merged with H1B dataset.
 
-You will
-
-* Describe where/how to find data.
-  * You must include a link to the original data source(s). Make sure to provide attribution to those who collected the data.
-  * Why was the data collected/curated? Who put it together? (This is important, if you don't know why it was collected then that might not be a good dataset to look at.
-  * Describe the different data files used and what each variable means. 
-  * If you have many variables then only describe the most relevant ones and summarize the rest.
+### Dataset 1: Travel Data
   
-* Describe any cleaning you had to do for your data.
-  * You *must* include a link to your `load_and_clean_data.R` file.
-  * Rrename variables and recode factors to make data more clear.
-  * Also, describe any additional R packages you used outside of those covered in class.
-  * Describe and show code for how you combined multiple data files and any cleaning that was necessary for that.
-  * Some repetition of what you do in your `load_and_clean_data.R` file is fine and encouraged if it helps explain what you did.
-* Organization, clarity, cleanliness of the page
-  * Make sure to remove excessive warnings, use clean easy-to-read code (without side scrolling), organize with sections, use bullets and other organization tools, etc.
+**Source**
 
+  Our first dataset is downloaded from the [U.S. Department of State](https://travel.state.gov/content/dam/visas/Statistics/Non-Immigrant-Statistics/NIVDetailTables/FYs97-22_NIVDetailTable.xlsx).and stored in the `dataset` folder. The data was collected by U.S Department of State, more specifically the Bureau of Consular Affairs. 
 
-# Dependencies Used For Data.qmd
-```{r}
-suppressPackageStartupMessages(library(tidyverse))
-library(tidyr)
-library(viridis)
-library(ggplot2)
-library(dplyr)
-library(readxl)
-library(readr)
-library(lubridate)
-```
-  
-# Data Background
-  
-  Our first dataset is downloaded from the [travel.state.gov website](https://travel.state.gov/content/dam/visas/Statistics/Non-Immigrant-Statistics/NIVDetailTables/FYs97-22_NIVDetailTable.xlsx) and stored in the `dataset` folder. The data was collected by U.S Department of State, more specifically the Bureau of Consular Affairs. 
-  
+**Purpose**
+
   The Report of the Visa Office is an annual report providing statistical information on immigrant and non-immigrant visa issuance by consular offices, including information visa allocation in numerically limited categories. The main part of this dataset we want to focus on is the country of origin of visa recipients for H1B-type visas. Years covered range from Fiscal Year 1997 to F.Y. 2022 inclusively.
 
   
+**Description**: 
 The original dataset comes with the following features/columns:
 
-* country: origin of country
-
-* H1B: H1B approval count
-
-* FY97 - FY22: represents year 1997 till 2022
+- **Country**: Origin country of visa recipients.
+- **H1B**: H1B approval count.
+- **FY97 - FY22**: Years 1997 to 2022.
 
 Essentially, this dataset contains information of H1B approval from year 1997 till 2022 and its originate country.
 
+**Cleaning Process**:
 
-## First Dataset Background
+1. **Read Excel Files**.
+2. **Filter and Group**.
+3. **Create Columns for Each Year**.
 
-The original dataset is in dataset directory as .xlsx file. It contains pivot tables for each year that describe various U.S travel approvals such as H1B. To transform the dataset into the current one, we did the following operation
+#### Cleaning Script
 
-* read in excel files
+Find the full cleaning script [here](/scripts/load_and_clean_data.R).
 
-* filter out null values(continents, .., etc)
+**Cleaned Data Example**:
 
-* group country
+Essentially, the dataset is a large excel file that contains multiple sheets, processes the data from the 'FY22' sheet to assign continents to countries, and then aggregates H-1B visa statistics from each sheet by country, storing the results in a data frame called 'processed_data'. Next we save the cleaned dataset as **cleaned_h1b_data.rds**. More details of the code in load_and_clean_data.R
 
-* filter out other columns and keep H1B column
-
-* create columns for each year (1977-2022)
-
-
-The script to transform the dataset is in scripts directory `load_and_clean_data.R` file.
-
-This is an example of how to load our cleaned dataset from dataset directory:
 ```{r}
-
+library(readr)
 #filename <- file.choose("cleaned_h1b_data.rds")
 #print(filename)
 h1b_country <- 
@@ -105,8 +77,13 @@ colnames(h1b_country) <- c(
 head(h1b_country)
 ```
 
+
+**Reshaped Data**:
+
 The following code shortens the dimension of our dataframe to 3 columns specially the years columns. Having many years column can make the dataset hard to analysis or explore. 
-```{r, results='hide'}
+```{r, results='hide', warning = FALSE}
+library(dplyr)
+library(tidyr)
 h1b_continent <- h1b_country |>
   group_by(Continent)|>
   select(-Country)|>
@@ -118,136 +95,33 @@ data_long <- pivot_longer(h1b_continent, cols = -Continent,
 head(data_long)
 ```
 
-```{r}
-# Sample data manipulation assuming h1b_country is your dataset
-h1b_country_temp <- h1b_country %>%
-  select(-Continent)
 
-# Convert the data from wide to long format
-data_long_all <- pivot_longer(
-  h1b_country_temp, cols = -Country, 
-  names_to = "year", values_to = "count_h1b"
-)
-
-# Filter for only recent years 2022, 2021, 2020, etc.
-years_of_interest <- c("2022", "2021", "2020", "2019", "2018")
-data_filtered <- data_long_all %>%
-  filter(year %in% years_of_interest)
-
-# Initialize an empty list to store the pie charts
-piecharts_all <- list()
-
-# Loop only over the filtered years
-for (year_iter in years_of_interest) {
-  print(year_iter)
-  all_temp <- data_filtered %>% 
-    filter(year == year_iter)
-  
-  # Select the top 5 countries based on the count
-  top_countries <- all_temp %>%
-    group_by(Country) %>%
-    summarise(total_count = sum(count_h1b), .groups = "drop") %>%
-    arrange(desc(total_count)) %>%
-    slice_max(order_by = total_count, n = 5)  # Updated to use slice_max
-  
-  # Summarise the rest as 'Other'
-  other_countries <- all_temp %>%
-    anti_join(top_countries, by = "Country") %>%
-    filter(!is.na(count_h1b)) %>%
-    summarise(Country = "Other", total_count = sum(count_h1b), .groups = "drop")
-  
-  # Combine the top countries and 'Other'
-  combined_data <- bind_rows(top_countries, other_countries)
-  
-  # Assuming combined_data is your data frame with the top 5 countries and 'Other'
-
-# Load necessary libraries
-library(ggplot2)
-library(dplyr)
-
-# Create a pie chart using ggplot2
-pie_chart <- ggplot(combined_data, aes(x = "", y = total_count, fill = Country)) +
-  geom_bar(width = 1, stat = "identity") +
-  coord_polar("y", start = 0) +
-  theme_void() +
-  theme(legend.position = "right") +
-  scale_fill_viridis_d() +
-  labs(title = paste("Top 5 Countries in", year_iter))
-
-  
-  # Store the pie chart in the list
-  piecharts_all[[year_iter]] <- pie_chart
-}
-
-# Print all pie charts stored in the list
-print(piecharts_all)
-```
-
-```{r}
-ggplot(data_long, aes(x = year, y = count_h1b, 
-                      fill = Continent)) +
-  geom_bar(stat = "identity", position = "stack") +
-  labs(title = "Total Values by Continent Over the Years",
-       x = "Year", y = "Total Value") + 
-  theme(legend.position = "top",
-        axis.text.x = element_text(angle = 45, hjust = 1))
-```
-
-```{r}
-ggplot(data_long, aes(x = year, y = count_h1b, fill = Continent)) +
-  geom_bar(stat = "identity", position = "stack") +
-  facet_wrap(~Continent, scales='free_y') + 
-  labs(title = "Total Values by Continent Over the Years",
-       x = "Year", y = "Total Value") + theme(legend.position = "top",
-        axis.text.x = element_text(angle = 45, hjust = 1)) +
-  scale_x_discrete(guide=guide_axis(check.overlap=TRUE))
-```
-
-```{r}
-# Rename year columns
-years <- paste0(1997:2022)
-colnames(h1b_country) <- c('Country', 'Continent', years)
-
-# Summarize total H1B visas per year and transform into long format for plotting
-total_h1b_by_year_long <- h1b_country %>%
-  select(all_of(years)) %>%
-  summarise(across(everything(), sum, na.rm = TRUE)) %>%
-  pivot_longer(cols = everything(), names_to = "year", values_to = "Total_H1B_Visas")
-
-# Plot total H1B visas issued worldwide over the years
-ggplot(total_h1b_by_year_long, aes(x = year, y = Total_H1B_Visas, fill = year)) +
-  geom_bar(stat = "identity") +
-  scale_fill_viridis_d() +
-  labs(title = "Total H1B Visas Issued Worldwide Over the Years",
-       x = "Year", y = "Total Number of H1B Visas") +
-  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1), legend.position = "none")
-```
+---
 
 
-```{r}
-# Summarize data by continent and transform into long format
-data_long <- h1b_country %>%
-  group_by(Continent) %>%
-  summarise(across(all_of(years), sum, na.rm = TRUE)) %>%
-  pivot_longer(cols = all_of(years), names_to = "year", values_to = "count_h1b")
+### Dataset 2: Labor Data
 
-# Plot total values by continent over the years
-ggplot(data_long, aes(x = year, y = count_h1b, fill = Continent)) +
-  geom_bar(stat = "identity") +
-  facet_wrap(~Continent, scales="free_y") +
-  scale_x_discrete(guide = guide_axis(check.overlap = TRUE)) +
-  labs(title = "Total H1B Visas by Continent Over the Years",
-       x = "Year", y = "Total Visas") +
-  theme(legend.position = "top", axis.text.x = element_text(angle = 45, hjust = 1),
-        plot.margin = unit(c(1, 1, 1, 1), "cm"))
-```
+**Source**: 
+[U.S. Department of Labor](https://www.dol.gov/agencies/eta/foreign-labor/performance).
+We downloaded LCA Programs H-1B and PERM disclosure data in .excel file or tabular data.
 
-## Explanation
+PERM_disclosure_data: A system used by the U.S Department of Labor to process labor certifications, which is the first step required in the process for certain foreign nationals to obtain an employment-based immigrant visa, or green card.
 
-While this dataset tells us about the country of origin of visa recipients for H1B-type visas. We believe that dataset 3 allows us to have a deeper understanding of the recent years and employment
+LCA_Program_data: LCA stands for Labor Condition Application. This application is a component of the H1B visa process, where employers in the U.S. must attest to the Department of Labor that they will pay the H1B visa holder a wage that is no less than the wage paid to similarly qualified U.S. workers. It also ensures that employing a foreign worker will not adversely affect the working conditions of U.S. workers similarly employed.
 
-# Dataset 3
+**Purpose**
 
+The data is made available as part of a broader government initiative toward transparency and open governance. This initiative aims to make government operations more accessible and understandable to the public.
+By providing access to historical and current data about immigration-related labor applications, the dataset aids in understand trends, evaluate the effectiveness of current policies, and plan future actions based on solid data.
+Overall, this dataset is a critical resource for enhancing understanding and facilitating a data-driven approach to managing and legislating foreign labor and immigration-related activities.
+
+
+**How it was collected?**
+
+Recall that the dataset was provided by OFLC(Office of Foreign Labor Certification). 
+Employers who are seeking to hire foreign workers must submit various forms of applications for prevailing wage determinations, labor certifications, and labor attestations. These applications are required for different visa programs, such as H-1B, H-2A, H-2B, and permanent residency applications. Our goal is focus on H-1B but not limited to explore other programs.
+
+**Description**:
 ## Background
 Since there exist many columns, we will list a few important columns.
 
@@ -271,54 +145,21 @@ Since there exist many columns, we will list a few important columns.
 
 **RECEIVED_DATE**: Date the application received by OFLC
 
+**Cleaning Process**:
 
-Source of Dataset: [U.S Department Labor](https://www.dol.gov/agencies/eta/foreign-labor/performance)
+1. **Load RDS Files**.
+2. **Merge Data**.
 
-We downloaded LCA Programs H-1B and PERM disclosure data 
+#### Cleaning Script
 
-The data is made available as part of a broader government initiative toward transparency and open governance. This initiative aims to make government operations more accessible and understandable to the public.
+Find the full cleaning script [here](/scripts/load_and_clean_data.R).
 
-By providing access to historical and current data about immigration-related labor applications, the dataset aids in understand trends, evaluate the effectiveness of current policies, and plan future actions based on solid data.
-
-A couple of ideas we can draw from this dataset are...
-
-* provide insights into the labor market
-* immigration trends
-* impacts on the economy
-
-The data includes information like case numbers, decision dates, and other metadata which are extracted from applications processed by the OFLC(Office of Foreign Labor Certification).
-This also includes newly added fields from updated visa application forms and systems, making the data more comprehensive over time. However, this dataset did not include personal or other case details due to privacy and integrity.
-
-Overall, this dataset is a critical resource for enhancing understanding and facilitating a data-driven approach to managing and legislating foreign labor and immigration-related activities.
-
-
-## How it was collected?
-Recall that the dataset was provided by OFLC(Office of Foreign Labor Certification). 
-
-Employers who are seeking to hire foreign workers must submit various forms of applications for prevailing wage determinations, labor certifications, and labor attestations. These applications are required for different visa programs, such as H-1B, H-2A, H-2B, and permanent residency applications. Our goal is focus on H-1B but not limited to explore other programs.
-
-## Why it is worth exploring?
-Because our groups are interested in the labor market in U.S specifically in foreign labors. This dataset allows us to analyze the labor market dynamics related to foreign labor in the U.S. You can track trends in wages, understand the demand for labor in specific sectors, and assess how immigration policies impact the economy. This kind of analysis is crucial for crafting informed labor and economic policies.
-
-## Our contribution
-Here, we will look into two related datasets, both from the same source. 
-
-PERM_disclosure_data: A system used by the U.S Department of Labor to process labor certifications, which is the first step required in the process for certain foreign nationals to obtain an employment-based immigrant visa, or green card.
-The PERM disclosure data typically includes information about applications submitted by employers who wish to hire foreign workers permanently. This data can provide insights into which companies are applying for labor certifications, the positions they are looking to fill, the salaries offered, the status of applications (whether they were certified, denied, or withdrawn), and other relevant details.
-
-LCA_Program_data: LCA stands for Labor Condition Application. This application is a component of the H1B visa process, where employers in the U.S. must attest to the Department of Labor that they will pay the H1B visa holder a wage that is no less than the wage paid to similarly qualified U.S. workers. It also ensures that employing a foreign worker will not adversely affect the working conditions of U.S. workers similarly employed.
-The LCA Program H1B data contains information regarding these applications, including details about the employers filing them, the positions for which they are filed, wage levels, locations of employment, and the status of these applications.
-
-Our direction is to start initial progress on LCA_Program_data to testify if H1B visa holder has a wage similar to qualified U.S. workers. Then, we will shift to perm_disclosure_data which is the where the main analysis is done.
-
-## Cleaning Dataset
-The following steps would be describing how we load our dataset and merge additional columns.
+The following steps would be describing how we load our dataset and merge additional columns. Later down the steps, we will merge the world economic dataset
 
 ```{r, results='hide'}
 df <- readRDS("dataset/cleaned_disclosure.rds")
 head(df)
 ```
-
 
 We selected this dataset, updated in 2024, because it comprehensively represents the evolution of U.S. immigration policy from the Trump to the Biden administration. It provides a wealth of columns suitable for statistical modeling. To enrich our analysis, we plan to merge it with two other datasets. The first includes information on the applicants' universities and majors, while the second contains data on their incomes, allowing us to construct a linear regression model. Once merged, we will have a dataframe with approximately 30+ columns.
 
@@ -348,7 +189,7 @@ head(df3)
 
 To merge the dataset together, we can find matching case numbers. The additional dataset gives additional information about applicants university, field of major, date of degree etc... 
 
- Here we commented it out since the dataset has already been merged.
+Here we commented it out since the dataset has already been merged.
 ```{r}
 # merge df1 and df2 by case number
 # merge_1 <- merge(df, df2, by="CASE_NUMBER", all = TRUE)
@@ -363,24 +204,17 @@ To merge the dataset together, we can find matching case numbers. The additional
 # saveRDS(final_merge, "dataset/final_merge.rds")
 ```
 
-
-## EDA version 2
+Load in the dataset here
 ```{r, results='hide'}
 final_df <- readRDS("dataset/final_merge.rds")
 head(final_df)
 ```
 
-```{r, results='hide'}
-# filter the dataset which jobs have most frequency and applicant get full time position
-filtered_data <- final_df |>
-  filter(FULL_TIME_POSITION == "Y") |>
-  count(JOB_TITLE, sort = TRUE) |>
-  top_n(5)
+We will extract year, month, day from the date column to prepare dataset for time-series forecasting later.
 
-print(filtered_data)
-```
 ```{r}
 # extract year, month, day from date
+library(lubridate)
 final_df$YEAR_RECEIVED = as.integer(substr(final_df$RECEIVED_DATE, 1, 4))
 final_df$MONTH_RECEIVED = month(final_df$RECEIVED_DATE)
 final_df$DAY_RECEIVED = day(final_df$RECEIVED_DATE)
@@ -402,140 +236,60 @@ final_df$MONTH_BEGIN = month(final_df$BEGIN_DATE)
 final_df$DAY_BEGIN = day(final_df$BEGIN_DATE)
 ```
 
-```{r}
-# filter the dataset which jobs have most frequency and applicant get full time position
-filtered_data <- final_df |>
-  count(EMPLOYER_NAME, sort = TRUE) |>
-  top_n(5)
+### Dataset 3: Economic Data
 
-print(filtered_data)
-```
-```{r}
+**Source**: [IMF](https://www.imf.org/external/datamapper/NGDPDPC@WEO/OEMDC/ADVEC/WEOWORLD).
 
-filtered_df <- final_df %>%
-  # filter(JOB_TITLE %in% c("Software Engineer", "Assistant Professor", "Business Analyst", "Machine Learning Engineer"),
-  # FULL_TIME_POSITION %in% c("Y", "N")) %>%
-  select(WAGE_RATE_OF_PAY_FROM, PREVAILING_WAGE)
+**Purpose**
 
-head(filtered_df)
-```
-Next, we will plot the log scale of prevailing_wage and wage_rate_of_pay_from.
-```{r}
-filtered_df <- final_df %>%
-  filter(
-         FULL_TIME_POSITION %in% c("Y", "N"),
-         # some wage unit of pay is in hours.
-         WAGE_UNIT_OF_PAY %in% c("Year")) |> 
-  select(WAGE_RATE_OF_PAY_FROM, PREVAILING_WAGE, WAGE_UNIT_OF_PAY)
+The International Monetary Fund (IMF) data is collected by the IMF itself. It gathers data from its member countries and other sources to monitor economic and financial developments globally. The data is typically collected through various means, including direct reporting from member countries, surveys, and other sources such as international organizations and financial institutions.
 
-# Create a ggplot scatter plot with a linear regression line
-ggplot(filtered_df, aes(x = log(PREVAILING_WAGE), y = log(WAGE_RATE_OF_PAY_FROM) )) +
-  geom_point(alpha = 0.5) +  # Adds scatter plot points with some transparency
-  geom_smooth(method = "lm", se = TRUE) +  # Adds a linear regression line without the confidence interval
-  labs(x = "Prevailing Wage", y = "Wage Rate of Pay From", title = "Relationship between Prevailing Wage and Wage Rate of Pay") 
+**Format**
 
-```
-We can see there there exist linear relationship between Prevailing wage and wage paid at worksite. To recall, prevailing wage is the average wage paid according to the labor market. It would be a surprise if foreign workers are paid less than their peers. 
+The format of the IMF data can vary depending on the specific dataset, but it often includes structured data tables, time series data, and reports. IMF includes Excel spreadsheets, CSV files, databases, and interactive online tools, to accommodate different user needs and preferences.
 
-```{r}
-# Identify states with high number of applicants or high approval rates
-state_df <- final_df
+**Cleaning**
 
-state_df <- na.omit(state_df[c("EMPLOYER_STATE", "CASE_STATUS")])
+To clean and process H1B visa data, we need to filters the data where CLASS_OF_ADMISSION is 'H-1B' and CASE_STATUS is 'Certified'.
 
-state_data <- state_df |>
-  group_by(EMPLOYER_STATE) |>
-  summarise(
-    Total_Applications = n(),
-    Approved_Applications = sum(CASE_STATUS == "Approved")
-  )
+1. selects relevant columns specified in relevant_columns
 
+2. creates dummy variables for the 'FOREIGN_WORKER_EDUCATION' column standardizes country names using a function standardize_country_names
+
+3. Applies this function to two data frames, fy22 and fy23, concatenates the cleaned data frames into one (h1b_stacked), and finally displays the cleaned data frames for FY22 (fy22_cleaned), FY23 (fy23_cleaned), and the concatenated data (h1b_stacked).
+```{r message = FALSE, warning = FALSE}
+# load dataset
+library(readxl)
+fy22 <- read_excel('dataset/Perm_data/PERM_Disclosure_Data_FY2022_Q4.xlsx')
+fy23 <- read_excel('dataset/Perm_data/PERM_Disclosure_Data_FY2023_Q4.xlsx')
 ```
 
 ```{r}
-# visualizing
-# Sort by total applications
-state_data_sorted_applicants <- state_data %>%
-  arrange(desc(Total_Applications))
-
-top_states <- state_data_sorted_applicants |>
-  top_n(20, Total_Applications)
-
-# Plot for Total Applications
-ggplot(top_states, aes(x = reorder(EMPLOYER_STATE, -Total_Applications), y = Total_Applications)) +
-  geom_bar(stat = "identity", fill = "GREY") +
-  theme(axis.text.y = element_text(size = 6)) +  # Smaller text size for states
-  labs(title = "Total Visa Applications by State", x = "State", y = "Number of Applications") +
-  coord_flip()  # Flips the coordinates to make labels readable
+# Load IMF data
+imf_gdpc_usd_raw <- read_excel('dataset/IMF_data/imf_gdp_per_capita_usd.xls')
+imf_unemployment_raw <- read_excel('dataset/IMF_data/imf_unemployment.xls')
+names(imf_gdpc_usd_raw)[1] <- "Country"
+names(imf_unemployment_raw)[1] <- "Country"
 ```
-Top 20 states where received the highest number of visa applications. In other word, these are the states that hire and submit applications for foreign workers the most (up to date 2024). From previous exploration, we learned that majority of the job titles are tech related jobs, and majority of tech companies still hiring located in these states.
 
+
+### Dependencies Used For Data.qmd
+Below is a list of packages that we use for our dataset
 ```{r}
-yearly_wage <- final_df %>%
-  group_by(YEAR_BEGIN) %>%
-  summarise(Avg_Prevailing_Wage = mean(PREVAILING_WAGE, na.rm = TRUE))
-
-ggplot(yearly_wage, aes(x = YEAR_BEGIN, y = Avg_Prevailing_Wage)) +
-  geom_line() +  # Use a line plot to show trends over time
-  geom_point() +  # Add points to highlight each year's average wage
-  labs(title = "Average Prevailing Wage Per Year",
-       x = "Year",
-       y = "Average Prevailing Wage") 
-
+suppressPackageStartupMessages(library(tidyverse))
+library(tidyr)
+library(viridis)
+library(fastDummies)
+library(ggplot2)
+library(dplyr)
+library(readxl)
+library(readr)
+library(lubridate)
 ```
-Average prevailing wage might not be a good choice since tech jobs would skew the average. We would take a look at the medians.
+  
 
-```{r}
-yearly_wage <- final_df %>%
-  group_by(YEAR_BEGIN) %>%
-  summarise(median_Prevailing_Wage = median(PREVAILING_WAGE, na.rm = TRUE))
 
-ggplot(yearly_wage, aes(x = YEAR_BEGIN, y = median_Prevailing_Wage)) +
-  geom_line() +  # Use a line plot to show trends over time
-  geom_point() +  # Add points to highlight each year's average wage
-  labs(title = "Median Prevailing Wage Per Year",
-       x = "Year",
-       y = "Median Prevailing Wage") 
 
-```
-Biden becomes president at year 2020. A sudden drop in wages happen in year 2021 due to covid19. Afterward, the trends goes right back up.
 
-## PERM_DISCLOSURE_DATA
-To recall, the first step required in the process for certain foreign nationals to obtain an employment-based immigrant visa, or green card is in **PERM_DISCLOSURE_DATA**
-It contains information about applications submitted by employers who wish to hire foreign workers permanently. This data can provide insights into which companies are applying for labor certifications, the positions they are looking to fill, the salaries offered, the status of applications (whether they were certified, denied, or withdrawn), and other relevant details.
 
-Here, we will load in the data and do basic inspection of the data. Acknowledging that this dataset contains many columns. We can create a separate df that contains columns we believe is important.
-
-**Note** that PERM_DISCLOSURE_DATA is almost the identical as LCA_Program data but PERM_DISCLOSURE_DATA contains more columns which you can select various columns depend on your needs.
-
-Commented it out since this is one time operation
-```{r}
-# perm_data <- read_excel("dataset/PERM_data.xlsx")
-# saveRDS(perm_data, "dataset/perm_data.rds")
-```
-
-```{r, results='hide'}
-perm_df <- readRDS("dataset/perm_data.rds")
-head(perm_df)
-```
-
-```{r, results='hide'}
-# let's check missing values
-print(colSums(is.na(perm_df)))
-```
-
-```{r}
-# 24962 rows, 154 columns
-dim(perm_df)
-```
-
-## EDA version 3
-```{r, results='hide'}
-final_perm_df <- select(perm_df, "CASE_NUMBER", "CASE_STATUS", "RECEIVED_DATE", "DECISION_DATE", "EMPLOYER_NAME",
-                        "EMPLOYER_NUM_EMPLOYEES", "AGENT_ATTORNEY_FIRM_NAME", "PW_WAGE", "PW_SKILL_LEVEL", "WORKSITE_STATE", "JOB_TITLE", "PW_UNIT_OF_PAY", "WAGE_OFFER_FROM", "WAGE_OFFER_UNIT_OF_PAY",
-                        , "MINIMUM_EDUCATION", "REQUIRED_EXPERIENCE", "COUNTRY_OF_CITIZENSHIP", "CLASS_OF_ADMISSION"
-                        )
-
-head(final_perm_df)
-```
 

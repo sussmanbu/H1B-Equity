@@ -139,6 +139,20 @@ filtered_data <- final_df |>
 
 print(filtered_data)
 ```
+```{r}
+percentage_with_software <- filtered_data %>%
+  mutate(contains_software = str_detect(tolower(JOB_TITLE), "software")) %>%
+  summarise(percentage = mean(contains_software) * 100)
+
+percentage_with_engineeer <- filtered_data %>%
+  mutate(contains_engineer = str_detect(tolower(JOB_TITLE), "engineer|developer")) %>%
+  summarise(percentage = mean(contains_engineer) * 100)
+
+percentage_with_software
+percentage_with_engineeer
+```
+
+
 This is the most frequent job titles appear in the dataset. From this result, we can see that tech related jobs are still the highest percentage of strong hire in United States.
 
 
@@ -220,10 +234,10 @@ top_states <- state_data_sorted_applicants |>
 
 # Plot for Total Applications
 ggplot(top_states, aes(x = reorder(EMPLOYER_STATE, -Total_Applications), y = Total_Applications)) +
-  geom_bar(stat = "identity", fill = "GREY") +
+  geom_bar(stat = "identity", fill = "Blue") +
   theme(axis.text.y = element_text(size = 6)) +  # Smaller text size for states
-  labs(title = "Total Visa Applications by State", x = "State", y = "Number of Applications") +
-  coord_flip()  # Flips the coordinates to make labels readable
+  labs(title = "Total Visa Applications by State, 2023", x = "State", y = "Number of Applications") +
+  coord_flip()
 ```
 Top 20 states where received the highest number of applications. Now you know what states to look for jobs.
 
