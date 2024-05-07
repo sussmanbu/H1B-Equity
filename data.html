@@ -287,6 +287,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ol>
 <section id="cleaning-script-1" class="level4">
 <h4 class="anchored" data-anchor-id="cleaning-script-1">Cleaning Script</h4>
+<p>Find the source of the dataset: <a href="./dataset/cleaned_disclosure.rds">here</a></p>
 <p>Find the full cleaning script <a href="./scripts/load_and_clean_data.R">here</a>.</p>
 <p>The following steps would be describing how we load our dataset and merge additional columns. Later down the steps, we will merge the world economic dataset</p>
 <div class="cell">
@@ -384,29 +385,84 @@ Attaching package: 'lubridate'</code></pre>
 <section id="dependencies-used-for-data.qmd" class="level3">
 <h3 class="anchored" data-anchor-id="dependencies-used-for-data.qmd">Dependencies Used For Data.qmd</h3>
 <p>Below is a list of packages that we use for our dataset</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>(<span class="fu">library</span>(tidyverse))</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyr)</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(viridis)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: viridisLite</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(fastDummies)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Thank you for using fastDummies!</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>To acknowledge our work, please cite the package:</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Kaplan, J. &amp; Schlegel, B. (2023). fastDummies: Fast Creation of Dummy (Binary) Columns and Rows from Categorical Variables. Version 1.7.1. URL: https://github.com/jacobkap/fastDummies, https://jacobkap.github.io/fastDummies/.</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readxl)</span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readr)</span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lubridate)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
+<table class="table">
+<colgroup>
+<col style="width: 17%">
+<col style="width: 82%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Library</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>dplyr</td>
+<td>Provides tools for data manipulation.</td>
+</tr>
+<tr class="even">
+<td>tsibble</td>
+<td>Provides time series data structures and functions.</td>
+</tr>
+<tr class="odd">
+<td>tidyr</td>
+<td>Helps in tidying data for analysis.</td>
+</tr>
+<tr class="even">
+<td>ggplot2</td>
+<td>A powerful data visualization system.</td>
+</tr>
+<tr class="odd">
+<td>forecast</td>
+<td>Methods and tools for forecasting time series data.</td>
+</tr>
+<tr class="even">
+<td>zoo</td>
+<td>Methods for irregular time series data.</td>
+</tr>
+<tr class="odd">
+<td>magick</td>
+<td>Image processing with ImageMagick.</td>
+</tr>
+<tr class="even">
+<td>viridis</td>
+<td>Color palettes for data visualization.</td>
+</tr>
+<tr class="odd">
+<td>cluster</td>
+<td>Functions for cluster analysis.</td>
+</tr>
+<tr class="even">
+<td>broom</td>
+<td>Converts analysis objects into tidy data frames.</td>
+</tr>
+<tr class="odd">
+<td>stringr</td>
+<td>String manipulation functions.</td>
+</tr>
+<tr class="even">
+<td>fastDummies</td>
+<td>Creates dummy columns for categorical variables.</td>
+</tr>
+<tr class="odd">
+<td>prophet</td>
+<td>Time series forecasting using an additive model.</td>
+</tr>
+<tr class="even">
+<td>ggfortify</td>
+<td>Extends ggplot2 for time series and other objects.</td>
+</tr>
+<tr class="odd">
+<td>lubridate</td>
+<td>Facilitates working with dates and times.</td>
+</tr>
+<tr class="even">
+<td>corrplot</td>
+<td>Visualizes correlation matrices.</td>
+</tr>
+</tbody>
+</table>
 
 
 </section>
