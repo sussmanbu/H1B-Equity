@@ -14,9 +14,7 @@ editor:
 
 ## Introduction
 
-The H-1B visa program is a vital bridge connecting skilled foreign professionals with U.S. employers facing labor shortages.
-Its annual cap and rigorous selection criteria make it one of the most competitive visa categories.
-Understanding the landscape of H-1B visa applicants—who they are, where they work, and how they contribute—can illuminate the program’s impact on individuals and the economy.
+The H-1B visa is a non-immigrant category in the United States designed for employers to hire foreign workers in specialty occupations that require specialized knowledge and at least a bachelor's degree, such as IT, finance, engineering, and medicine. This visa is essential for filling workforce gaps in sectors like technology, where there is a high demand for skilled professionals. With its annual cap and stringent selection criteria, the H-1B visa remains one of the most competitive categories, and understanding its applicant demographics and economic factors can provide valuable insights into it's effectiveness.
 
 This page aims to provide an accessible overview of how H-1B visa applicants are faring, presenting insights into applicant trends, approval rates, and economic contributions.
 
