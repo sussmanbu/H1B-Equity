@@ -15,7 +15,7 @@ editor:
 We explore three datasets:
 
 1.  **Travel Data**: Visas per country - from travel.state.gov (U.S Department of State, Department of Consular Affairs)
-2.  **Labor Data**: H1B worker conditions - from dol.gov (U.S Department of Labor)
+2.  **Labor Data**: H-1B worker conditions - from dol.gov (U.S Department of Labor)
 3.  **Economic Data**: GDP per capita and Unemployment rate per country - from imf.org (Internation Monetary Fund)
 
 ### Dataset 1: Travel Data
@@ -33,17 +33,17 @@ The Report of the Visa Office is an annual report providing statistical
 information on immigrant and non-immigrant visa issuance by consular
 offices, including information visa allocation in numerically limited
 categories. The main part of this dataset we want to focus on is the
-country of origin of visa recipients for H1B-type visas. Years covered
+country of origin of visa recipients for H-1B type visas. Years covered
 range from Fiscal Year 1997 to F.Y. 2022 inclusively.
 
 **Description**: The original dataset comes with the following
 features/columns:
 
 -   **Country**: Origin country of visa recipients.
--   **H1B**: H1B approval count.
+-   **H-1B**: H-1B approval count.
 -   **FY97 - FY22**: Years 1997 to 2022.
 
-Essentially, this dataset contains information of H1B approval from year
+Essentially, this dataset contains information of H-1B approval from year
 1997 till 2022 and its originate country.
 
 **Cleaning Process**:
@@ -132,9 +132,9 @@ process for certain foreign nationals to obtain an employment-based
 immigrant visa, or green card.
 
 LCA_Program_data: LCA stands for Labor Condition Application. This
-application is a component of the H1B visa process, where employers in
+application is a component of the H-1B visa process, where employers in
 the U.S. must attest to the Department of Labor that they will pay the
-H1B visa holder a wage that is no less than the wage paid to similarly
+H-1B visa holder a wage that is no less than the wage paid to similarly
 qualified U.S. workers. It also ensures that employing a foreign worker
 will not adversely affect the working conditions of U.S. workers
 similarly employed.
@@ -322,7 +322,7 @@ preferences.
 
 **Cleaning**
 
-To clean and process H1B visa data, we need to filters the data where
+To clean and process H-1B visa data, we need to filters the data where
 CLASS_OF_ADMISSION is 'H-1B' and CASE_STATUS is 'Certified'.
 
 1.  selects relevant columns specified in relevant_columns

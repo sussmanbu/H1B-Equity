@@ -10,7 +10,7 @@ editor:
 
 ![](images/h1b.png){width="900"}
 
-# How is H1B applicants doing?
+# How is H-1B applicants doing?
 
 ## Introduction
 
@@ -26,7 +26,7 @@ The majority of the accepted applicants have at least master degrees.
 ![](images/education.png)
 
 Countries like India and China dominate the applicant pool, reflecting strong educational systems in these regions and their economies’ growth.
-In fact, 81.4% of applicants were from India in 2022, when 17.5\$ of the worlds population is in India.
+In fact, 81.4% of applicants were from India in 2022, when 17.5% of the worlds population is in India.
 From 1997 to 2022, applicants from India comprise 61.3% of the total applicant pool, and applicants from Asia comprised 80.4%.
 
 
@@ -49,14 +49,15 @@ So, the concentration in this graph around the wage = \$45,000 is, in reality, a
 
 ![](images/medianwage.png)
 
-## How Can H1B Applicants Find a Job These Days?
+## How Can H-1B Applicants Find a Job These Days?
+
 
 ![](images/Applications_by_State.png)
 
 **Interpretation Of The Barchart**
 
-Looking at the chart, H1B applicants have a better odds of finding a full time position in california or texas since thats where majority of tech companies are.
-H1B applicants should plan ahead and think about what states they want to live in.
+Looking at the chart, H-1B applicants have a better odds of finding a full time position in california or texas since thats where majority of tech companies are.
+H-1B applicants should plan ahead and think about what states they want to live in.
 
 Economic Contributions of H-1B Workers H-1B visa holders significantly contribute to the U.S. economy.Employers rely on their specialized skills to fill key gaps, particularly in IT, engineering, and research roles.
 
