@@ -8,7 +8,7 @@ draft: false
 
 # Motivation for Data Analysis
 
-Our data analysis seeks to achieve an understanding of how and why H1-B applications vary across countries, continents, and time. We are interested in the number of applications from each country and/or continent, the wages of the recipients, the level of education that the applicants have achieved, and the financial information from their country of citizenship. We are interested in answering how the distribution of H1-B applicants has changed throughout time, whether education level and wage are correlated, and how that has changed, as well as whether the financial standing of a country is correlated with the number of citizens applying for an H1-B visa.
+Our data analysis seeks to understand how H1-B applications vary across countries, continents, and time. More specifically, we are interested in the number of applications from each country and/or continent, the wages of the recipients, the level of education that the applicants have achieved, and the economic data of their country of citizenship. We want to investigate how the distribution of H1-B applicants per continent has changed over time, and how (if at all) wage is linked to education level, GDP per capita of country of origin, and Unemployment rate of country of origin for applicants with successful H1B visa applications.
 
 -   Modeling and Inference
 
