@@ -392,7 +392,6 @@ ggplot(education, aes(y = certified_count/total_count, x = yearmonth(year_month)
 ```
 
 
-
 #Goals: -see if we can do linear regression once things are normalized by population
 
 ```{r}
@@ -516,17 +515,17 @@ print(p)
 ```
 
 ```{r}
-  top_countries <- h1b_data_2022 |>
-  group_by(Country_Standardized) |>
-  summarise(total_count = count_h1b) |>
-  arrange(desc(total_count)) |>
-  top_n(5)
+top_countries <- h1b_data_2022 |>
+group_by(Country_Standardized) |>
+summarise(total_count = count_h1b) |>
+arrange(desc(total_count)) |>
+top_n(5)
   
   #summarise the rest
-  other_countries <- h1b_data_2022 |>
-  anti_join(top_countries, by = "Country_Standardized") |>
-    filter(!is.na(count_h1b))|>
-  summarise(Country_Standardized = "Other",
+other_countries <- h1b_data_2022 |>
+anti_join(top_countries, by = "Country_Standardized") |>
+  filter(!is.na(count_h1b))|>
+summarise(Country_Standardized = "Other",
             total_count = sum(count_h1b))
   
 combined_data <- bind_rows(top_countries, other_countries)
@@ -542,11 +541,109 @@ ggplot(combined_data, aes(x = "", y = total_count, fill = toupper(Country_Standa
   theme(plot.title = element_text(hjust = 0.5))
   
 ```
+
+
 ```{r}
-h1b_long
+relevant_columns <- c("Country_Standardized", "count_h1b")
+mergetry_pop_country <- mergetry[, relevant_columns]
+
+mergetry_pop_country <- mergetry_pop_country[!is.na(mergetry_pop_country$count_h1b), ]
+mergetry_pop_country <- mergetry_pop_country[!is.na(mergetry_pop_country$Country_Standardized), ]
+
+top_countries <- mergetry_pop_country |>
+  #distinct(Country_Standardized, .keep_all = TRUE) |>
+  group_by(Country_Standardized) |>
+  summarise(total_count = sum(count_h1b)) |>
+  arrange(desc(total_count)) |>
+  top_n(5)
+
+  
+#summarise the rest
+other_countries <- mergetry |>
+anti_join(top_countries, by = "Country_Standardized") |>
+  filter(!is.na(count_h1b))|>
+summarise(Country_Standardized = "Other",
+            total_count = sum(count_h1b))
+  
+combined_data <- bind_rows(top_countries, other_countries)
+#   pie_chart <- pie(combined_data$total_count, labels = upper(combined_data$Country_Standardized), main = # paste("Top 5 Countries in 2022"), col=viridis(length(combined_data$total_count)))
+  
+ggplot(combined_data, aes(x = "", y = total_count, fill = toupper(Country_Standardized))) +
+  geom_bar(width = 1, stat = "identity") +
+  coord_polar("y", start = 0) +
+  theme_void() +
+  theme(legend.position = "right") +
+  scale_fill_viridis_d(name = 'Country of Origin') +
+  labs(title = paste("Top 5 Countries 1997-2022")) +
+  theme(plot.title = element_text(hjust = 0.5))
+  
+
 ```
+
 ```{r}
-h1b_long
+#calculating percentage of applicants from India in 2022
+h1b_data_2022 <- h1b_data_2022[!is.na(h1b_data_2022$count_h1b), ]
+total_sum <- sum(h1b_data_2022$count_h1b)
+india_sum <- sum(h1b_data_2022$count_h1b[h1b_data_2022$Country_Standardized == "india"])
+percentage_from_india <- (india_sum / total_sum) * 100
+print(percentage_from_india)
+
+```
+
+```{r}
+#calculating percentage of applicants from india 1997-2022
+mergetry_nonan <- mergetry_pop_country[!is.na(mergetry_pop_country$count_h1b), ]
+total_sum <- sum(mergetry_nonan$count_h1b)
+india_sum <- sum(mergetry_nonan$count_h1b[mergetry_nonan$Country_Standardized == "india"])
+percentage_from_india <- (india_sum / total_sum) * 100
+print(percentage_from_india)
+```
+
+```{r}
+#calculating percentage of applicants from china 1997-2022
+total_sum <- sum(mergetry_nonan$count_h1b)
+china_sum <- sum(mergetry_nonan$count_h1b[mergetry_nonan$Country_Standardized == "china"])
+percentage_from_china <- (china_sum / total_sum) * 100
+print(percentage_from_china)
+```
+
+```{r}
+#Calculating percentage of world population from china
+mergetry_nonan <- mergetry[!is.na(mergetry$Population), ]
+mergetry_nonan <- mergetry_nonan[!is.na(mergetry_nonan$Country_Standardized), ]
+total_sum <- sum(mergetry_nonan$Population)
+china_sum <- sum(mergetry_nonan$Population[mergetry_nonan$Country_Standardized == "china"])
+percentage_from_china <- (china_sum / total_sum) * 100
+print(percentage_from_china)
+```
+
+```{r}
+#Calculating percentage of h1-b applicants  from Asia
+mergetry_nonan <- mergetry[!is.na(mergetry$count_h1b), ]
+total_sum <- sum(mergetry_nonan$count_h1b)
+asia_sum <- sum(mergetry_nonan$count_h1b[mergetry_nonan$Continent == "Asia"])
+percentage_from_asia <- (asia_sum / total_sum) * 100
+print(percentage_from_asia)
+```
+
+```{r}
+#Calculating percentage of world population from India
+mergetry_nonan <- mergetry[!is.na(mergetry$Population), ]
+mergetry_nonan <- mergetry_nonan[!is.na(mergetry_nonan$Country_Standardized), ]
+total_sum <- sum(mergetry_nonan$Population)
+india_sum <- sum(mergetry_nonan$Population[mergetry_nonan$Country_Standardized == "india"])
+percentage_from_india <- (india_sum / total_sum) * 100
+print(percentage_from_india)
+```
+
+```{r}
+#calculating percentage of world population from Asia
+mergetry_nonan <- mergetry[!is.na(mergetry$Population), ]
+mergetry_nonan <- mergetry_nonan[!is.na(mergetry_nonan$Continent), ]
+total_sum <- sum(mergetry_nonan$Population)
+asia_sum <- sum(mergetry_nonan$Population[mergetry_nonan$Continent == "Asia"])
+percentage_from_asia <- (asia_sum / total_sum) * 100
+print(percentage_from_asia)
 ```
 
 
