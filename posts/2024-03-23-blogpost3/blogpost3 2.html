@@ -186,13 +186,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <ol type="1">
-<li><p>Further cleaning: we discovered that one of the rows of the <code>Unknown</code> continent, <code>United Nations Laissez-Passer</code>, contained only empty rows. This suggests that this <code>Country</code> value might have had some nonzero values for some non-H1B visa types in the original dataset, but since it has zero H1B visas given to it over all the years, we deleted this row.</p></li>
-<li><p>Data exploration: [comment on data exploration here, explaining the following 3 graphs:]</p></li>
+<li><p>Further cleaning: we discovered that one of the countries of the <code>Unknown</code> continent, <code>United Nations Laissez-Passer</code>, contained only empty rows. This suggests that this <code>Country</code> value might have had some nonzero values for some non-H1B visa types in the original dataset, but since it has zero H1B visas given to it over all the years, we deleted this row. This ‘United Nations Laissez-Passer’ is a document held by diplomats to make travelling between countries easier.</p></li>
+<li><p>Data exploration: We did some preliminary comparisons between the continents and countries to see how the number of recipients has changed in proportion between 1997 and 2022. It is clear that across all countries, there was a significant decrease in H1B recpients throughout the Covid pandemic. The number of recipients with ‘Unknown Nationality’ has decreased to almost none since 1997. Africa, Europe, Oceania, and South America all have decreased in sponshorship throughout this time period, whereas Asia has increased. Asia also is the largest recipient of sponsorship by a significant proportion, as the continent receives between 50-80% of the administered visas in this time period. A good next step would be to normalize these proportions by population of each of these continents.</p></li>
 </ol>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># run this if you don't have the magick package installed</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># install.packages("magick")</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># make sure to comment install.package out before creating gh-pages.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#run this if you don't have the magick package installed</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">#install.packages("magick")</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">#make sure to comment install.package out before creating gh-pages.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(magick)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -215,7 +215,7 @@ Disabled features: fftw, ghostscript, x11</code></pre>
 <p><img src="blogpost3_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<p>For this side by side comparison of H1B approvals and other countries, we get to observe the trend of each countries. It seems like Asia has been getting positive trends since year 1997 till 2022 except 2020 and 2021 due to covid. In contrast, other countries like Europe, South America, Oceania and Africa have all been trending downward for H1B approval. It can be worth to understand what factors contribute to the trends.</p>
+<p>Observation: For this side by side comparison of H1B approvals and other countries, we get to observe the trend of each countries. It seems like Asia has been getting positive trends since year 1997 till 2022 except 2020 and 2021 due to covid. In contrast, other countries like Europe, South America, Oceania and Africa have all been trending downward for H1B approval. It can be worth to understand what factors contribute to the trends.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>image3 <span class="ot">&lt;-</span> <span class="fu">image_read</span>(<span class="st">'images/percent_bar_faceted.png'</span>)</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(image3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -223,7 +223,7 @@ Disabled features: fftw, ghostscript, x11</code></pre>
 <p><img src="blogpost3_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<p>The last plot shows similar content to plot 2. However, with percentage being display, we see that Asia out numbered all other countries combined in terms of H1B approval and Europe comes in second place.</p>
+<p>Observation: The last plot shows similar content to plot 2. However, with percentage being display, we see that Asia out numbered all other countries combined in terms of H1B approval and Europe comes in second place.</p>
 
 
 

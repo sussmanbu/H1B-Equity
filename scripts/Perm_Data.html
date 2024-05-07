@@ -224,7 +224,7 @@ Attaching package: 'lubridate'</code></pre>
 </div>
 <p>#Loading Data:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># # #Load Perm Data</span></span>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># #Load Perm Data</span></span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="co"># filepath &lt;- 'dataset/Perm_data/PERM_FY2019.xlsx'</span></span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="co"># fy19 &lt;- read_excel(filepath)</span></span>
 <span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="co"># filepath &lt;- 'dataset/Perm_data/PERM_Disclosure_Data_FY2020.xlsx'</span></span>
@@ -249,27 +249,27 @@ Attaching package: 'lubridate'</code></pre>
 <span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a><span class="co">#   filter(CLASS_OF_ADMISSION == 'H-1B')</span></span>
 <span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
 <span id="cb19-25"><a href="#cb19-25" aria-hidden="true" tabindex="-1"></a><span class="co"># #Only keep relevant columns(some years differ in column titles)</span></span>
-<span id="cb19-26"><a href="#cb19-26" aria-hidden="true" tabindex="-1"></a><span class="co"># relevant_columns &lt;- c("CASE_NUMBER", "CASE_STATUS", "DECISION_DATE", "EMPLOYER_NAME", "WAGE_OFFERED_FROM_9089", "COUNTRY_OF_CITIZENSHIP", "FOREIGN_WORKER_INFO_EDUCATION")</span></span>
+<span id="cb19-26"><a href="#cb19-26" aria-hidden="true" tabindex="-1"></a><span class="co"># relevant_columns &lt;- c("CASE_NUMBER", "CASE_STATUS", "DECISION_DATE", "EMPLOYER_NAME", # "WAGE_OFFERED_FROM_9089", "COUNTRY_OF_CITIZENSHIP", "FOREIGN_WORKER_INFO_EDUCATION")</span></span>
 <span id="cb19-27"><a href="#cb19-27" aria-hidden="true" tabindex="-1"></a><span class="co"># fy19_relevant &lt;- fy19[, relevant_columns]</span></span>
 <span id="cb19-28"><a href="#cb19-28" aria-hidden="true" tabindex="-1"></a><span class="co"># fy19_relevant &lt;- fy19_relevant |&gt; rename(WAGE_OFFER_FROM = WAGE_OFFERED_FROM_9089)</span></span>
 <span id="cb19-29"><a href="#cb19-29" aria-hidden="true" tabindex="-1"></a><span class="co"># fy19_relevant &lt;- fy19_relevant |&gt; rename(FOREIGN_WORKER_EDUCATION = FOREIGN_WORKER_INFO_EDUCATION)</span></span>
 <span id="cb19-30"><a href="#cb19-30" aria-hidden="true" tabindex="-1"></a><span class="co"># fy19_relevant$DECISION_DATE &lt;- as.Date(fy19_relevant$DECISION_DATE)</span></span>
 <span id="cb19-31"><a href="#cb19-31" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb19-32"><a href="#cb19-32" aria-hidden="true" tabindex="-1"></a><span class="co"># relevant_columns &lt;- c("CASE_NUMBER", "CASE_STATUS", "DECISION_DATE", "EMPLOYER_NAME", "WAGE_OFFER_FROM",  "COUNTRY_OF_CITIZENSHIP", "FOREIGN_WORKER_EDUCATION")</span></span>
+<span id="cb19-32"><a href="#cb19-32" aria-hidden="true" tabindex="-1"></a><span class="co"># relevant_columns &lt;- c("CASE_NUMBER", "CASE_STATUS", "DECISION_DATE", "EMPLOYER_NAME", "WAGE_OFFER_FROM", # "COUNTRY_OF_CITIZENSHIP", "FOREIGN_WORKER_EDUCATION")</span></span>
 <span id="cb19-33"><a href="#cb19-33" aria-hidden="true" tabindex="-1"></a><span class="co"># fy20_relevant &lt;- fy20[, relevant_columns]</span></span>
 <span id="cb19-34"><a href="#cb19-34" aria-hidden="true" tabindex="-1"></a><span class="co"># fy20_relevant$DECISION_DATE &lt;- as.Date(fy20_relevant$DECISION_DATE)</span></span>
 <span id="cb19-35"><a href="#cb19-35" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb19-36"><a href="#cb19-36" aria-hidden="true" tabindex="-1"></a><span class="co"># relevant_columns &lt;- c("CASE_NUMBER", "CASE_STATUS", "DECISION_DATE", "EMPLOYER_NAME", "WAGE_OFFER_FROM",  "COUNTRY_OF_CITIZENSHIP", "FOREIGN_WORKER_EDUCATION")</span></span>
+<span id="cb19-36"><a href="#cb19-36" aria-hidden="true" tabindex="-1"></a><span class="co"># relevant_columns &lt;- c("CASE_NUMBER", "CASE_STATUS", "DECISION_DATE", "EMPLOYER_NAME", "WAGE_OFFER_FROM", # "COUNTRY_OF_CITIZENSHIP", "FOREIGN_WORKER_EDUCATION")</span></span>
 <span id="cb19-37"><a href="#cb19-37" aria-hidden="true" tabindex="-1"></a><span class="co"># fy21_relevant &lt;- fy21[, relevant_columns]</span></span>
 <span id="cb19-38"><a href="#cb19-38" aria-hidden="true" tabindex="-1"></a><span class="co"># # fy21_relevant &lt;- fy21_relevant |&gt; rename(WAGE_OFFER_FROM = WAGE_OFFERED_FROM_9089)</span></span>
 <span id="cb19-39"><a href="#cb19-39" aria-hidden="true" tabindex="-1"></a><span class="co"># fy21_relevant$DECISION_DATE &lt;- as.Date(fy21_relevant$DECISION_DATE)</span></span>
 <span id="cb19-40"><a href="#cb19-40" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb19-41"><a href="#cb19-41" aria-hidden="true" tabindex="-1"></a><span class="co"># relevant_columns &lt;- c("CASE_NUMBER", "CASE_STATUS", "DECISION_DATE", "EMPLOYER_NAME", "WAGE_OFFER_FROM", "COUNTRY_OF_CITIZENSHIP", "FOREIGN_WORKER_EDUCATION")</span></span>
+<span id="cb19-41"><a href="#cb19-41" aria-hidden="true" tabindex="-1"></a><span class="co"># relevant_columns &lt;- c("CASE_NUMBER", "CASE_STATUS", "DECISION_DATE", "EMPLOYER_NAME", "WAGE_OFFER_FROM", # "COUNTRY_OF_CITIZENSHIP", "FOREIGN_WORKER_EDUCATION")</span></span>
 <span id="cb19-42"><a href="#cb19-42" aria-hidden="true" tabindex="-1"></a><span class="co"># fy22_relevant &lt;- fy22[, relevant_columns]</span></span>
 <span id="cb19-43"><a href="#cb19-43" aria-hidden="true" tabindex="-1"></a><span class="co"># # fy21_relevant &lt;- fy21_relevant |&gt; rename(WAGE_OFFER_FROM = WAGE_OFFERED_FROM_9089)</span></span>
 <span id="cb19-44"><a href="#cb19-44" aria-hidden="true" tabindex="-1"></a><span class="co"># fy22_relevant$DECISION_DATE &lt;- as.Date(fy22_relevant$DECISION_DATE)</span></span>
 <span id="cb19-45"><a href="#cb19-45" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb19-46"><a href="#cb19-46" aria-hidden="true" tabindex="-1"></a><span class="co"># relevant_columns &lt;- c("CASE_NUMBER", "CASE_STATUS", "DECISION_DATE", "EMPLOYER_NAME", "WAGE_OFFER_FROM",  "COUNTRY_OF_CITIZENSHIP", "FOREIGN_WORKER_EDUCATION")</span></span>
+<span id="cb19-46"><a href="#cb19-46" aria-hidden="true" tabindex="-1"></a><span class="co"># relevant_columns &lt;- c("CASE_NUMBER", "CASE_STATUS", "DECISION_DATE", "EMPLOYER_NAME", "WAGE_OFFER_FROM", # "COUNTRY_OF_CITIZENSHIP", "FOREIGN_WORKER_EDUCATION")</span></span>
 <span id="cb19-47"><a href="#cb19-47" aria-hidden="true" tabindex="-1"></a><span class="co"># fy23_relevant &lt;- fy23[, relevant_columns]</span></span>
 <span id="cb19-48"><a href="#cb19-48" aria-hidden="true" tabindex="-1"></a><span class="co"># # fy21_relevant &lt;- fy21_relevant |&gt; rename(WAGE_OFFER_FROM = WAGE_OFFERED_FROM_9089)</span></span>
 <span id="cb19-49"><a href="#cb19-49" aria-hidden="true" tabindex="-1"></a><span class="co"># fy23_relevant$DECISION_DATE &lt;- as.Date(fy23_relevant$DECISION_DATE)</span></span>
@@ -670,106 +670,78 @@ override using the `.groups` argument.</code></pre>
 </div>
 <p>#Goals: -see if we can do linear regression once things are normalized by population</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>population_data_test <span class="ot">&lt;-</span> <span class="fu">read_xls</span>(<span class="st">"dataset/IMF_data/imf_population.xls"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>population_data <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"dataset/population_1997-2023.csv"</span>, <span class="at">header=</span><span class="cn">TRUE</span>)</span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(population_data) <span class="ot">&lt;-</span> population_data[<span class="dv">1</span>, ]</span>
+<span id="cb65-3"><a href="#cb65-3" aria-hidden="true" tabindex="-1"></a>population_data <span class="ot">&lt;-</span> population_data[<span class="sc">-</span><span class="dv">1</span>, ]</span>
+<span id="cb65-4"><a href="#cb65-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb65-5"><a href="#cb65-5" aria-hidden="true" tabindex="-1"></a>pattern <span class="ot">&lt;-</span> <span class="st">"(1997|1998|1999|2000|2001|2002|2003|2004|2005|2006|2007|2008|2009|2010|2011|2012|2013|2014|2015|2016|2017|2018|2019|2020|2021|2022|2023)"</span></span>
+<span id="cb65-6"><a href="#cb65-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb65-7"><a href="#cb65-7" aria-hidden="true" tabindex="-1"></a>population_data <span class="ot">&lt;-</span> population_data <span class="sc">%&gt;%</span></span>
+<span id="cb65-8"><a href="#cb65-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">year =</span> <span class="fu">as.numeric</span>(<span class="fu">str_extract</span>(Region, pattern))) <span class="sc">%&gt;%</span></span>
+<span id="cb65-9"><a href="#cb65-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Year <span class="sc">!=</span> <span class="st">'1996'</span>)</span>
+<span id="cb65-10"><a href="#cb65-10" aria-hidden="true" tabindex="-1"></a><span class="co">#population_data$Year = as.numeric(population_data$Year)</span></span>
+<span id="cb65-11"><a href="#cb65-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb65-12"><a href="#cb65-12" aria-hidden="true" tabindex="-1"></a>h1b_country <span class="ot">&lt;-</span> </span>
+<span id="cb65-13"><a href="#cb65-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">read_rds</span>(<span class="st">'dataset/cleaned_h1b_data.rds'</span>)</span>
+<span id="cb65-14"><a href="#cb65-14" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(h1b_country) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'Country'</span>,<span class="st">'Continent'</span>,<span class="st">'1997'</span>, <span class="st">'1998'</span>, <span class="st">'1999'</span>, <span class="st">'2000'</span>, <span class="st">'2001'</span>, <span class="st">'2002'</span>, <span class="st">'2003'</span>, <span class="st">'2004'</span>, <span class="st">'2005'</span>, <span class="st">'2006'</span>, <span class="st">'2007'</span>, <span class="st">'2008'</span>, <span class="st">'2009'</span>, <span class="st">'2010'</span>, <span class="st">'2011'</span>, <span class="st">'2012'</span>, <span class="st">'2013'</span>, <span class="st">'2014'</span>, <span class="st">'2015'</span>, <span class="st">'2016'</span>, <span class="st">'2017'</span>, <span class="st">'2018'</span>, <span class="st">'2019'</span>, <span class="st">'2020'</span>, <span class="st">'2021'</span>, <span class="st">'2022'</span>)</span>
+<span id="cb65-15"><a href="#cb65-15" aria-hidden="true" tabindex="-1"></a>h1b_long <span class="ot">&lt;-</span> <span class="fu">pivot_longer</span>(h1b_country, <span class="at">cols =</span> <span class="sc">-</span><span class="fu">c</span>(<span class="st">"Continent"</span>, <span class="st">"Country"</span>), <span class="at">names_to =</span> <span class="st">"year"</span>, <span class="at">values_to =</span> <span class="st">"count_h1b"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a>population_data_test</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 231 × 51
-   Population (Millions of pe…¹ `1980` `1981` `1982` `1983` `1984` `1985` `1986`
-   &lt;chr&gt;                        &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt; 
- 1 &lt;NA&gt;                         &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;  
- 2 Afghanistan                  no da… no da… no da… no da… no da… no da… no da…
- 3 Albania                      2.672… 2.726  2.783… 2.843… 2.903… 2.964… 3.023…
- 4 Algeria                      18.666 19.24… 19.86… 20.51… 21.17… 22.19… 22.80…
- 5 Andorra                      no da… no da… no da… no da… no da… no da… no da…
- 6 Angola                       8.272… 8.494… 8.720… 8.948… 9.185… 10.35  10.64…
- 7 Antigua and Barbuda          0.068… 0.068… 0.067… 0.066… 0.065… 0.064… 0.063 
- 8 Argentina                    27.94… 28.44… 28.93  29.34  29.84  30.35… 30.73…
- 9 Armenia                      no da… no da… no da… no da… no da… no da… no da…
-10 Aruba                        no da… no da… no da… no da… no da… no da… 0.060…
-# ℹ 221 more rows
-# ℹ abbreviated name: ¹​`Population (Millions of people)`
-# ℹ 43 more variables: `1987` &lt;chr&gt;, `1988` &lt;chr&gt;, `1989` &lt;chr&gt;, `1990` &lt;chr&gt;,
-#   `1991` &lt;chr&gt;, `1992` &lt;chr&gt;, `1993` &lt;chr&gt;, `1994` &lt;chr&gt;, `1995` &lt;chr&gt;,
-#   `1996` &lt;chr&gt;, `1997` &lt;chr&gt;, `1998` &lt;chr&gt;, `1999` &lt;chr&gt;, `2000` &lt;chr&gt;,
-#   `2001` &lt;chr&gt;, `2002` &lt;chr&gt;, `2003` &lt;chr&gt;, `2004` &lt;chr&gt;, `2005` &lt;chr&gt;,
-#   `2006` &lt;chr&gt;, `2007` &lt;chr&gt;, `2008` &lt;chr&gt;, `2009` &lt;chr&gt;, `2010` &lt;chr&gt;, …</code></pre>
-</div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a>population_data <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"dataset/population_1997-2023.csv"</span>, <span class="at">header=</span><span class="cn">TRUE</span>)</span>
-<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(population_data) <span class="ot">&lt;-</span> population_data[<span class="dv">1</span>, ]</span>
-<span id="cb68-3"><a href="#cb68-3" aria-hidden="true" tabindex="-1"></a>population_data <span class="ot">&lt;-</span> population_data[<span class="sc">-</span><span class="dv">1</span>, ]</span>
-<span id="cb68-4"><a href="#cb68-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb68-5"><a href="#cb68-5" aria-hidden="true" tabindex="-1"></a>pattern <span class="ot">&lt;-</span> <span class="st">"(1997|1998|1999|2000|2001|2002|2003|2004|2005|2006|2007|2008|2009|2010|2011|2012|2013|2014|2015|2016|2017|2018|2019|2020|2021|2022|2023)"</span></span>
-<span id="cb68-6"><a href="#cb68-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb68-7"><a href="#cb68-7" aria-hidden="true" tabindex="-1"></a>population_data <span class="ot">&lt;-</span> population_data <span class="sc">%&gt;%</span></span>
-<span id="cb68-8"><a href="#cb68-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">year =</span> <span class="fu">as.numeric</span>(<span class="fu">str_extract</span>(Region, pattern))) <span class="sc">%&gt;%</span></span>
-<span id="cb68-9"><a href="#cb68-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Year <span class="sc">!=</span> <span class="st">'1996'</span>)</span>
-<span id="cb68-10"><a href="#cb68-10" aria-hidden="true" tabindex="-1"></a><span class="co">#population_data$Year = as.numeric(population_data$Year)</span></span>
-<span id="cb68-11"><a href="#cb68-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb68-12"><a href="#cb68-12" aria-hidden="true" tabindex="-1"></a>h1b_country <span class="ot">&lt;-</span> </span>
-<span id="cb68-13"><a href="#cb68-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">read_rds</span>(<span class="st">'dataset/cleaned_h1b_data.rds'</span>)</span>
-<span id="cb68-14"><a href="#cb68-14" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(h1b_country) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'Country'</span>,<span class="st">'Continent'</span>,<span class="st">'1997'</span>, <span class="st">'1998'</span>, <span class="st">'1999'</span>, <span class="st">'2000'</span>, <span class="st">'2001'</span>, <span class="st">'2002'</span>, <span class="st">'2003'</span>, <span class="st">'2004'</span>, <span class="st">'2005'</span>, <span class="st">'2006'</span>, <span class="st">'2007'</span>, <span class="st">'2008'</span>, <span class="st">'2009'</span>, <span class="st">'2010'</span>, <span class="st">'2011'</span>, <span class="st">'2012'</span>, <span class="st">'2013'</span>, <span class="st">'2014'</span>, <span class="st">'2015'</span>, <span class="st">'2016'</span>, <span class="st">'2017'</span>, <span class="st">'2018'</span>, <span class="st">'2019'</span>, <span class="st">'2020'</span>, <span class="st">'2021'</span>, <span class="st">'2022'</span>)</span>
-<span id="cb68-15"><a href="#cb68-15" aria-hidden="true" tabindex="-1"></a>h1b_long <span class="ot">&lt;-</span> <span class="fu">pivot_longer</span>(h1b_country, <span class="at">cols =</span> <span class="sc">-</span><span class="fu">c</span>(<span class="st">"Continent"</span>, <span class="st">"Country"</span>), <span class="at">names_to =</span> <span class="st">"year"</span>, <span class="at">values_to =</span> <span class="st">"count_h1b"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>standardize_country_names <span class="ot">&lt;-</span> <span class="cf">function</span>(countries) {</span>
-<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a>  countries <span class="sc">%&gt;%</span></span>
-<span id="cb69-3"><a href="#cb69-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tolower</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb69-4"><a href="#cb69-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"china - mainland"</span>, <span class="st">"china"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb69-5"><a href="#cb69-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"congo, democratic republic of the"</span>, <span class="st">"democratic replublic of congo"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb69-6"><a href="#cb69-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"congo, republic of the"</span>, <span class="st">"republic of congo"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb69-7"><a href="#cb69-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"congo (brazzaville)"</span>, <span class="st">"republic of congo"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb69-8"><a href="#cb69-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"congo (kinshasa)"</span>, <span class="st">"democratic republic of congo"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb69-9"><a href="#cb69-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"hong kong s.a.r."</span>, <span class="st">"hong kong"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb69-10"><a href="#cb69-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"cape verde"</span>, <span class="st">"cabo verde"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb69-11"><a href="#cb69-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"cape verde"</span>, <span class="st">"cabo verde"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb69-12"><a href="#cb69-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"hong kong sar"</span>, <span class="st">"hong kong"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb69-13"><a href="#cb69-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"islamic republic of iran"</span>, <span class="st">"iran"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb69-14"><a href="#cb69-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"kyrgyz republic"</span>, <span class="st">"kyrgyzstan"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb69-15"><a href="#cb69-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"lao p.d.r."</span>, <span class="st">"laos"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb69-16"><a href="#cb69-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"macao sar"</span>, <span class="st">"macau"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb69-17"><a href="#cb69-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"north macedonia"</span>, <span class="st">"macedonia"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb69-18"><a href="#cb69-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"russian federation"</span>, <span class="st">"russia"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb69-19"><a href="#cb69-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"korea, republic of"</span>, <span class="st">"south korea"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb69-20"><a href="#cb69-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"taiwan province of china"</span>, <span class="st">"taiwan"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb69-21"><a href="#cb69-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"united republic of tanzania"</span>, <span class="st">"tanzania"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb69-22"><a href="#cb69-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"türkiye, republic of"</span>, <span class="st">"turkey"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb69-23"><a href="#cb69-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"united kingdom"</span>, <span class="st">"great britain"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb69-24"><a href="#cb69-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"bolivarian republic of venezuela"</span>, <span class="st">"venezuela"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb69-25"><a href="#cb69-25" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"congo, dem. rep. of the"</span>, <span class="st">"democratic republic of congo"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb69-26"><a href="#cb69-26" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"slovak republic"</span>, <span class="st">"slovakia"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb69-27"><a href="#cb69-27" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"st lucia"</span>, <span class="st">"saint lucia"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb69-28"><a href="#cb69-28" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"st vincent"</span>, <span class="st">"saint vincent and the grenadines"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb69-29"><a href="#cb69-29" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"sri lanka"</span>, <span class="st">"sri lanka"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb69-30"><a href="#cb69-30" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"bahamas, the"</span>, <span class="st">"bahamas"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb69-31"><a href="#cb69-31" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"gambia, the"</span>, <span class="st">"gambia"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb69-32"><a href="#cb69-32" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"myanmar </span><span class="sc">\\</span><span class="st">(myanmar</span><span class="sc">\\</span><span class="st">)"</span>, <span class="st">"myanmar"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb69-33"><a href="#cb69-33" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"united states of america"</span>, <span class="st">"united states"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb69-34"><a href="#cb69-34" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"china, people's republic of"</span>, <span class="st">"china"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb69-35"><a href="#cb69-35" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"cote d'ivoire"</span>, <span class="st">"côte d'ivoire"</span> )</span>
-<span id="cb69-36"><a href="#cb69-36" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb69-37"><a href="#cb69-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-38"><a href="#cb69-38" aria-hidden="true" tabindex="-1"></a>population_data<span class="sc">$</span>Country_Standardized <span class="ot">&lt;-</span> <span class="fu">standardize_country_names</span>(population_data<span class="sc">$</span>Name)</span>
-<span id="cb69-39"><a href="#cb69-39" aria-hidden="true" tabindex="-1"></a>h1b_long<span class="sc">$</span>Country_Standardized <span class="ot">&lt;-</span> <span class="fu">standardize_country_names</span>(h1b_long<span class="sc">$</span>Country)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a>standardize_country_names <span class="ot">&lt;-</span> <span class="cf">function</span>(countries) {</span>
+<span id="cb66-2"><a href="#cb66-2" aria-hidden="true" tabindex="-1"></a>  countries <span class="sc">%&gt;%</span></span>
+<span id="cb66-3"><a href="#cb66-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tolower</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb66-4"><a href="#cb66-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"china - mainland"</span>, <span class="st">"china"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb66-5"><a href="#cb66-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"congo, democratic republic of the"</span>, <span class="st">"democratic replublic of congo"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb66-6"><a href="#cb66-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"congo, republic of the"</span>, <span class="st">"republic of congo"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb66-7"><a href="#cb66-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"congo (brazzaville)"</span>, <span class="st">"republic of congo"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb66-8"><a href="#cb66-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"congo (kinshasa)"</span>, <span class="st">"democratic republic of congo"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb66-9"><a href="#cb66-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"hong kong s.a.r."</span>, <span class="st">"hong kong"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb66-10"><a href="#cb66-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"cape verde"</span>, <span class="st">"cabo verde"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb66-11"><a href="#cb66-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"cape verde"</span>, <span class="st">"cabo verde"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb66-12"><a href="#cb66-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"hong kong sar"</span>, <span class="st">"hong kong"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb66-13"><a href="#cb66-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"islamic republic of iran"</span>, <span class="st">"iran"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb66-14"><a href="#cb66-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"kyrgyz republic"</span>, <span class="st">"kyrgyzstan"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb66-15"><a href="#cb66-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"lao p.d.r."</span>, <span class="st">"laos"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb66-16"><a href="#cb66-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"macao sar"</span>, <span class="st">"macau"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb66-17"><a href="#cb66-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"north macedonia"</span>, <span class="st">"macedonia"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb66-18"><a href="#cb66-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"russian federation"</span>, <span class="st">"russia"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb66-19"><a href="#cb66-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"korea, republic of"</span>, <span class="st">"south korea"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb66-20"><a href="#cb66-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"taiwan province of china"</span>, <span class="st">"taiwan"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb66-21"><a href="#cb66-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"united republic of tanzania"</span>, <span class="st">"tanzania"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb66-22"><a href="#cb66-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"türkiye, republic of"</span>, <span class="st">"turkey"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb66-23"><a href="#cb66-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"united kingdom"</span>, <span class="st">"great britain"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb66-24"><a href="#cb66-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"bolivarian republic of venezuela"</span>, <span class="st">"venezuela"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb66-25"><a href="#cb66-25" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"congo, dem. rep. of the"</span>, <span class="st">"democratic republic of congo"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb66-26"><a href="#cb66-26" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"slovak republic"</span>, <span class="st">"slovakia"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb66-27"><a href="#cb66-27" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"st lucia"</span>, <span class="st">"saint lucia"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb66-28"><a href="#cb66-28" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"st vincent"</span>, <span class="st">"saint vincent and the grenadines"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb66-29"><a href="#cb66-29" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"sri lanka"</span>, <span class="st">"sri lanka"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb66-30"><a href="#cb66-30" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"bahamas, the"</span>, <span class="st">"bahamas"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb66-31"><a href="#cb66-31" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"gambia, the"</span>, <span class="st">"gambia"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb66-32"><a href="#cb66-32" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"myanmar </span><span class="sc">\\</span><span class="st">(myanmar</span><span class="sc">\\</span><span class="st">)"</span>, <span class="st">"myanmar"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb66-33"><a href="#cb66-33" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"united states of america"</span>, <span class="st">"united states"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb66-34"><a href="#cb66-34" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"china, people's republic of"</span>, <span class="st">"china"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb66-35"><a href="#cb66-35" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_replace_all</span>(<span class="st">"cote d'ivoire"</span>, <span class="st">"côte d'ivoire"</span> )</span>
+<span id="cb66-36"><a href="#cb66-36" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb66-37"><a href="#cb66-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb66-38"><a href="#cb66-38" aria-hidden="true" tabindex="-1"></a>population_data<span class="sc">$</span>Country_Standardized <span class="ot">&lt;-</span> <span class="fu">standardize_country_names</span>(population_data<span class="sc">$</span>Name)</span>
+<span id="cb66-39"><a href="#cb66-39" aria-hidden="true" tabindex="-1"></a>h1b_long<span class="sc">$</span>Country_Standardized <span class="ot">&lt;-</span> <span class="fu">standardize_country_names</span>(h1b_long<span class="sc">$</span>Country)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a>mergetry <span class="ot">&lt;-</span> <span class="fu">left_join</span>(population_data, h1b_long, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"Year"</span> <span class="ot">=</span> <span class="st">"year"</span>, <span class="st">"Country_Standardized"</span> <span class="ot">=</span> <span class="st">"Country_Standardized"</span>))</span>
-<span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a>mergetry <span class="ot">&lt;-</span> mergetry <span class="sc">|&gt;</span></span>
-<span id="cb70-3"><a href="#cb70-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Population =</span> <span class="fu">as.numeric</span>(<span class="fu">gsub</span>(<span class="st">","</span>, <span class="st">""</span>, <span class="st">`</span><span class="at">Total Population</span><span class="st">`</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a>mergetry <span class="ot">&lt;-</span> <span class="fu">left_join</span>(population_data, h1b_long, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"Year"</span> <span class="ot">=</span> <span class="st">"year"</span>, <span class="st">"Country_Standardized"</span> <span class="ot">=</span> <span class="st">"Country_Standardized"</span>))</span>
+<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a>mergetry <span class="ot">&lt;-</span> mergetry <span class="sc">|&gt;</span></span>
+<span id="cb67-3"><a href="#cb67-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Population =</span> <span class="fu">as.numeric</span>(<span class="fu">gsub</span>(<span class="st">","</span>, <span class="st">""</span>, <span class="st">`</span><span class="at">Total Population</span><span class="st">`</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning: There was 1 warning in `mutate()`.
 ℹ In argument: `Population = as.numeric(gsub(",", "", `Total Population`))`.
 Caused by warning:
 ! NAs introduced by coercion</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a>merge_continent <span class="ot">&lt;-</span> mergetry <span class="sc">|&gt;</span></span>
-<span id="cb72-2"><a href="#cb72-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Continent, Year)<span class="sc">|&gt;</span></span>
-<span id="cb72-3"><a href="#cb72-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">c</span>(Continent, count_h1b, Population, Year))<span class="sc">|&gt;</span></span>
-<span id="cb72-4"><a href="#cb72-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="fu">across</span>(<span class="fu">everything</span>(), sum, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb72-5"><a href="#cb72-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Continent <span class="sc">!=</span> <span class="st">'NA'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>merge_continent <span class="ot">&lt;-</span> mergetry <span class="sc">|&gt;</span></span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Continent, Year)<span class="sc">|&gt;</span></span>
+<span id="cb69-3"><a href="#cb69-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">c</span>(Continent, count_h1b, Population, Year))<span class="sc">|&gt;</span></span>
+<span id="cb69-4"><a href="#cb69-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="fu">across</span>(<span class="fu">everything</span>(), sum, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb69-5"><a href="#cb69-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Continent <span class="sc">!=</span> <span class="st">'NA'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning: There was 1 warning in `summarize()`.
 ℹ In argument: `across(everything(), sum, na.rm = TRUE)`.
@@ -790,68 +762,106 @@ Supply arguments directly to `.fns` through an anonymous function instead.
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(merge_continent, <span class="fu">aes</span>(<span class="at">x =</span> Year, <span class="at">y =</span> count_h1b, <span class="at">fill =</span> Continent)) <span class="sc">+</span></span>
-<span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">position =</span> <span class="st">"stack"</span>) <span class="sc">+</span></span>
-<span id="cb75-3"><a href="#cb75-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>Continent, <span class="at">scales=</span><span class="st">'free_y'</span>) <span class="sc">+</span> </span>
-<span id="cb75-4"><a href="#cb75-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Total Values by Continent Over the Years"</span>,</span>
-<span id="cb75-5"><a href="#cb75-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Year"</span>, <span class="at">y =</span> <span class="st">"Number of Applications"</span>) <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>,</span>
-<span id="cb75-6"><a href="#cb75-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>)) <span class="sc">+</span></span>
-<span id="cb75-7"><a href="#cb75-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_discrete</span>(<span class="at">guide=</span><span class="fu">guide_axis</span>(<span class="at">check.overlap=</span><span class="cn">TRUE</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(merge_continent, <span class="fu">aes</span>(<span class="at">x =</span> Year, <span class="at">y =</span> count_h1b, <span class="at">fill =</span> Continent)) <span class="sc">+</span></span>
+<span id="cb72-2"><a href="#cb72-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">position =</span> <span class="st">"stack"</span>) <span class="sc">+</span></span>
+<span id="cb72-3"><a href="#cb72-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>Continent, <span class="at">scales=</span><span class="st">'free_y'</span>) <span class="sc">+</span> </span>
+<span id="cb72-4"><a href="#cb72-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Total Values by Continent Over the Years"</span>,</span>
+<span id="cb72-5"><a href="#cb72-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Year"</span>, <span class="at">y =</span> <span class="st">"Number of Applications"</span>) <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>,</span>
+<span id="cb72-6"><a href="#cb72-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb72-7"><a href="#cb72-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_discrete</span>(<span class="at">guide=</span><span class="fu">guide_axis</span>(<span class="at">check.overlap=</span><span class="cn">TRUE</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="Perm_Data_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid" width="672"></p>
+<p><img src="Perm_Data_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid" width="672"></p>
 </div>
-<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(merge_continent, <span class="fu">aes</span>(<span class="at">x =</span> Year, <span class="at">y =</span> count_h1b<span class="sc">/</span>Population, <span class="at">fill =</span> Continent)) <span class="sc">+</span></span>
-<span id="cb76-2"><a href="#cb76-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">position =</span> <span class="st">"stack"</span>) <span class="sc">+</span></span>
-<span id="cb76-3"><a href="#cb76-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>Continent, <span class="at">scales=</span><span class="st">'free_y'</span>) <span class="sc">+</span> </span>
-<span id="cb76-4"><a href="#cb76-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Total Values by Continent Over the Years, Normalized by Population"</span>,</span>
-<span id="cb76-5"><a href="#cb76-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Year"</span>, <span class="at">y =</span> <span class="st">"Number of Applications/Population"</span>) <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>,</span>
-<span id="cb76-6"><a href="#cb76-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))<span class="sc">+</span></span>
-<span id="cb76-7"><a href="#cb76-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_discrete</span>(<span class="at">guide=</span><span class="fu">guide_axis</span>(<span class="at">check.overlap=</span><span class="cn">TRUE</span>))<span class="sc">+</span></span>
-<span id="cb76-8"><a href="#cb76-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.y =</span> <span class="fu">element_blank</span>(), <span class="at">axis.ticks.y =</span> <span class="fu">element_blank</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(merge_continent, <span class="fu">aes</span>(<span class="at">x =</span> Year, <span class="at">y =</span> count_h1b<span class="sc">/</span>Population, <span class="at">fill =</span> Continent)) <span class="sc">+</span></span>
+<span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">position =</span> <span class="st">"stack"</span>) <span class="sc">+</span></span>
+<span id="cb73-3"><a href="#cb73-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>Continent, <span class="at">scales=</span><span class="st">'free_y'</span>) <span class="sc">+</span> </span>
+<span id="cb73-4"><a href="#cb73-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Total Values by Continent Over the Years, Normalized by Population"</span>,</span>
+<span id="cb73-5"><a href="#cb73-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Year"</span>, <span class="at">y =</span> <span class="st">"Number of Applications/Population"</span>) <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>,</span>
+<span id="cb73-6"><a href="#cb73-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))<span class="sc">+</span></span>
+<span id="cb73-7"><a href="#cb73-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_discrete</span>(<span class="at">guide=</span><span class="fu">guide_axis</span>(<span class="at">check.overlap=</span><span class="cn">TRUE</span>))<span class="sc">+</span></span>
+<span id="cb73-8"><a href="#cb73-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.y =</span> <span class="fu">element_blank</span>(), <span class="at">axis.ticks.y =</span> <span class="fu">element_blank</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="Perm_Data_files/figure-html/unnamed-chunk-28-2.png" class="img-fluid" width="672"></p>
+<p><img src="Perm_Data_files/figure-html/unnamed-chunk-26-2.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a>mergetry<span class="sc">$</span>Year <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(mergetry<span class="sc">$</span>Year)</span>
-<span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a>world_map <span class="ot">&lt;-</span> <span class="fu">map_data</span>(<span class="st">"world"</span>)</span>
-<span id="cb77-3"><a href="#cb77-3" aria-hidden="true" tabindex="-1"></a>world_map<span class="sc">$</span>Country_Standardized <span class="ot">&lt;-</span> <span class="fu">standardize_country_names</span>(world_map<span class="sc">$</span>region)</span>
-<span id="cb77-4"><a href="#cb77-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb77-5"><a href="#cb77-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Merge world map data with h1b data</span></span>
-<span id="cb77-6"><a href="#cb77-6" aria-hidden="true" tabindex="-1"></a>h1b_data_2022 <span class="ot">&lt;-</span> <span class="fu">subset</span>(mergetry, year <span class="sc">==</span> <span class="dv">2022</span>)</span>
-<span id="cb77-7"><a href="#cb77-7" aria-hidden="true" tabindex="-1"></a>map_data <span class="ot">&lt;-</span> <span class="fu">inner_join</span>(world_map, h1b_data_2022, <span class="at">by =</span> <span class="st">"Country_Standardized"</span>)</span>
-<span id="cb77-8"><a href="#cb77-8" aria-hidden="true" tabindex="-1"></a>map_data <span class="ot">&lt;-</span> map_data[<span class="fu">order</span>(map_data<span class="sc">$</span>order), ]</span>
-<span id="cb77-9"><a href="#cb77-9" aria-hidden="true" tabindex="-1"></a>map_data <span class="ot">&lt;-</span> <span class="fu">subset</span>(map_data, year <span class="sc">==</span> <span class="dv">2022</span>)</span>
-<span id="cb77-10"><a href="#cb77-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb77-11"><a href="#cb77-11" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb77-12"><a href="#cb77-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_map</span>(<span class="at">data =</span> map_data, <span class="at">map =</span> map_data,</span>
-<span id="cb77-13"><a href="#cb77-13" aria-hidden="true" tabindex="-1"></a>           <span class="fu">aes</span>(<span class="at">map_id =</span> region, <span class="at">fill =</span> <span class="fu">log</span>(count_h1b)<span class="sc">/</span><span class="fu">log</span>(Population))) <span class="sc">+</span></span>
-<span id="cb77-14"><a href="#cb77-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">expand_limits</span>(<span class="at">x =</span> <span class="fu">c</span>(<span class="fu">min</span>(map_data<span class="sc">$</span>long), <span class="fu">max</span>(map_data<span class="sc">$</span>long)), </span>
-<span id="cb77-15"><a href="#cb77-15" aria-hidden="true" tabindex="-1"></a>              <span class="at">y =</span> <span class="fu">c</span>(<span class="fu">min</span>(map_data<span class="sc">$</span>lat), <span class="fu">max</span>(map_data<span class="sc">$</span>lat)))<span class="sc">+</span></span>
-<span id="cb77-16"><a href="#cb77-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_fixed</span>(<span class="at">ratio=</span><span class="fl">1.2</span>) <span class="sc">+</span></span>
-<span id="cb77-17"><a href="#cb77-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_void</span>() <span class="sc">+</span></span>
-<span id="cb77-18"><a href="#cb77-18" aria-hidden="true" tabindex="-1"></a>  <span class="co">#scale_fill_continuous(name = "H1B Count") + </span></span>
-<span id="cb77-19"><a href="#cb77-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_viridis_c</span>()<span class="sc">+</span></span>
-<span id="cb77-20"><a href="#cb77-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"H1B Visa Distribution by Country, 2022"</span>)<span class="sc">+</span></span>
-<span id="cb77-21"><a href="#cb77-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>))</span>
-<span id="cb77-22"><a href="#cb77-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb77-23"><a href="#cb77-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb77-24"><a href="#cb77-24" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a>mergetry<span class="sc">$</span>Year <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(mergetry<span class="sc">$</span>Year)</span>
+<span id="cb74-2"><a href="#cb74-2" aria-hidden="true" tabindex="-1"></a>world_map <span class="ot">&lt;-</span> <span class="fu">map_data</span>(<span class="st">"world"</span>)</span>
+<span id="cb74-3"><a href="#cb74-3" aria-hidden="true" tabindex="-1"></a>world_map<span class="sc">$</span>Country_Standardized <span class="ot">&lt;-</span> <span class="fu">standardize_country_names</span>(world_map<span class="sc">$</span>region)</span>
+<span id="cb74-4"><a href="#cb74-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb74-5"><a href="#cb74-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Merge world map data with h1b data</span></span>
+<span id="cb74-6"><a href="#cb74-6" aria-hidden="true" tabindex="-1"></a>h1b_data_2022 <span class="ot">&lt;-</span> <span class="fu">subset</span>(mergetry, year <span class="sc">==</span> <span class="dv">2022</span>)</span>
+<span id="cb74-7"><a href="#cb74-7" aria-hidden="true" tabindex="-1"></a>map_data <span class="ot">&lt;-</span> <span class="fu">inner_join</span>(world_map, h1b_data_2022, <span class="at">by =</span> <span class="st">"Country_Standardized"</span>)</span>
+<span id="cb74-8"><a href="#cb74-8" aria-hidden="true" tabindex="-1"></a>map_data <span class="ot">&lt;-</span> map_data[<span class="fu">order</span>(map_data<span class="sc">$</span>order), ]</span>
+<span id="cb74-9"><a href="#cb74-9" aria-hidden="true" tabindex="-1"></a>map_data <span class="ot">&lt;-</span> <span class="fu">subset</span>(map_data, year <span class="sc">==</span> <span class="dv">2022</span>)</span>
+<span id="cb74-10"><a href="#cb74-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb74-11"><a href="#cb74-11" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb74-12"><a href="#cb74-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_map</span>(<span class="at">data =</span> map_data, <span class="at">map =</span> map_data,</span>
+<span id="cb74-13"><a href="#cb74-13" aria-hidden="true" tabindex="-1"></a>           <span class="fu">aes</span>(<span class="at">map_id =</span> region, <span class="at">fill =</span> <span class="fu">log</span>(count_h1b)<span class="sc">/</span><span class="fu">log</span>(Population))) <span class="sc">+</span></span>
+<span id="cb74-14"><a href="#cb74-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">expand_limits</span>(<span class="at">x =</span> <span class="fu">c</span>(<span class="fu">min</span>(map_data<span class="sc">$</span>long), <span class="fu">max</span>(map_data<span class="sc">$</span>long)), </span>
+<span id="cb74-15"><a href="#cb74-15" aria-hidden="true" tabindex="-1"></a>              <span class="at">y =</span> <span class="fu">c</span>(<span class="fu">min</span>(map_data<span class="sc">$</span>lat), <span class="fu">max</span>(map_data<span class="sc">$</span>lat)))<span class="sc">+</span></span>
+<span id="cb74-16"><a href="#cb74-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_fixed</span>(<span class="at">ratio=</span><span class="fl">1.2</span>) <span class="sc">+</span></span>
+<span id="cb74-17"><a href="#cb74-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_void</span>() <span class="sc">+</span></span>
+<span id="cb74-18"><a href="#cb74-18" aria-hidden="true" tabindex="-1"></a>  <span class="co">#scale_fill_continuous(name = "H1B Count") + </span></span>
+<span id="cb74-19"><a href="#cb74-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_viridis_c</span>()<span class="sc">+</span></span>
+<span id="cb74-20"><a href="#cb74-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"H1B Visa Distribution by Country, 2022"</span>)<span class="sc">+</span></span>
+<span id="cb74-21"><a href="#cb74-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>))</span>
+<span id="cb74-22"><a href="#cb74-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb74-23"><a href="#cb74-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb74-24"><a href="#cb74-24" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="Perm_Data_files/figure-html/unnamed-chunk-29-1.png" class="img-fluid" width="672"></p>
+<p><img src="Perm_Data_files/figure-html/unnamed-chunk-27-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb78"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a>top_countries <span class="ot">&lt;-</span> h1b_data_2022 <span class="sc">|&gt;</span></span>
-<span id="cb78-2"><a href="#cb78-2" aria-hidden="true" tabindex="-1"></a><span class="fu">group_by</span>(Country_Standardized) <span class="sc">|&gt;</span></span>
-<span id="cb78-3"><a href="#cb78-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summarise</span>(<span class="at">total_count =</span> count_h1b) <span class="sc">|&gt;</span></span>
-<span id="cb78-4"><a href="#cb78-4" aria-hidden="true" tabindex="-1"></a><span class="fu">arrange</span>(<span class="fu">desc</span>(total_count)) <span class="sc">|&gt;</span></span>
-<span id="cb78-5"><a href="#cb78-5" aria-hidden="true" tabindex="-1"></a><span class="fu">top_n</span>(<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a>top_countries <span class="ot">&lt;-</span> h1b_data_2022 <span class="sc">|&gt;</span></span>
+<span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a><span class="fu">group_by</span>(Country_Standardized) <span class="sc">|&gt;</span></span>
+<span id="cb75-3"><a href="#cb75-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summarise</span>(<span class="at">total_count =</span> count_h1b) <span class="sc">|&gt;</span></span>
+<span id="cb75-4"><a href="#cb75-4" aria-hidden="true" tabindex="-1"></a><span class="fu">arrange</span>(<span class="fu">desc</span>(total_count)) <span class="sc">|&gt;</span></span>
+<span id="cb75-5"><a href="#cb75-5" aria-hidden="true" tabindex="-1"></a><span class="fu">top_n</span>(<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Selecting by total_count</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb80"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a>  <span class="co">#summarise the rest</span></span>
-<span id="cb80-2"><a href="#cb80-2" aria-hidden="true" tabindex="-1"></a>other_countries <span class="ot">&lt;-</span> h1b_data_2022 <span class="sc">|&gt;</span></span>
+<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a>  <span class="co">#summarise the rest</span></span>
+<span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a>other_countries <span class="ot">&lt;-</span> h1b_data_2022 <span class="sc">|&gt;</span></span>
+<span id="cb77-3"><a href="#cb77-3" aria-hidden="true" tabindex="-1"></a><span class="fu">anti_join</span>(top_countries, <span class="at">by =</span> <span class="st">"Country_Standardized"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb77-4"><a href="#cb77-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(count_h1b))<span class="sc">|&gt;</span></span>
+<span id="cb77-5"><a href="#cb77-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summarise</span>(<span class="at">Country_Standardized =</span> <span class="st">"Other"</span>,</span>
+<span id="cb77-6"><a href="#cb77-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">total_count =</span> <span class="fu">sum</span>(count_h1b))</span>
+<span id="cb77-7"><a href="#cb77-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb77-8"><a href="#cb77-8" aria-hidden="true" tabindex="-1"></a>combined_data <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(top_countries, other_countries)</span>
+<span id="cb77-9"><a href="#cb77-9" aria-hidden="true" tabindex="-1"></a><span class="co">#   pie_chart &lt;- pie(combined_data$total_count, labels = upper(combined_data$Country_Standardized), main = # paste("Top 5 Countries in 2022"), col=viridis(length(combined_data$total_count)))</span></span>
+<span id="cb77-10"><a href="#cb77-10" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb77-11"><a href="#cb77-11" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(combined_data, <span class="fu">aes</span>(<span class="at">x =</span> <span class="st">""</span>, <span class="at">y =</span> total_count, <span class="at">fill =</span> <span class="fu">toupper</span>(Country_Standardized))) <span class="sc">+</span></span>
+<span id="cb77-12"><a href="#cb77-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">width =</span> <span class="dv">1</span>, <span class="at">stat =</span> <span class="st">"identity"</span>) <span class="sc">+</span></span>
+<span id="cb77-13"><a href="#cb77-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_polar</span>(<span class="st">"y"</span>, <span class="at">start =</span> <span class="dv">0</span>) <span class="sc">+</span></span>
+<span id="cb77-14"><a href="#cb77-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_void</span>() <span class="sc">+</span></span>
+<span id="cb77-15"><a href="#cb77-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"right"</span>) <span class="sc">+</span></span>
+<span id="cb77-16"><a href="#cb77-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_viridis_d</span>(<span class="at">name =</span> <span class="st">'Country of Origin'</span>) <span class="sc">+</span></span>
+<span id="cb77-17"><a href="#cb77-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="fu">paste</span>(<span class="st">"Top 5 Countries in 2022"</span>)) <span class="sc">+</span></span>
+<span id="cb77-18"><a href="#cb77-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Perm_Data_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb78"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a>relevant_columns <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Country_Standardized"</span>, <span class="st">"count_h1b"</span>)</span>
+<span id="cb78-2"><a href="#cb78-2" aria-hidden="true" tabindex="-1"></a>mergetry_pop_country <span class="ot">&lt;-</span> mergetry[, relevant_columns]</span>
+<span id="cb78-3"><a href="#cb78-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb78-4"><a href="#cb78-4" aria-hidden="true" tabindex="-1"></a>mergetry_pop_country <span class="ot">&lt;-</span> mergetry_pop_country[<span class="sc">!</span><span class="fu">is.na</span>(mergetry_pop_country<span class="sc">$</span>count_h1b), ]</span>
+<span id="cb78-5"><a href="#cb78-5" aria-hidden="true" tabindex="-1"></a>mergetry_pop_country <span class="ot">&lt;-</span> mergetry_pop_country[<span class="sc">!</span><span class="fu">is.na</span>(mergetry_pop_country<span class="sc">$</span>Country_Standardized), ]</span>
+<span id="cb78-6"><a href="#cb78-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb78-7"><a href="#cb78-7" aria-hidden="true" tabindex="-1"></a>top_countries <span class="ot">&lt;-</span> mergetry_pop_country <span class="sc">|&gt;</span></span>
+<span id="cb78-8"><a href="#cb78-8" aria-hidden="true" tabindex="-1"></a>  <span class="co">#distinct(Country_Standardized, .keep_all = TRUE) |&gt;</span></span>
+<span id="cb78-9"><a href="#cb78-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Country_Standardized) <span class="sc">|&gt;</span></span>
+<span id="cb78-10"><a href="#cb78-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">total_count =</span> <span class="fu">sum</span>(count_h1b)) <span class="sc">|&gt;</span></span>
+<span id="cb78-11"><a href="#cb78-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(total_count)) <span class="sc">|&gt;</span></span>
+<span id="cb78-12"><a href="#cb78-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">top_n</span>(<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Selecting by total_count</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb80"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a><span class="co">#summarise the rest</span></span>
+<span id="cb80-2"><a href="#cb80-2" aria-hidden="true" tabindex="-1"></a>other_countries <span class="ot">&lt;-</span> mergetry <span class="sc">|&gt;</span></span>
 <span id="cb80-3"><a href="#cb80-3" aria-hidden="true" tabindex="-1"></a><span class="fu">anti_join</span>(top_countries, <span class="at">by =</span> <span class="st">"Country_Standardized"</span>) <span class="sc">|&gt;</span></span>
 <span id="cb80-4"><a href="#cb80-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(count_h1b))<span class="sc">|&gt;</span></span>
 <span id="cb80-5"><a href="#cb80-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summarise</span>(<span class="at">Country_Standardized =</span> <span class="st">"Other"</span>,</span>
@@ -866,171 +876,133 @@ Supply arguments directly to `.fns` through an anonymous function instead.
 <span id="cb80-14"><a href="#cb80-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_void</span>() <span class="sc">+</span></span>
 <span id="cb80-15"><a href="#cb80-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"right"</span>) <span class="sc">+</span></span>
 <span id="cb80-16"><a href="#cb80-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_viridis_d</span>(<span class="at">name =</span> <span class="st">'Country of Origin'</span>) <span class="sc">+</span></span>
-<span id="cb80-17"><a href="#cb80-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="fu">paste</span>(<span class="st">"Top 5 Countries in 2022"</span>)) <span class="sc">+</span></span>
+<span id="cb80-17"><a href="#cb80-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="fu">paste</span>(<span class="st">"Top 5 Countries 1997-2022"</span>)) <span class="sc">+</span></span>
 <span id="cb80-18"><a href="#cb80-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="Perm_Data_files/figure-html/unnamed-chunk-30-1.png" class="img-fluid" width="672"></p>
+<p><img src="Perm_Data_files/figure-html/unnamed-chunk-29-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb81"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a>relevant_columns <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Country_Standardized"</span>, <span class="st">"count_h1b"</span>)</span>
-<span id="cb81-2"><a href="#cb81-2" aria-hidden="true" tabindex="-1"></a>mergetry_pop_country <span class="ot">&lt;-</span> mergetry[, relevant_columns]</span>
-<span id="cb81-3"><a href="#cb81-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb81-4"><a href="#cb81-4" aria-hidden="true" tabindex="-1"></a>mergetry_pop_country <span class="ot">&lt;-</span> mergetry_pop_country[<span class="sc">!</span><span class="fu">is.na</span>(mergetry_pop_country<span class="sc">$</span>count_h1b), ]</span>
-<span id="cb81-5"><a href="#cb81-5" aria-hidden="true" tabindex="-1"></a>mergetry_pop_country <span class="ot">&lt;-</span> mergetry_pop_country[<span class="sc">!</span><span class="fu">is.na</span>(mergetry_pop_country<span class="sc">$</span>Country_Standardized), ]</span>
-<span id="cb81-6"><a href="#cb81-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb81-7"><a href="#cb81-7" aria-hidden="true" tabindex="-1"></a>top_countries <span class="ot">&lt;-</span> mergetry_pop_country <span class="sc">|&gt;</span></span>
-<span id="cb81-8"><a href="#cb81-8" aria-hidden="true" tabindex="-1"></a>  <span class="co">#distinct(Country_Standardized, .keep_all = TRUE) |&gt;</span></span>
-<span id="cb81-9"><a href="#cb81-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Country_Standardized) <span class="sc">|&gt;</span></span>
-<span id="cb81-10"><a href="#cb81-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">total_count =</span> <span class="fu">sum</span>(count_h1b)) <span class="sc">|&gt;</span></span>
-<span id="cb81-11"><a href="#cb81-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(total_count)) <span class="sc">|&gt;</span></span>
-<span id="cb81-12"><a href="#cb81-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">top_n</span>(<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Selecting by total_count</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a><span class="co">#summarise the rest</span></span>
-<span id="cb83-2"><a href="#cb83-2" aria-hidden="true" tabindex="-1"></a>other_countries <span class="ot">&lt;-</span> mergetry <span class="sc">|&gt;</span></span>
-<span id="cb83-3"><a href="#cb83-3" aria-hidden="true" tabindex="-1"></a><span class="fu">anti_join</span>(top_countries, <span class="at">by =</span> <span class="st">"Country_Standardized"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb83-4"><a href="#cb83-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(count_h1b))<span class="sc">|&gt;</span></span>
-<span id="cb83-5"><a href="#cb83-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summarise</span>(<span class="at">Country_Standardized =</span> <span class="st">"Other"</span>,</span>
-<span id="cb83-6"><a href="#cb83-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">total_count =</span> <span class="fu">sum</span>(count_h1b))</span>
-<span id="cb83-7"><a href="#cb83-7" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb83-8"><a href="#cb83-8" aria-hidden="true" tabindex="-1"></a>combined_data <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(top_countries, other_countries)</span>
-<span id="cb83-9"><a href="#cb83-9" aria-hidden="true" tabindex="-1"></a><span class="co">#   pie_chart &lt;- pie(combined_data$total_count, labels = upper(combined_data$Country_Standardized), main = # paste("Top 5 Countries in 2022"), col=viridis(length(combined_data$total_count)))</span></span>
-<span id="cb83-10"><a href="#cb83-10" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb83-11"><a href="#cb83-11" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(combined_data, <span class="fu">aes</span>(<span class="at">x =</span> <span class="st">""</span>, <span class="at">y =</span> total_count, <span class="at">fill =</span> <span class="fu">toupper</span>(Country_Standardized))) <span class="sc">+</span></span>
-<span id="cb83-12"><a href="#cb83-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">width =</span> <span class="dv">1</span>, <span class="at">stat =</span> <span class="st">"identity"</span>) <span class="sc">+</span></span>
-<span id="cb83-13"><a href="#cb83-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_polar</span>(<span class="st">"y"</span>, <span class="at">start =</span> <span class="dv">0</span>) <span class="sc">+</span></span>
-<span id="cb83-14"><a href="#cb83-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_void</span>() <span class="sc">+</span></span>
-<span id="cb83-15"><a href="#cb83-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"right"</span>) <span class="sc">+</span></span>
-<span id="cb83-16"><a href="#cb83-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_viridis_d</span>(<span class="at">name =</span> <span class="st">'Country of Origin'</span>) <span class="sc">+</span></span>
-<span id="cb83-17"><a href="#cb83-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="fu">paste</span>(<span class="st">"Top 5 Countries 1997-2022"</span>)) <span class="sc">+</span></span>
-<span id="cb83-18"><a href="#cb83-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<p><img src="Perm_Data_files/figure-html/unnamed-chunk-31-1.png" class="img-fluid" width="672"></p>
-</div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb84"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb84-1"><a href="#cb84-1" aria-hidden="true" tabindex="-1"></a><span class="co">#calculating percentage of applicants from India in 2022</span></span>
-<span id="cb84-2"><a href="#cb84-2" aria-hidden="true" tabindex="-1"></a>h1b_data_2022 <span class="ot">&lt;-</span> h1b_data_2022[<span class="sc">!</span><span class="fu">is.na</span>(h1b_data_2022<span class="sc">$</span>count_h1b), ]</span>
-<span id="cb84-3"><a href="#cb84-3" aria-hidden="true" tabindex="-1"></a>total_sum <span class="ot">&lt;-</span> <span class="fu">sum</span>(h1b_data_2022<span class="sc">$</span>count_h1b)</span>
-<span id="cb84-4"><a href="#cb84-4" aria-hidden="true" tabindex="-1"></a>india_sum <span class="ot">&lt;-</span> <span class="fu">sum</span>(h1b_data_2022<span class="sc">$</span>count_h1b[h1b_data_2022<span class="sc">$</span>Country_Standardized <span class="sc">==</span> <span class="st">"india"</span>])</span>
-<span id="cb84-5"><a href="#cb84-5" aria-hidden="true" tabindex="-1"></a>percentage_from_india <span class="ot">&lt;-</span> (india_sum <span class="sc">/</span> total_sum) <span class="sc">*</span> <span class="dv">100</span></span>
-<span id="cb84-6"><a href="#cb84-6" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(percentage_from_india)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb81"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a><span class="co">#calculating percentage of applicants from India in 2022</span></span>
+<span id="cb81-2"><a href="#cb81-2" aria-hidden="true" tabindex="-1"></a>h1b_data_2022 <span class="ot">&lt;-</span> h1b_data_2022[<span class="sc">!</span><span class="fu">is.na</span>(h1b_data_2022<span class="sc">$</span>count_h1b), ]</span>
+<span id="cb81-3"><a href="#cb81-3" aria-hidden="true" tabindex="-1"></a>total_sum <span class="ot">&lt;-</span> <span class="fu">sum</span>(h1b_data_2022<span class="sc">$</span>count_h1b)</span>
+<span id="cb81-4"><a href="#cb81-4" aria-hidden="true" tabindex="-1"></a>india_sum <span class="ot">&lt;-</span> <span class="fu">sum</span>(h1b_data_2022<span class="sc">$</span>count_h1b[h1b_data_2022<span class="sc">$</span>Country_Standardized <span class="sc">==</span> <span class="st">"india"</span>])</span>
+<span id="cb81-5"><a href="#cb81-5" aria-hidden="true" tabindex="-1"></a>percentage_from_india <span class="ot">&lt;-</span> (india_sum <span class="sc">/</span> total_sum) <span class="sc">*</span> <span class="dv">100</span></span>
+<span id="cb81-6"><a href="#cb81-6" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(percentage_from_india)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 81.45388</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb86"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb86-1"><a href="#cb86-1" aria-hidden="true" tabindex="-1"></a><span class="co">#calculating percentage of applicants from india 1997-2022</span></span>
-<span id="cb86-2"><a href="#cb86-2" aria-hidden="true" tabindex="-1"></a>mergetry_nonan <span class="ot">&lt;-</span> mergetry_pop_country[<span class="sc">!</span><span class="fu">is.na</span>(mergetry_pop_country<span class="sc">$</span>count_h1b), ]</span>
-<span id="cb86-3"><a href="#cb86-3" aria-hidden="true" tabindex="-1"></a>total_sum <span class="ot">&lt;-</span> <span class="fu">sum</span>(mergetry_nonan<span class="sc">$</span>count_h1b)</span>
-<span id="cb86-4"><a href="#cb86-4" aria-hidden="true" tabindex="-1"></a>india_sum <span class="ot">&lt;-</span> <span class="fu">sum</span>(mergetry_nonan<span class="sc">$</span>count_h1b[mergetry_nonan<span class="sc">$</span>Country_Standardized <span class="sc">==</span> <span class="st">"india"</span>])</span>
-<span id="cb86-5"><a href="#cb86-5" aria-hidden="true" tabindex="-1"></a>percentage_from_india <span class="ot">&lt;-</span> (india_sum <span class="sc">/</span> total_sum) <span class="sc">*</span> <span class="dv">100</span></span>
-<span id="cb86-6"><a href="#cb86-6" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(percentage_from_india)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a><span class="co">#calculating percentage of applicants from india 1997-2022</span></span>
+<span id="cb83-2"><a href="#cb83-2" aria-hidden="true" tabindex="-1"></a>mergetry_nonan <span class="ot">&lt;-</span> mergetry_pop_country[<span class="sc">!</span><span class="fu">is.na</span>(mergetry_pop_country<span class="sc">$</span>count_h1b), ]</span>
+<span id="cb83-3"><a href="#cb83-3" aria-hidden="true" tabindex="-1"></a>total_sum <span class="ot">&lt;-</span> <span class="fu">sum</span>(mergetry_nonan<span class="sc">$</span>count_h1b)</span>
+<span id="cb83-4"><a href="#cb83-4" aria-hidden="true" tabindex="-1"></a>india_sum <span class="ot">&lt;-</span> <span class="fu">sum</span>(mergetry_nonan<span class="sc">$</span>count_h1b[mergetry_nonan<span class="sc">$</span>Country_Standardized <span class="sc">==</span> <span class="st">"india"</span>])</span>
+<span id="cb83-5"><a href="#cb83-5" aria-hidden="true" tabindex="-1"></a>percentage_from_india <span class="ot">&lt;-</span> (india_sum <span class="sc">/</span> total_sum) <span class="sc">*</span> <span class="dv">100</span></span>
+<span id="cb83-6"><a href="#cb83-6" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(percentage_from_india)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 61.29237</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb88"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb88-1"><a href="#cb88-1" aria-hidden="true" tabindex="-1"></a><span class="co">#calculating percentage of applicants from china 1997-2022</span></span>
-<span id="cb88-2"><a href="#cb88-2" aria-hidden="true" tabindex="-1"></a>total_sum <span class="ot">&lt;-</span> <span class="fu">sum</span>(mergetry_nonan<span class="sc">$</span>count_h1b)</span>
-<span id="cb88-3"><a href="#cb88-3" aria-hidden="true" tabindex="-1"></a>china_sum <span class="ot">&lt;-</span> <span class="fu">sum</span>(mergetry_nonan<span class="sc">$</span>count_h1b[mergetry_nonan<span class="sc">$</span>Country_Standardized <span class="sc">==</span> <span class="st">"china"</span>])</span>
-<span id="cb88-4"><a href="#cb88-4" aria-hidden="true" tabindex="-1"></a>percentage_from_china <span class="ot">&lt;-</span> (china_sum <span class="sc">/</span> total_sum) <span class="sc">*</span> <span class="dv">100</span></span>
-<span id="cb88-5"><a href="#cb88-5" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(percentage_from_china)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb85"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a><span class="co">#calculating percentage of applicants from china 1997-2022</span></span>
+<span id="cb85-2"><a href="#cb85-2" aria-hidden="true" tabindex="-1"></a>total_sum <span class="ot">&lt;-</span> <span class="fu">sum</span>(mergetry_nonan<span class="sc">$</span>count_h1b)</span>
+<span id="cb85-3"><a href="#cb85-3" aria-hidden="true" tabindex="-1"></a>china_sum <span class="ot">&lt;-</span> <span class="fu">sum</span>(mergetry_nonan<span class="sc">$</span>count_h1b[mergetry_nonan<span class="sc">$</span>Country_Standardized <span class="sc">==</span> <span class="st">"china"</span>])</span>
+<span id="cb85-4"><a href="#cb85-4" aria-hidden="true" tabindex="-1"></a>percentage_from_china <span class="ot">&lt;-</span> (china_sum <span class="sc">/</span> total_sum) <span class="sc">*</span> <span class="dv">100</span></span>
+<span id="cb85-5"><a href="#cb85-5" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(percentage_from_china)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 8.671413</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb90"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb90-1"><a href="#cb90-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Calculating percentage of world population from china</span></span>
-<span id="cb90-2"><a href="#cb90-2" aria-hidden="true" tabindex="-1"></a>mergetry_nonan <span class="ot">&lt;-</span> mergetry[<span class="sc">!</span><span class="fu">is.na</span>(mergetry<span class="sc">$</span>Population), ]</span>
-<span id="cb90-3"><a href="#cb90-3" aria-hidden="true" tabindex="-1"></a>mergetry_nonan <span class="ot">&lt;-</span> mergetry_nonan[<span class="sc">!</span><span class="fu">is.na</span>(mergetry_nonan<span class="sc">$</span>Country_Standardized), ]</span>
-<span id="cb90-4"><a href="#cb90-4" aria-hidden="true" tabindex="-1"></a>total_sum <span class="ot">&lt;-</span> <span class="fu">sum</span>(mergetry_nonan<span class="sc">$</span>Population)</span>
-<span id="cb90-5"><a href="#cb90-5" aria-hidden="true" tabindex="-1"></a>china_sum <span class="ot">&lt;-</span> <span class="fu">sum</span>(mergetry_nonan<span class="sc">$</span>Population[mergetry_nonan<span class="sc">$</span>Country_Standardized <span class="sc">==</span> <span class="st">"china"</span>])</span>
-<span id="cb90-6"><a href="#cb90-6" aria-hidden="true" tabindex="-1"></a>percentage_from_china <span class="ot">&lt;-</span> (china_sum <span class="sc">/</span> total_sum) <span class="sc">*</span> <span class="dv">100</span></span>
-<span id="cb90-7"><a href="#cb90-7" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(percentage_from_china)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb87"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb87-1"><a href="#cb87-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Calculating percentage of world population from china</span></span>
+<span id="cb87-2"><a href="#cb87-2" aria-hidden="true" tabindex="-1"></a>mergetry_nonan <span class="ot">&lt;-</span> mergetry[<span class="sc">!</span><span class="fu">is.na</span>(mergetry<span class="sc">$</span>Population), ]</span>
+<span id="cb87-3"><a href="#cb87-3" aria-hidden="true" tabindex="-1"></a>mergetry_nonan <span class="ot">&lt;-</span> mergetry_nonan[<span class="sc">!</span><span class="fu">is.na</span>(mergetry_nonan<span class="sc">$</span>Country_Standardized), ]</span>
+<span id="cb87-4"><a href="#cb87-4" aria-hidden="true" tabindex="-1"></a>total_sum <span class="ot">&lt;-</span> <span class="fu">sum</span>(mergetry_nonan<span class="sc">$</span>Population)</span>
+<span id="cb87-5"><a href="#cb87-5" aria-hidden="true" tabindex="-1"></a>china_sum <span class="ot">&lt;-</span> <span class="fu">sum</span>(mergetry_nonan<span class="sc">$</span>Population[mergetry_nonan<span class="sc">$</span>Country_Standardized <span class="sc">==</span> <span class="st">"china"</span>])</span>
+<span id="cb87-6"><a href="#cb87-6" aria-hidden="true" tabindex="-1"></a>percentage_from_china <span class="ot">&lt;-</span> (china_sum <span class="sc">/</span> total_sum) <span class="sc">*</span> <span class="dv">100</span></span>
+<span id="cb87-7"><a href="#cb87-7" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(percentage_from_china)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 19.27712</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb92"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb92-1"><a href="#cb92-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Calculating percentage of h1-b applicants  from Asia</span></span>
-<span id="cb92-2"><a href="#cb92-2" aria-hidden="true" tabindex="-1"></a>mergetry_nonan <span class="ot">&lt;-</span> mergetry[<span class="sc">!</span><span class="fu">is.na</span>(mergetry<span class="sc">$</span>count_h1b), ]</span>
-<span id="cb92-3"><a href="#cb92-3" aria-hidden="true" tabindex="-1"></a>total_sum <span class="ot">&lt;-</span> <span class="fu">sum</span>(mergetry_nonan<span class="sc">$</span>count_h1b)</span>
-<span id="cb92-4"><a href="#cb92-4" aria-hidden="true" tabindex="-1"></a>asia_sum <span class="ot">&lt;-</span> <span class="fu">sum</span>(mergetry_nonan<span class="sc">$</span>count_h1b[mergetry_nonan<span class="sc">$</span>Continent <span class="sc">==</span> <span class="st">"Asia"</span>])</span>
-<span id="cb92-5"><a href="#cb92-5" aria-hidden="true" tabindex="-1"></a>percentage_from_asia <span class="ot">&lt;-</span> (asia_sum <span class="sc">/</span> total_sum) <span class="sc">*</span> <span class="dv">100</span></span>
-<span id="cb92-6"><a href="#cb92-6" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(percentage_from_asia)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb89"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb89-1"><a href="#cb89-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Calculating percentage of h1-b applicants  from Asia</span></span>
+<span id="cb89-2"><a href="#cb89-2" aria-hidden="true" tabindex="-1"></a>mergetry_nonan <span class="ot">&lt;-</span> mergetry[<span class="sc">!</span><span class="fu">is.na</span>(mergetry<span class="sc">$</span>count_h1b), ]</span>
+<span id="cb89-3"><a href="#cb89-3" aria-hidden="true" tabindex="-1"></a>total_sum <span class="ot">&lt;-</span> <span class="fu">sum</span>(mergetry_nonan<span class="sc">$</span>count_h1b)</span>
+<span id="cb89-4"><a href="#cb89-4" aria-hidden="true" tabindex="-1"></a>asia_sum <span class="ot">&lt;-</span> <span class="fu">sum</span>(mergetry_nonan<span class="sc">$</span>count_h1b[mergetry_nonan<span class="sc">$</span>Continent <span class="sc">==</span> <span class="st">"Asia"</span>])</span>
+<span id="cb89-5"><a href="#cb89-5" aria-hidden="true" tabindex="-1"></a>percentage_from_asia <span class="ot">&lt;-</span> (asia_sum <span class="sc">/</span> total_sum) <span class="sc">*</span> <span class="dv">100</span></span>
+<span id="cb89-6"><a href="#cb89-6" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(percentage_from_asia)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 80.40328</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb94"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb94-1"><a href="#cb94-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Calculating percentage of world population from India</span></span>
-<span id="cb94-2"><a href="#cb94-2" aria-hidden="true" tabindex="-1"></a>mergetry_nonan <span class="ot">&lt;-</span> mergetry[<span class="sc">!</span><span class="fu">is.na</span>(mergetry<span class="sc">$</span>Population), ]</span>
-<span id="cb94-3"><a href="#cb94-3" aria-hidden="true" tabindex="-1"></a>mergetry_nonan <span class="ot">&lt;-</span> mergetry_nonan[<span class="sc">!</span><span class="fu">is.na</span>(mergetry_nonan<span class="sc">$</span>Country_Standardized), ]</span>
-<span id="cb94-4"><a href="#cb94-4" aria-hidden="true" tabindex="-1"></a>total_sum <span class="ot">&lt;-</span> <span class="fu">sum</span>(mergetry_nonan<span class="sc">$</span>Population)</span>
-<span id="cb94-5"><a href="#cb94-5" aria-hidden="true" tabindex="-1"></a>india_sum <span class="ot">&lt;-</span> <span class="fu">sum</span>(mergetry_nonan<span class="sc">$</span>Population[mergetry_nonan<span class="sc">$</span>Country_Standardized <span class="sc">==</span> <span class="st">"india"</span>])</span>
-<span id="cb94-6"><a href="#cb94-6" aria-hidden="true" tabindex="-1"></a>percentage_from_india <span class="ot">&lt;-</span> (india_sum <span class="sc">/</span> total_sum) <span class="sc">*</span> <span class="dv">100</span></span>
-<span id="cb94-7"><a href="#cb94-7" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(percentage_from_india)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb91"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb91-1"><a href="#cb91-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Calculating percentage of world population from India</span></span>
+<span id="cb91-2"><a href="#cb91-2" aria-hidden="true" tabindex="-1"></a>mergetry_nonan <span class="ot">&lt;-</span> mergetry[<span class="sc">!</span><span class="fu">is.na</span>(mergetry<span class="sc">$</span>Population), ]</span>
+<span id="cb91-3"><a href="#cb91-3" aria-hidden="true" tabindex="-1"></a>mergetry_nonan <span class="ot">&lt;-</span> mergetry_nonan[<span class="sc">!</span><span class="fu">is.na</span>(mergetry_nonan<span class="sc">$</span>Country_Standardized), ]</span>
+<span id="cb91-4"><a href="#cb91-4" aria-hidden="true" tabindex="-1"></a>total_sum <span class="ot">&lt;-</span> <span class="fu">sum</span>(mergetry_nonan<span class="sc">$</span>Population)</span>
+<span id="cb91-5"><a href="#cb91-5" aria-hidden="true" tabindex="-1"></a>india_sum <span class="ot">&lt;-</span> <span class="fu">sum</span>(mergetry_nonan<span class="sc">$</span>Population[mergetry_nonan<span class="sc">$</span>Country_Standardized <span class="sc">==</span> <span class="st">"india"</span>])</span>
+<span id="cb91-6"><a href="#cb91-6" aria-hidden="true" tabindex="-1"></a>percentage_from_india <span class="ot">&lt;-</span> (india_sum <span class="sc">/</span> total_sum) <span class="sc">*</span> <span class="dv">100</span></span>
+<span id="cb91-7"><a href="#cb91-7" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(percentage_from_india)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 17.47209</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb96"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb96-1"><a href="#cb96-1" aria-hidden="true" tabindex="-1"></a><span class="co">#calculating percentage of world population from Asia</span></span>
-<span id="cb96-2"><a href="#cb96-2" aria-hidden="true" tabindex="-1"></a>mergetry_nonan <span class="ot">&lt;-</span> mergetry[<span class="sc">!</span><span class="fu">is.na</span>(mergetry<span class="sc">$</span>Population), ]</span>
-<span id="cb96-3"><a href="#cb96-3" aria-hidden="true" tabindex="-1"></a>mergetry_nonan <span class="ot">&lt;-</span> mergetry_nonan[<span class="sc">!</span><span class="fu">is.na</span>(mergetry_nonan<span class="sc">$</span>Continent), ]</span>
-<span id="cb96-4"><a href="#cb96-4" aria-hidden="true" tabindex="-1"></a>total_sum <span class="ot">&lt;-</span> <span class="fu">sum</span>(mergetry_nonan<span class="sc">$</span>Population)</span>
-<span id="cb96-5"><a href="#cb96-5" aria-hidden="true" tabindex="-1"></a>asia_sum <span class="ot">&lt;-</span> <span class="fu">sum</span>(mergetry_nonan<span class="sc">$</span>Population[mergetry_nonan<span class="sc">$</span>Continent <span class="sc">==</span> <span class="st">"Asia"</span>])</span>
-<span id="cb96-6"><a href="#cb96-6" aria-hidden="true" tabindex="-1"></a>percentage_from_asia <span class="ot">&lt;-</span> (asia_sum <span class="sc">/</span> total_sum) <span class="sc">*</span> <span class="dv">100</span></span>
-<span id="cb96-7"><a href="#cb96-7" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(percentage_from_asia)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb93"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb93-1"><a href="#cb93-1" aria-hidden="true" tabindex="-1"></a><span class="co">#calculating percentage of world population from Asia</span></span>
+<span id="cb93-2"><a href="#cb93-2" aria-hidden="true" tabindex="-1"></a>mergetry_nonan <span class="ot">&lt;-</span> mergetry[<span class="sc">!</span><span class="fu">is.na</span>(mergetry<span class="sc">$</span>Population), ]</span>
+<span id="cb93-3"><a href="#cb93-3" aria-hidden="true" tabindex="-1"></a>mergetry_nonan <span class="ot">&lt;-</span> mergetry_nonan[<span class="sc">!</span><span class="fu">is.na</span>(mergetry_nonan<span class="sc">$</span>Continent), ]</span>
+<span id="cb93-4"><a href="#cb93-4" aria-hidden="true" tabindex="-1"></a>total_sum <span class="ot">&lt;-</span> <span class="fu">sum</span>(mergetry_nonan<span class="sc">$</span>Population)</span>
+<span id="cb93-5"><a href="#cb93-5" aria-hidden="true" tabindex="-1"></a>asia_sum <span class="ot">&lt;-</span> <span class="fu">sum</span>(mergetry_nonan<span class="sc">$</span>Population[mergetry_nonan<span class="sc">$</span>Continent <span class="sc">==</span> <span class="st">"Asia"</span>])</span>
+<span id="cb93-6"><a href="#cb93-6" aria-hidden="true" tabindex="-1"></a>percentage_from_asia <span class="ot">&lt;-</span> (asia_sum <span class="sc">/</span> total_sum) <span class="sc">*</span> <span class="dv">100</span></span>
+<span id="cb93-7"><a href="#cb93-7" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(percentage_from_asia)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 62.05651</code></pre>
 </div>
 </div>
 <p>#Group combined data by year and country of citizenship</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb98"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb98-1"><a href="#cb98-1" aria-hidden="true" tabindex="-1"></a>combined_19_23_pop <span class="ot">&lt;-</span> combined_19_23 <span class="sc">|&gt;</span></span>
-<span id="cb98-2"><a href="#cb98-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(year, COUNTRY_OF_CITIZENSHIP)<span class="sc">|&gt;</span></span>
-<span id="cb98-3"><a href="#cb98-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">num_applicants =</span> <span class="fu">n</span>(), <span class="at">num_certified =</span> <span class="fu">sum</span>(CASE_STATUS <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Certified"</span>, <span class="st">"Certified-Expired"</span>)), <span class="at">avg_wage =</span> <span class="fu">mean</span>(WAGE_OFFER_FROM))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb95"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb95-1"><a href="#cb95-1" aria-hidden="true" tabindex="-1"></a>combined_19_23_pop <span class="ot">&lt;-</span> combined_19_23 <span class="sc">|&gt;</span></span>
+<span id="cb95-2"><a href="#cb95-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(year, COUNTRY_OF_CITIZENSHIP)<span class="sc">|&gt;</span></span>
+<span id="cb95-3"><a href="#cb95-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">num_applicants =</span> <span class="fu">n</span>(), <span class="at">num_certified =</span> <span class="fu">sum</span>(CASE_STATUS <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Certified"</span>, <span class="st">"Certified-Expired"</span>)), <span class="at">avg_wage =</span> <span class="fu">mean</span>(WAGE_OFFER_FROM))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>`summarise()` has grouped output by 'year'. You can override using the
 `.groups` argument.</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb100"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb100-1"><a href="#cb100-1" aria-hidden="true" tabindex="-1"></a><span class="co">#make sure both datasets have lower case values for country before merging</span></span>
-<span id="cb100-2"><a href="#cb100-2" aria-hidden="true" tabindex="-1"></a>combined_19_23_pop <span class="ot">&lt;-</span> combined_19_23_pop <span class="sc">|&gt;</span></span>
-<span id="cb100-3"><a href="#cb100-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">COUNTRY_OF_CITIZENSHIP =</span> <span class="fu">toupper</span>(COUNTRY_OF_CITIZENSHIP))</span>
-<span id="cb100-4"><a href="#cb100-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb100-5"><a href="#cb100-5" aria-hidden="true" tabindex="-1"></a>population_data <span class="ot">&lt;-</span> population_data <span class="sc">|&gt;</span></span>
-<span id="cb100-6"><a href="#cb100-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Name =</span> <span class="fu">toupper</span>(Name)) <span class="sc">|&gt;</span></span>
-<span id="cb100-7"><a href="#cb100-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">year =</span> <span class="fu">as.numeric</span>(year))</span>
-<span id="cb100-8"><a href="#cb100-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb100-9"><a href="#cb100-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb100-10"><a href="#cb100-10" aria-hidden="true" tabindex="-1"></a>mergetry <span class="ot">&lt;-</span> <span class="fu">left_join</span>(population_data, combined_19_23_pop, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"year"</span> <span class="ot">=</span> <span class="st">"year"</span>, <span class="st">"Name"</span> <span class="ot">=</span> <span class="st">"COUNTRY_OF_CITIZENSHIP"</span>))</span>
-<span id="cb100-11"><a href="#cb100-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb100-12"><a href="#cb100-12" aria-hidden="true" tabindex="-1"></a>mergetry<span class="sc">$</span><span class="st">`</span><span class="at">Total Population</span><span class="st">`</span> <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">gsub</span>(<span class="st">","</span>, <span class="st">""</span>, mergetry<span class="sc">$</span><span class="st">`</span><span class="at">Total Population</span><span class="st">`</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb97"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb97-1"><a href="#cb97-1" aria-hidden="true" tabindex="-1"></a><span class="co">#make sure both datasets have lower case values for country before merging</span></span>
+<span id="cb97-2"><a href="#cb97-2" aria-hidden="true" tabindex="-1"></a>combined_19_23_pop <span class="ot">&lt;-</span> combined_19_23_pop <span class="sc">|&gt;</span></span>
+<span id="cb97-3"><a href="#cb97-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">COUNTRY_OF_CITIZENSHIP =</span> <span class="fu">toupper</span>(COUNTRY_OF_CITIZENSHIP))</span>
+<span id="cb97-4"><a href="#cb97-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb97-5"><a href="#cb97-5" aria-hidden="true" tabindex="-1"></a>population_data <span class="ot">&lt;-</span> population_data <span class="sc">|&gt;</span></span>
+<span id="cb97-6"><a href="#cb97-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Name =</span> <span class="fu">toupper</span>(Name)) <span class="sc">|&gt;</span></span>
+<span id="cb97-7"><a href="#cb97-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">year =</span> <span class="fu">as.numeric</span>(year))</span>
+<span id="cb97-8"><a href="#cb97-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb97-9"><a href="#cb97-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb97-10"><a href="#cb97-10" aria-hidden="true" tabindex="-1"></a>mergetry <span class="ot">&lt;-</span> <span class="fu">left_join</span>(population_data, combined_19_23_pop, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"year"</span> <span class="ot">=</span> <span class="st">"year"</span>, <span class="st">"Name"</span> <span class="ot">=</span> <span class="st">"COUNTRY_OF_CITIZENSHIP"</span>))</span>
+<span id="cb97-11"><a href="#cb97-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb97-12"><a href="#cb97-12" aria-hidden="true" tabindex="-1"></a>mergetry<span class="sc">$</span><span class="st">`</span><span class="at">Total Population</span><span class="st">`</span> <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">gsub</span>(<span class="st">","</span>, <span class="st">""</span>, mergetry<span class="sc">$</span><span class="st">`</span><span class="at">Total Population</span><span class="st">`</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning: NAs introduced by coercion</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb102"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb102-1"><a href="#cb102-1" aria-hidden="true" tabindex="-1"></a>mergetry_2023 <span class="ot">&lt;-</span> mergetry <span class="sc">|&gt;</span> <span class="fu">filter</span>(Year <span class="sc">==</span> <span class="dv">2023</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb99"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb99-1"><a href="#cb99-1" aria-hidden="true" tabindex="-1"></a>mergetry_2023 <span class="ot">&lt;-</span> mergetry <span class="sc">|&gt;</span> <span class="fu">filter</span>(Year <span class="sc">==</span> <span class="dv">2023</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb103"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb103-1"><a href="#cb103-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(mergetry_2023, <span class="fu">aes</span>(<span class="at">x =</span> num_applicants<span class="sc">/</span><span class="st">`</span><span class="at">Total Population</span><span class="st">`</span>, <span class="at">y =</span> num_certified<span class="sc">/</span><span class="st">`</span><span class="at">Total Population</span><span class="st">`</span>)) <span class="sc">+</span></span>
-<span id="cb103-2"><a href="#cb103-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">shape =</span> <span class="dv">21</span>, <span class="at">fill =</span> <span class="st">"blue"</span>, <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">size =</span> <span class="dv">3</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
-<span id="cb103-3"><a href="#cb103-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Number of Applicants"</span>, <span class="at">y =</span> <span class="st">"Number Certified"</span>, <span class="at">title =</span> <span class="st">"Scatter Plot of Applicants vs Certified 2023, normalized by population"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb100"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb100-1"><a href="#cb100-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(mergetry_2023, <span class="fu">aes</span>(<span class="at">x =</span> num_applicants<span class="sc">/</span><span class="st">`</span><span class="at">Total Population</span><span class="st">`</span>, <span class="at">y =</span> num_certified<span class="sc">/</span><span class="st">`</span><span class="at">Total Population</span><span class="st">`</span>)) <span class="sc">+</span></span>
+<span id="cb100-2"><a href="#cb100-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">shape =</span> <span class="dv">21</span>, <span class="at">fill =</span> <span class="st">"blue"</span>, <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">size =</span> <span class="dv">3</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb100-3"><a href="#cb100-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Number of Applicants"</span>, <span class="at">y =</span> <span class="st">"Number Certified"</span>, <span class="at">title =</span> <span class="st">"Scatter Plot of Applicants vs Certified 2023, normalized by population"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning: Removed 88 rows containing missing values or values outside the scale range
 (`geom_point()`).</code></pre>
 </div>
 <div class="cell-output-display">
-<p><img src="Perm_Data_files/figure-html/unnamed-chunk-40-1.png" class="img-fluid" width="672"></p>
+<p><img src="Perm_Data_files/figure-html/unnamed-chunk-38-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb105"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb105-1"><a href="#cb105-1" aria-hidden="true" tabindex="-1"></a>linear_model_pop <span class="ot">&lt;-</span> <span class="fu">lm</span>(num_applicants<span class="sc">/</span><span class="st">`</span><span class="at">Total Population</span><span class="st">`</span> <span class="sc">~</span> num_certified<span class="sc">/</span><span class="st">`</span><span class="at">Total Population</span><span class="st">`</span> <span class="sc">-</span><span class="dv">1</span>, <span class="at">data =</span> mergetry_2023)</span>
-<span id="cb105-2"><a href="#cb105-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb105-3"><a href="#cb105-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(linear_model_pop)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb102"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb102-1"><a href="#cb102-1" aria-hidden="true" tabindex="-1"></a>linear_model_pop <span class="ot">&lt;-</span> <span class="fu">lm</span>(num_applicants<span class="sc">/</span><span class="st">`</span><span class="at">Total Population</span><span class="st">`</span> <span class="sc">~</span> num_certified<span class="sc">/</span><span class="st">`</span><span class="at">Total Population</span><span class="st">`</span> <span class="sc">-</span><span class="dv">1</span>, <span class="at">data =</span> mergetry_2023)</span>
+<span id="cb102-2"><a href="#cb102-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb102-3"><a href="#cb102-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(linear_model_pop)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -1053,7 +1025,7 @@ Residual standard error: 8.958e-06 on 137 degrees of freedom
 Multiple R-squared:  0.184, Adjusted R-squared:  0.1721 
 F-statistic: 15.45 on 2 and 137 DF,  p-value: 8.928e-07</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb107"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb107-1"><a href="#cb107-1" aria-hidden="true" tabindex="-1"></a>broom<span class="sc">::</span><span class="fu">tidy</span>(linear_model_pop)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb104"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb104-1"><a href="#cb104-1" aria-hidden="true" tabindex="-1"></a>broom<span class="sc">::</span><span class="fu">tidy</span>(linear_model_pop)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 2 × 5
   term                              estimate std.error statistic   p.value
@@ -1063,25 +1035,25 @@ F-statistic: 15.45 on 2 and 137 DF,  p-value: 8.928e-07</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb109"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb109-1"><a href="#cb109-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(linear_model_pop, <span class="fu">aes</span>(<span class="at">x =</span> .fitted, <span class="at">y =</span> .resid)) <span class="sc">+</span></span>
-<span id="cb109-2"><a href="#cb109-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">shape =</span> <span class="dv">21</span>, <span class="at">fill =</span> <span class="st">"transparent"</span>, <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">size =</span> <span class="dv">3</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
-<span id="cb109-3"><a href="#cb109-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Fitted Values"</span>, <span class="at">y =</span> <span class="st">"Residuals"</span>, <span class="at">title =</span> <span class="st">"Residual vs Fitted of Linear Regression of Number of applicants and number of certifications, normed by population "</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb106"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb106-1"><a href="#cb106-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(linear_model_pop, <span class="fu">aes</span>(<span class="at">x =</span> .fitted, <span class="at">y =</span> .resid)) <span class="sc">+</span></span>
+<span id="cb106-2"><a href="#cb106-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">shape =</span> <span class="dv">21</span>, <span class="at">fill =</span> <span class="st">"transparent"</span>, <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">size =</span> <span class="dv">3</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb106-3"><a href="#cb106-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Fitted Values"</span>, <span class="at">y =</span> <span class="st">"Residuals"</span>, <span class="at">title =</span> <span class="st">"Residual vs Fitted of Linear Regression of Number of applicants and number of certifications, normed by population "</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="Perm_Data_files/figure-html/unnamed-chunk-42-1.png" class="img-fluid" width="672"></p>
+<p><img src="Perm_Data_files/figure-html/unnamed-chunk-40-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>#look at the scale, this looks like a good model.</p>
 <p>#Now, see if population can predict number of applicants</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb110"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb110-1"><a href="#cb110-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(mergetry_2023, <span class="fu">aes</span>(<span class="at">x =</span> <span class="st">`</span><span class="at">Total Population</span><span class="st">`</span>, <span class="at">y =</span> num_applicants)) <span class="sc">+</span></span>
-<span id="cb110-2"><a href="#cb110-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">shape =</span> <span class="dv">21</span>, <span class="at">fill =</span> <span class="st">"blue"</span>, <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">size =</span> <span class="dv">3</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
-<span id="cb110-3"><a href="#cb110-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Total Population"</span>, <span class="at">y =</span> <span class="st">"Number of Applicants"</span>, <span class="at">title =</span> <span class="st">"Scatter Plot of population vs applicants 2023"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb107"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb107-1"><a href="#cb107-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(mergetry_2023, <span class="fu">aes</span>(<span class="at">x =</span> <span class="st">`</span><span class="at">Total Population</span><span class="st">`</span>, <span class="at">y =</span> num_applicants)) <span class="sc">+</span></span>
+<span id="cb107-2"><a href="#cb107-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">shape =</span> <span class="dv">21</span>, <span class="at">fill =</span> <span class="st">"blue"</span>, <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">size =</span> <span class="dv">3</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb107-3"><a href="#cb107-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Total Population"</span>, <span class="at">y =</span> <span class="st">"Number of Applicants"</span>, <span class="at">title =</span> <span class="st">"Scatter Plot of population vs applicants 2023"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning: Removed 88 rows containing missing values or values outside the scale range
 (`geom_point()`).</code></pre>
 </div>
 <div class="cell-output-display">
-<p><img src="Perm_Data_files/figure-html/unnamed-chunk-43-1.png" class="img-fluid" width="672"></p>
+<p><img src="Perm_Data_files/figure-html/unnamed-chunk-41-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>soooo, doesn’t look like a good candidate for linear regression</p>
