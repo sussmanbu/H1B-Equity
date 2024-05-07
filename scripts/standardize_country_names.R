@@ -8,7 +8,6 @@ standardize_country_names <- function(countries) {
     str_replace_all("congo (kinshasa)", "democratic republic of congo") %>%
     str_replace_all("hong kong s.a.r.", "hong kong") %>%
     str_replace_all("cape verde", "cabo verde") %>%
-    str_replace_all("cape verde", "cabo verde") %>%
     str_replace_all("hong kong sar", "hong kong") %>%
     str_replace_all("islamic republic of iran", "iran") %>%
     str_replace_all("kyrgyz republic", "kyrgyzstan") %>%
