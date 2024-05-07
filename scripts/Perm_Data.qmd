@@ -44,13 +44,13 @@ library(maps)
 #   filter(CLASS_OF_ADMISSION == 'H-1B')
 # 
 # #Only keep relevant columns(some years differ in column titles)
-# relevant_columns <- c("CASE_NUMBER", "CASE_STATUS", "DECISION_DATE", "EMPLOYER_NAME", # "WAGE_OFFERED_FROM_9089", "COUNTRY_OF_CITIZENSHIP", "FOREIGN_WORKER_INFO_EDUCATION")
+# relevant_columns <- c("CASE_NUMBER", "CASE_STATUS", "DECISION_DATE", "EMPLOYER_NAME", # # "WAGE_OFFERED_FROM_9089", "COUNTRY_OF_CITIZENSHIP", "FOREIGN_WORKER_INFO_EDUCATION")
 # fy19_relevant <- fy19[, relevant_columns]
 # fy19_relevant <- fy19_relevant |> rename(WAGE_OFFER_FROM = WAGE_OFFERED_FROM_9089)
 # fy19_relevant <- fy19_relevant |> rename(FOREIGN_WORKER_EDUCATION = FOREIGN_WORKER_INFO_EDUCATION)
 # fy19_relevant$DECISION_DATE <- as.Date(fy19_relevant$DECISION_DATE)
 # 
-# relevant_columns <- c("CASE_NUMBER", "CASE_STATUS", "DECISION_DATE", "EMPLOYER_NAME", "WAGE_OFFER_FROM", # "COUNTRY_OF_CITIZENSHIP", "FOREIGN_WORKER_EDUCATION")
+# relevant_columns <- c("CASE_NUMBER", "CASE_STATUS", "DECISION_DATE", "EMPLOYER_NAME", "WAGE_OFFER_FROM",  # "COUNTRY_OF_CITIZENSHIP", "FOREIGN_WORKER_EDUCATION")
 # fy20_relevant <- fy20[, relevant_columns]
 # fy20_relevant$DECISION_DATE <- as.Date(fy20_relevant$DECISION_DATE)
 # 
@@ -64,7 +64,7 @@ library(maps)
 # # fy21_relevant <- fy21_relevant |> rename(WAGE_OFFER_FROM = WAGE_OFFERED_FROM_9089)
 # fy22_relevant$DECISION_DATE <- as.Date(fy22_relevant$DECISION_DATE)
 # 
-# relevant_columns <- c("CASE_NUMBER", "CASE_STATUS", "DECISION_DATE", "EMPLOYER_NAME", "WAGE_OFFER_FROM", # "COUNTRY_OF_CITIZENSHIP", "FOREIGN_WORKER_EDUCATION")
+# relevant_columns <- c("CASE_NUMBER", "CASE_STATUS", "DECISION_DATE", "EMPLOYER_NAME", "WAGE_OFFER_FROM",  # "COUNTRY_OF_CITIZENSHIP", "FOREIGN_WORKER_EDUCATION")
 # fy23_relevant <- fy23[, relevant_columns]
 # # fy21_relevant <- fy21_relevant |> rename(WAGE_OFFER_FROM = WAGE_OFFERED_FROM_9089)
 # fy23_relevant$DECISION_DATE <- as.Date(fy23_relevant$DECISION_DATE)

@@ -1,7 +1,7 @@
 library(readxl)
 library(dplyr)
 
-file_path <- "dataset/FYs97-22_NIVDetailTable.xlsx"
+file_path <- ""
 sheet_names <- excel_sheets(file_path)
 
 fy22 <- read_excel(file_path, sheet = 'FY22') %>%
@@ -45,3 +45,4 @@ for (sheet_name in sheet_names) {
 }
 
 saveRDS(processed_data, file = "dataset/cleaned_h1b_data.rds")
+
