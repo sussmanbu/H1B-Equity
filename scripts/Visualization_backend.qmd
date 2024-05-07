@@ -1,0 +1,656 @@
+#Libraries
+```{r}
+library(dplyr)
+library(tsibble)
+library(tidyr)
+library(ggplot2)
+library(forecast)
+library(zoo)
+library(readxl)
+library(lubridate)
+library(broom)
+library(stringr)
+library(readr)
+
+library(ggplot2)
+library(gganimate)
+library(maps)
+```
+
+#Loading Data:
+```{r message = FALSE, warning = FALSE}
+# # #Load Perm Data
+# filepath <- 'dataset/Perm_data/PERM_FY2019.xlsx'
+# fy19 <- read_excel(filepath)
+# filepath <- 'dataset/Perm_data/PERM_Disclosure_Data_FY2020.xlsx'
+# fy20 <- read_excel(filepath)
+# filepath <- 'dataset/Perm_data/PERM_Disclosure_Data_FY2021.xlsx'
+# fy21 <- read_excel(filepath)
+# filepath <- 'dataset/Perm_data/PERM_Disclosure_Data_FY2022_Q4.xlsx'
+# fy22 <- read_excel(filepath)
+# filepath <- 'dataset/Perm_data/PERM_Disclosure_Data_FY2023_Q4.xlsx'
+# fy23 <- read_excel(filepath)
+# 
+# #Filter by H-1B
+# fy19 <- fy19 |> 
+#   filter(CLASS_OF_ADMISSION == 'H-1B')
+# fy20 <- fy20 |> 
+#   filter(CLASS_OF_ADMISSION == 'H-1B')
+# fy21 <- fy21 |> 
+#   filter(CLASS_OF_ADMISSION == 'H-1B')
+# fy22 <- fy22 |> 
+#   filter(CLASS_OF_ADMISSION == 'H-1B')
+# fy23 <- fy23 |> 
+#   filter(CLASS_OF_ADMISSION == 'H-1B')
+# 
+# #Only keep relevant columns(some years differ in column titles)
+# relevant_columns <- c("CASE_NUMBER", "CASE_STATUS", "DECISION_DATE", "EMPLOYER_NAME", "WAGE_OFFERED_FROM_9089", "COUNTRY_OF_CITIZENSHIP", "FOREIGN_WORKER_INFO_EDUCATION")
+# fy19_relevant <- fy19[, relevant_columns]
+# fy19_relevant <- fy19_relevant |> rename(WAGE_OFFER_FROM = WAGE_OFFERED_FROM_9089)
+# fy19_relevant <- fy19_relevant |> rename(FOREIGN_WORKER_EDUCATION = FOREIGN_WORKER_INFO_EDUCATION)
+# fy19_relevant$DECISION_DATE <- as.Date(fy19_relevant$DECISION_DATE)
+# 
+# relevant_columns <- c("CASE_NUMBER", "CASE_STATUS", "DECISION_DATE", "EMPLOYER_NAME", "WAGE_OFFER_FROM",  "COUNTRY_OF_CITIZENSHIP", "FOREIGN_WORKER_EDUCATION")
+# fy20_relevant <- fy20[, relevant_columns]
+# fy20_relevant$DECISION_DATE <- as.Date(fy20_relevant$DECISION_DATE)
+# 
+# relevant_columns <- c("CASE_NUMBER", "CASE_STATUS", "DECISION_DATE", "EMPLOYER_NAME", "WAGE_OFFER_FROM",  "COUNTRY_OF_CITIZENSHIP", "FOREIGN_WORKER_EDUCATION")
+# fy21_relevant <- fy21[, relevant_columns]
+# # fy21_relevant <- fy21_relevant |> rename(WAGE_OFFER_FROM = WAGE_OFFERED_FROM_9089)
+# fy21_relevant$DECISION_DATE <- as.Date(fy21_relevant$DECISION_DATE)
+# 
+# relevant_columns <- c("CASE_NUMBER", "CASE_STATUS", "DECISION_DATE", "EMPLOYER_NAME", "WAGE_OFFER_FROM", "COUNTRY_OF_CITIZENSHIP", "FOREIGN_WORKER_EDUCATION")
+# fy22_relevant <- fy22[, relevant_columns]
+# # fy21_relevant <- fy21_relevant |> rename(WAGE_OFFER_FROM = WAGE_OFFERED_FROM_9089)
+# fy22_relevant$DECISION_DATE <- as.Date(fy22_relevant$DECISION_DATE)
+# 
+# relevant_columns <- c("CASE_NUMBER", "CASE_STATUS", "DECISION_DATE", "EMPLOYER_NAME", "WAGE_OFFER_FROM",  "COUNTRY_OF_CITIZENSHIP", "FOREIGN_WORKER_EDUCATION")
+# fy23_relevant <- fy23[, relevant_columns]
+# # fy21_relevant <- fy21_relevant |> rename(WAGE_OFFER_FROM = WAGE_OFFERED_FROM_9089)
+# fy23_relevant$DECISION_DATE <- as.Date(fy23_relevant$DECISION_DATE)
+# 
+# #Extract year/month/etc
+# fy19_relevant$month <- month(fy19_relevant$DECISION_DATE)
+# fy19_relevant$year <- year(fy19_relevant$DECISION_DATE)
+# fy19_relevant$year_month <- paste(fy19_relevant$year, fy19_relevant$month, sep = "-")
+# 
+# fy20_relevant$month <- month(fy20_relevant$DECISION_DATE)
+# fy20_relevant$year <- year(fy20_relevant$DECISION_DATE)
+# fy20_relevant$year_month <- paste(fy20_relevant$year, fy20_relevant$month, sep = "-")
+# 
+# fy21_relevant$month <- month(fy21_relevant$DECISION_DATE)
+# fy21_relevant$year <- year(fy21_relevant$DECISION_DATE)
+# fy21_relevant$year_month <- paste(fy21_relevant$year, fy21_relevant$month, sep = "-")
+# 
+# fy22_relevant$month <- month(fy22_relevant$DECISION_DATE)
+# fy22_relevant$year <- year(fy22_relevant$DECISION_DATE)
+# fy22_relevant$year_month <- paste(fy22_relevant$year, fy22_relevant$month, sep = "-")
+# 
+# fy23_relevant$month <- month(fy23_relevant$DECISION_DATE)
+# fy23_relevant$year <- year(fy23_relevant$DECISION_DATE)
+# fy23_relevant$year_month <- paste(fy23_relevant$year, fy23_relevant$month, sep = "-")
+# 
+# #combine everythin
+# combined_19_23 <- rbind(fy19_relevant, fy20_relevant)
+# combined_19_23 <- rbind(combined_19_23, fy21_relevant)
+# combined_19_23 <- rbind(combined_19_23, fy22_relevant)
+# combined_19_23 <- rbind(combined_19_23, fy23_relevant)
+# 
+# #write to csv
+# write.csv(combined_19_23, file = "dataset/combined_perm_19_23.csv", row.names = FALSE)
+```
+
+```{r message = FALSE, warning = FALSE}
+combined_19_23 <- read.csv("dataset/combined_perm_19_23.csv")
+
+fy19_relevant <- combined_19_23 |> filter(year==2019)
+fy20_relevant <- combined_19_23 |> filter(year==2020)
+fy21_relevant <- combined_19_23 |> filter(year==2021)
+fy22_relevant <- combined_19_23 |> filter(year==2022)
+fy23_relevant <- combined_19_23 |> filter(year==2023)
+
+```
+
+#Notes: 
+
+Case_status : Certified, Certified-Expired, Denied, Withdrawn
+Foreign_worker_education: Master's, Bachelor's, Doctorate, Other, None, Associate's, High School
+
+#Try Linear Regression, with number of applicants and number of applications certified
+
+```{r}
+applicants_count <- fy23_relevant |>
+  group_by(COUNTRY_OF_CITIZENSHIP) |>
+  summarise(num_applicants = n())
+
+fy23_certified <- fy23_relevant |>
+  filter(CASE_STATUS %in% c('Certified', 'Certified-Expired')) |>
+  group_by(COUNTRY_OF_CITIZENSHIP) |>
+  summarise(num_certified = n())
+
+prop_certified <- left_join(applicants_count, fy23_certified, by = "COUNTRY_OF_CITIZENSHIP")
+prop_certified <- na.omit(prop_certified)
+
+correlation_matrix <- cor(prop_certified |> select_if(is.numeric))
+print(correlation_matrix)
+```
+We can see that they are almost perfectly correlatied, so linear regression should be good. However,
+
+```{r}
+ggplot(prop_certified, aes(x = num_applicants, y = num_certified)) +
+  geom_point(shape = 21, fill = "blue", color = "black", size = 3, alpha = 0.5) +
+  labs(x = "Number of Applicants", y = "Number Certified", title = "Scatter Plot of Applicants vs Certified, 2023")
+```
+This plot shows a very large gap that would greatly influence the result of any linear regression model. So, we can remove the outliers and build regression model without them.
+```{r}
+#calculating q3 + 1.5*iqr and q1-1.5*iqr to remove outliers
+quantiles <- quantile(prop_certified$num_applicants, probs = c(0.25, 0.75))
+q1 <- quantiles[1]
+q3 <- quantiles[2]
+iqr <- q3 - q1
+maxthreshold <- q3 + 1.5 * iqr
+minthreshold <- q1 -1.5*iqr
+top_outliers <- prop_certified[prop_certified$num_applicants > maxthreshold, ]
+bottom_outliers <- prop_certified[prop_certified$num_applicants < minthreshold, ]
+#removing outliers
+prop_certified_filtered <- prop_certified|> filter(num_applicants <= maxthreshold, num_applicants >= minthreshold)
+```
+
+Now,we can try to build with outliers removed.
+```{r}
+#Trying again with outliers removed
+prop_certified_filtered$num_applicants_log <- log(prop_certified_filtered$num_applicants)
+prop_certified_filtered$num_certified_log <- log(prop_certified_filtered$num_certified)
+
+linear_model_filtered <- lm(num_applicants_log ~ num_certified_log -1, data = prop_certified_filtered)
+summary(linear_model_filtered)
+broom::tidy(linear_model_filtered)
+```
+We get a crazy low p-value, which should be good but actually just shows that these variables basically hold the same information, so the regression model is redundant.
+```{r}
+#plotting resid vs fitted, need to transform back from log
+predicted_log <- predict(linear_model_filtered)
+predicted <- exp(predicted_log)
+
+augmented_data <- augment(linear_model_filtered, newdata = data.frame(num_certified_log = prop_certified_filtered$num_certified_log, num_applicants_log = prop_certified_filtered$num_applicants_log))
+
+augmented_data$exp_fitted <- exp(augmented_data$.fitted)
+augmented_data$exp_resid <- exp(augmented_data$.resid)
+
+ggplot(augmented_data, aes(x = exp_fitted, y = exp_resid)) +
+  geom_point(shape = 21, fill = "transparent", color = "black", size = 3, alpha = 0.5) +
+  labs(x = "Fitted Values", y = "Residuals", title = "Residual vs Fitted of Logged Linear Regression")
+```
+Also, even with the outliers removed, the residual values do not fit exactly as we want. This is not an  optimal example of linear regression.
+Try something else:
+
+#Try linear regression for wage_offered
+```{r}
+#Start by removing outliers
+sum(is.na(fy19_relevant$WAGE_OFFERED_FROM_9089))
+sum(is.na(fy19_relevant$WAGE_OFFERED_TO_9089))
+
+quantiles <- quantile(fy23_relevant$WAGE_OFFER_FROM, probs = c(0.25, 0.75), na.rm = TRUE)
+q1 <- quantiles[1]
+q3 <- quantiles[2]
+iqr <- q3 - q1
+
+maxthreshold <- q3 + 1.5 * iqr
+minthreshold <- q1 -1.5*iqr
+
+top_outliers <- fy23_relevant[fy23_relevant$WAGE_OFFER_FROM > maxthreshold, ]
+bottom_outliers <- fy23_relevant[fy23_relevant$WAGE_OFFER_FROM < minthreshold, ]
+
+# Remove outliers from the original dataset
+fy23_wage <- fy23_relevant|> filter(WAGE_OFFER_FROM <= maxthreshold, WAGE_OFFER_FROM >= minthreshold)
+```
+
+#Want to see if there's more applicants for higher paying jobs
+```{r}
+# Define the number of bins and create bins for the 'WAGE_OFFERED_FROM_9089' variable
+num_bins <- 5  # You can adjust the number of bins as needed
+fy23_wage <- fy23_wage %>%
+  mutate(WAGE_BIN = cut(WAGE_OFFER_FROM, breaks = num_bins, labels = FALSE))
+
+
+# Group by the bins and count the number of applicants for each bin
+applicant_counts <- fy23_wage |>
+  group_by(WAGE_BIN) |>
+  mutate(num_applicants = n())
+```
+
+```{r}
+# Retrieve the bin values
+bin_values <- seq(min(fy23_wage$WAGE_OFFER_FROM), max(fy23_wage$WAGE_OFFER_FROM), length.out = num_bins + 1)
+bin_intervals <- paste0(bin_values[-length(bin_values)], " - ", bin_values[-1])
+
+ggplot(fy23_wage, aes(x = factor(WAGE_BIN, labels = bin_intervals))) +
+  geom_bar() +
+  labs(x = "Wage Bin in $", y = "Number of Applicants", title = "Wages of Applicants")
+```
+We can try to predict the wages for employees in the upcoming period.
+
+```{r}
+combined_wage <- combined_19_23  |>
+  select(year_month, WAGE_OFFER_FROM) |>
+  group_by(year_month) |>
+  summarise(avg_wage = mean(WAGE_OFFER_FROM, na.rm = TRUE)) %>%
+  filter(!is.na(avg_wage))
+
+ts_data <- combined_wage |>
+  mutate(date = yearmonth(combined_wage$year_month)) |> as_tsibble(index = date)
+
+
+model <- auto.arima(ts_data$avg_wage)
+n_periods <- 12
+forecast_values <- forecast(model, h = n_periods)
+
+attr(model$x, "tsp")
+every_other_index <- seq(1, 60, by = 5)
+autoplot(forecast_values) +
+  scale_x_continuous(breaks = every_other_index, labels = ts_data$year_month[every_other_index]) +
+  labs(x = "Time", y = "Average Wage in $", title = "Forecast of Wage")+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+#Now, want to see if the acceptance rate of the top 5 countries are different
+```{r}
+top5_countries <- combined_19_23 |>
+  group_by(COUNTRY_OF_CITIZENSHIP) |>
+  summarise(num_applicants = n()) |>
+  top_n(5)
+
+bottom5_countries <- combined_19_23 |>
+  group_by(COUNTRY_OF_CITIZENSHIP) |>
+  summarise(num_applicants = n()) |>
+  filter(num_applicants > 0) |>
+  top_n(-5)
+
+top5_applicants <- combined_19_23 %>%
+  filter(COUNTRY_OF_CITIZENSHIP %in% top5_countries$COUNTRY_OF_CITIZENSHIP)|>
+  group_by(COUNTRY_OF_CITIZENSHIP, year_month) %>%
+  summarise(total_applicants = n())
+
+top5_certified <- combined_19_23 %>%
+  filter(COUNTRY_OF_CITIZENSHIP %in% top5_countries$COUNTRY_OF_CITIZENSHIP)|>
+  filter(CASE_STATUS %in% c("Certified", "Certified-Expired")) %>%
+  group_by(COUNTRY_OF_CITIZENSHIP, year_month) %>%
+  summarise(certified_applicants = n())
+
+merged_data <- left_join(top5_applicants, top5_certified, by = c("COUNTRY_OF_CITIZENSHIP", "year_month"))
+
+ggplot(merged_data, aes(y = total_applicants, x = yearmonth(year_month), color = COUNTRY_OF_CITIZENSHIP)) +
+  geom_line() +
+  geom_line(aes(y = certified_applicants), linetype = "dotted") +
+  labs(x = "Decision Date", y = "Number of Applicants", title = "Number of Applicants by Country for Top 5 Countries")
+```
+
+```{r}
+certified_counts <- combined_19_23 %>%
+  group_by(year_month, COUNTRY_OF_CITIZENSHIP) %>%
+  summarise(certified_count = sum(CASE_STATUS %in% c("Certified", "Certified-Expired")),
+            total_count = n()) %>%
+  mutate(non_certified_count = total_count - certified_count)
+
+average_applicants <- certified_counts %>%
+  group_by(year_month) %>%
+  summarise(average_for_day = mean(total_count))
+
+average_certified <- certified_counts %>%
+  group_by(year_month) %>%
+  summarise(certified_for_day = mean(certified_count))
+
+average_merged_data <- left_join(average_applicants, average_certified, by = "year_month")
+
+ggplot(average_merged_data, aes(y = average_for_day, x = yearmonth(year_month))) +
+  geom_line() +
+  geom_line(aes(y = certified_for_day), linetype = "dotted") +
+  labs(x = "Decision Date", y = "Number of Applicants", title = "Average number of applicants")
+```
+
+
+```{r}
+top5_wage <- combined_19_23 |>
+  filter(COUNTRY_OF_CITIZENSHIP %in% top5_countries$COUNTRY_OF_CITIZENSHIP)|>
+  filter(CASE_STATUS %in% c("Certified", "Certified-Expired")) |>
+  group_by(COUNTRY_OF_CITIZENSHIP, year_month) |>
+  summarise(avg_wage = mean(WAGE_OFFER_FROM, na.rm = TRUE)) |>
+  filter(!is.na(avg_wage))
+
+ggplot(top5_wage, aes(y = avg_wage, x = yearmonth(year_month), color = COUNTRY_OF_CITIZENSHIP)) +
+  geom_line() +
+  facet_wrap(~COUNTRY_OF_CITIZENSHIP)+
+  labs(x = "Decision Date", y = "Average Wage", title = "Average Wage by Country for Top 5 Countries")+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+```{r}
+top5_wage <- combined_19_23 |>
+  filter(CASE_STATUS %in% c("Certified", "Certified-Expired")) |>
+  group_by(year_month) |>
+  summarise(avg_wage = mean(WAGE_OFFER_FROM, na.rm = TRUE)) |>
+  filter(!is.na(avg_wage))
+
+ggplot(top5_wage, aes(y = avg_wage, x = yearmonth(year_month))) +
+  geom_line() +
+  labs(x = "Decision Date", y = "Average Wage", title = "Average Wage")
+```
+
+```{r}
+certified_counts <- combined_19_23 %>%
+  filter(COUNTRY_OF_CITIZENSHIP %in% top5_countries$COUNTRY_OF_CITIZENSHIP)|>
+  group_by(year_month, COUNTRY_OF_CITIZENSHIP) %>%
+  summarise(certified_count = sum(CASE_STATUS %in% c("Certified", "Certified-Expired")),
+            total_count = n()) %>%
+  mutate(non_certified_count = total_count - certified_count)
+
+ggplot(certified_counts, aes(y = certified_count/total_count, x = yearmonth(year_month))) +
+  geom_line() +
+  facet_wrap(~COUNTRY_OF_CITIZENSHIP)+
+  labs(x = "Decision Date", y = "Certified/Total", title = "Acceptance Rate for the top 5 Countries")+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+#Now, look at correlation between education level and wage
+
+```{r}
+combined_19_23_accepted <- combined_19_23 |>
+  filter(CASE_STATUS %in% c("Certified", "Certified-Expired"))
+
+#scatter plot: x = time, y = wage, color = education level
+ggplot(combined_19_23_accepted, aes(x = yearmonth(year_month), y = log(WAGE_OFFER_FROM), color = FOREIGN_WORKER_EDUCATION)) +
+  geom_point(alpha = 0.5) +
+  labs(x = "Year Month", y = "Wage", color = "Education Level",
+       title = "Scatter Plot of Wage vs Year Month")
+```
+
+```{r}
+education <- combined_19_23 %>%
+  group_by(FOREIGN_WORKER_EDUCATION, year_month) %>%
+  summarise(certified_count = sum(CASE_STATUS %in% c("Certified", "Certified-Expired")),
+            total_count = n()) %>%
+  mutate(non_certified_count = total_count - certified_count)
+
+ggplot(education, aes(y = total_count, x = yearmonth(year_month), color = FOREIGN_WORKER_EDUCATION)) +
+  geom_line() +
+  labs(x = "Decision Date", y = "Applied", title = "Applicants and Education Levels")
+```
+
+
+```{r}
+ggplot(education, aes(y = certified_count/total_count, x = yearmonth(year_month))) +
+  geom_line() +
+  facet_wrap(~FOREIGN_WORKER_EDUCATION) +
+  labs(x = "Decision Date", y = "Accepted", title = "Accptance Rate and Education Levels")+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+
+#Goals: -see if we can do linear regression once things are normalized by population
+
+```{r}
+population_data <- read.csv("dataset/IMF_data/imf_population.csv", header=TRUE)
+h1b_country <- read_rds('dataset/cleaned_h1b_data.rds')
+population_data$Year <- as.character(population_data$Year)
+
+colnames(h1b_country) <- c('Country','Continent','1997', '1998', '1999', '2000', '2001', '2002', '2003', '2004', '2005', '2006', '2007', '2008', '2009', '2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022')
+h1b_long <- pivot_longer(h1b_country, cols = -c("Continent", "Country"), names_to = "year", values_to = "count_h1b")
+
+
+source("scripts/standardize_country_names.R")
+population_data$Country_Standardized <- standardize_country_names(population_data$Name)
+h1b_long$Country_Standardized <- standardize_country_names(h1b_long$Country)
+```
+
+
+```{r}
+mergetry <- left_join(population_data, h1b_long, by = c("Year" = "year", "Country_Standardized" = "Country_Standardized"))
+mergetry <- mergetry |>
+  mutate(Population = as.numeric(gsub(",", "", `Total.Population`)))
+
+merge_continent <- mergetry |>
+  group_by(Continent, Year)|>
+  select(c(Continent, count_h1b, Population, Year))|>
+  summarize(across(everything(), sum, na.rm = TRUE)) |>
+  filter(Continent != 'NA')
+```
+
+
+```{r}
+ggplot(merge_continent, aes(x = Year, y = count_h1b, fill = Continent)) +
+  geom_bar(stat = "identity", position = "stack") +
+  facet_wrap(~Continent, scales='free_y') + 
+  labs(title = "Total Values by Continent Over the Years",
+       x = "Year", y = "Number of Applications") + theme(legend.position = "none",
+        axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_x_discrete(guide=guide_axis(check.overlap=TRUE))
+
+ggplot(merge_continent, aes(x = Year, y = count_h1b/Population, fill = Continent)) +
+  geom_bar(stat = "identity", position = "stack") +
+  facet_wrap(~Continent, scales='free_y') + 
+  labs(title = "Total Values by Continent Over the Years, Normalized by Population",
+       x = "Year", y = "Number of Applications/Population") + theme(legend.position = "none",
+        axis.text.x = element_text(angle = 45, hjust = 1))+
+  scale_x_discrete(guide=guide_axis(check.overlap=TRUE))+
+  theme(axis.text.y = element_blank(), axis.ticks.y = element_blank())
+
+```
+
+```{r}
+mergetry$Year <- as.factor(mergetry$Year)
+world_map <- map_data("world")
+world_map$Country_Standardized <- standardize_country_names(world_map$region)
+
+# Merge world map data with h1b data
+h1b_data_2022 <- subset(mergetry, year == 2022)
+map_data <- inner_join(world_map, h1b_data_2022, by = "Country_Standardized")
+map_data <- map_data[order(map_data$order), ]
+map_data <- subset(map_data, year == 2022)
+
+p <- ggplot() +
+  geom_map(data = map_data, map = map_data,
+           aes(map_id = region, fill = log(count_h1b)/log(Population))) +
+  expand_limits(x = c(min(map_data$long), max(map_data$long)), 
+              y = c(min(map_data$lat), max(map_data$lat)))+
+  coord_fixed(ratio=1.2) +
+  theme_void() +
+  #scale_fill_continuous(name = "H1B Count") + 
+  scale_fill_viridis_c()+
+  labs(title = "H1B Visa Distribution by Country, 2022")+
+  theme(plot.title = element_text(hjust = 0.5))
+
+
+print(p)
+```
+
+```{r}
+top_countries <- h1b_data_2022 |>
+group_by(Country_Standardized) |>
+summarise(total_count = count_h1b) |>
+arrange(desc(total_count)) |>
+top_n(5)
+  
+  #summarise the rest
+other_countries <- h1b_data_2022 |>
+anti_join(top_countries, by = "Country_Standardized") |>
+  filter(!is.na(count_h1b))|>
+summarise(Country_Standardized = "Other",
+            total_count = sum(count_h1b))
+  
+combined_data <- bind_rows(top_countries, other_countries)
+#   pie_chart <- pie(combined_data$total_count, labels = upper(combined_data$Country_Standardized), main = # paste("Top 5 Countries in 2022"), col=viridis(length(combined_data$total_count)))
+  
+ggplot(combined_data, aes(x = "", y = total_count, fill = toupper(Country_Standardized))) +
+  geom_bar(width = 1, stat = "identity") +
+  coord_polar("y", start = 0) +
+  theme_void() +
+  theme(legend.position = "right") +
+  scale_fill_viridis_d(name = 'Country of Origin') +
+  labs(title = paste("Top 5 Countries in 2022")) +
+  theme(plot.title = element_text(hjust = 0.5))
+  
+```
+
+
+```{r}
+relevant_columns <- c("Country_Standardized", "count_h1b")
+mergetry_pop_country <- mergetry[, relevant_columns]
+
+mergetry_pop_country <- mergetry_pop_country[!is.na(mergetry_pop_country$count_h1b), ]
+mergetry_pop_country <- mergetry_pop_country[!is.na(mergetry_pop_country$Country_Standardized), ]
+
+top_countries <- mergetry_pop_country |>
+  #distinct(Country_Standardized, .keep_all = TRUE) |>
+  group_by(Country_Standardized) |>
+  summarise(total_count = sum(count_h1b)) |>
+  arrange(desc(total_count)) |>
+  top_n(5)
+
+  
+#summarise the rest
+other_countries <- mergetry |>
+anti_join(top_countries, by = "Country_Standardized") |>
+  filter(!is.na(count_h1b))|>
+summarise(Country_Standardized = "Other",
+            total_count = sum(count_h1b))
+  
+combined_data <- bind_rows(top_countries, other_countries)
+#   pie_chart <- pie(combined_data$total_count, labels = upper(combined_data$Country_Standardized), main = # paste("Top 5 Countries in 2022"), col=viridis(length(combined_data$total_count)))
+  
+ggplot(combined_data, aes(x = "", y = total_count, fill = toupper(Country_Standardized))) +
+  geom_bar(width = 1, stat = "identity") +
+  coord_polar("y", start = 0) +
+  theme_void() +
+  theme(legend.position = "right") +
+  scale_fill_viridis_d(name = 'Country of Origin') +
+  labs(title = paste("Top 5 Countries 1997-2022")) +
+  theme(plot.title = element_text(hjust = 0.5))
+  
+
+```
+
+```{r}
+#calculating percentage of applicants from India in 2022
+h1b_data_2022 <- h1b_data_2022[!is.na(h1b_data_2022$count_h1b), ]
+total_sum <- sum(h1b_data_2022$count_h1b)
+india_sum <- sum(h1b_data_2022$count_h1b[h1b_data_2022$Country_Standardized == "india"])
+percentage_from_india <- (india_sum / total_sum) * 100
+print(percentage_from_india)
+
+```
+
+```{r}
+#calculating percentage of applicants from india 1997-2022
+mergetry_nonan <- mergetry_pop_country[!is.na(mergetry_pop_country$count_h1b), ]
+total_sum <- sum(mergetry_nonan$count_h1b)
+india_sum <- sum(mergetry_nonan$count_h1b[mergetry_nonan$Country_Standardized == "india"])
+percentage_from_india <- (india_sum / total_sum) * 100
+print(percentage_from_india)
+```
+
+```{r}
+#calculating percentage of applicants from china 1997-2022
+total_sum <- sum(mergetry_nonan$count_h1b)
+china_sum <- sum(mergetry_nonan$count_h1b[mergetry_nonan$Country_Standardized == "china"])
+percentage_from_china <- (china_sum / total_sum) * 100
+print(percentage_from_china)
+```
+
+```{r}
+#Calculating percentage of world population from china
+mergetry_nonan <- mergetry[!is.na(mergetry$Population), ]
+mergetry_nonan <- mergetry_nonan[!is.na(mergetry_nonan$Country_Standardized), ]
+total_sum <- sum(mergetry_nonan$Population)
+china_sum <- sum(mergetry_nonan$Population[mergetry_nonan$Country_Standardized == "china"])
+percentage_from_china <- (china_sum / total_sum) * 100
+print(percentage_from_china)
+```
+
+```{r}
+#Calculating percentage of h1-b applicants  from Asia
+mergetry_nonan <- mergetry[!is.na(mergetry$count_h1b), ]
+total_sum <- sum(mergetry_nonan$count_h1b)
+asia_sum <- sum(mergetry_nonan$count_h1b[mergetry_nonan$Continent == "Asia"])
+percentage_from_asia <- (asia_sum / total_sum) * 100
+print(percentage_from_asia)
+```
+
+```{r}
+#Calculating percentage of world population from India
+mergetry_nonan <- mergetry[!is.na(mergetry$Population), ]
+mergetry_nonan <- mergetry_nonan[!is.na(mergetry_nonan$Country_Standardized), ]
+total_sum <- sum(mergetry_nonan$Population)
+india_sum <- sum(mergetry_nonan$Population[mergetry_nonan$Country_Standardized == "india"])
+percentage_from_india <- (india_sum / total_sum) * 100
+print(percentage_from_india)
+```
+
+```{r}
+#calculating percentage of world population from Asia
+mergetry_nonan <- mergetry[!is.na(mergetry$Population), ]
+mergetry_nonan <- mergetry_nonan[!is.na(mergetry_nonan$Continent), ]
+total_sum <- sum(mergetry_nonan$Population)
+asia_sum <- sum(mergetry_nonan$Population[mergetry_nonan$Continent == "Asia"])
+percentage_from_asia <- (asia_sum / total_sum) * 100
+print(percentage_from_asia)
+```
+
+
+#Group combined data by year and country of citizenship
+
+```{r}
+combined_19_23_pop <- combined_19_23 |>
+  group_by(year, COUNTRY_OF_CITIZENSHIP)|>
+  summarise(num_applicants = n(), num_certified = sum(CASE_STATUS %in% c("Certified", "Certified-Expired")), avg_wage = mean(WAGE_OFFER_FROM))
+  
+
+#make sure both datasets have lower case values for country before merging
+combined_19_23_pop <- combined_19_23_pop |>
+  mutate(COUNTRY_OF_CITIZENSHIP = toupper(COUNTRY_OF_CITIZENSHIP))
+
+population_data <- population_data |>
+  mutate(Name = toupper(Name)) |>
+  mutate(year = as.numeric(year))
+
+
+mergetry <- left_join(population_data, combined_19_23_pop, by = c("year" = "year", "Name" = "COUNTRY_OF_CITIZENSHIP"))
+
+mergetry$`Total Population` <- as.numeric(gsub(",", "", mergetry$`Total Population`))
+
+mergetry_2023 <- mergetry |> filter(Year == 2023)
+```
+
+
+```{r}
+ggplot(mergetry_2023, aes(x = num_applicants/`Total Population`, y = num_certified/`Total Population`)) +
+  geom_point(shape = 21, fill = "blue", color = "black", size = 3, alpha = 0.5) +
+  labs(x = "Number of Applicants", y = "Number Certified", title = "Scatter Plot of Applicants vs Certified 2023, normalized by population")
+```
+
+```{r}
+linear_model_pop <- lm(num_applicants/`Total Population` ~ num_certified/`Total Population` -1, data = mergetry_2023)
+
+summary(linear_model_pop)
+broom::tidy(linear_model_pop)
+```
+
+```{r}
+ggplot(linear_model_pop, aes(x = .fitted, y = .resid)) +
+  geom_point(shape = 21, fill = "transparent", color = "black", size = 3, alpha = 0.5) +
+  labs(x = "Fitted Values", y = "Residuals", title = "Residual vs Fitted of Linear Regression of Number of applicants and number of certifications, normed by population ")
+```
+
+#look at the scale, this looks like a good model.
+
+
+#Now, see if population can predict number of applicants
+
+```{r}
+ggplot(mergetry_2023, aes(x = `Total Population`, y = num_applicants)) +
+  geom_point(shape = 21, fill = "blue", color = "black", size = 3, alpha = 0.5) +
+  labs(x = "Total Population", y = "Number of Applicants", title = "Scatter Plot of population vs applicants 2023")
+```
+
+soooo, doesn't look like a good candidate for linear regression
+
+
