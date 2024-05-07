@@ -241,8 +241,19 @@ print(paste("Improvement over median baseline: ", median_rmse - model_rmse))
 # Visualizing actual vs predicted wages
 ```{r}
 ggplot(test_data, aes(x = Wage, y = Predicted_Wage)) +
-  geom_point() +
-  geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "red") +
-  labs(title = "Actual vs Predicted Wages", x = "Actual Wage", y = "Predicted Wage")
+  
+  geom_point(color = "blue", alpha = 0.5) +
+
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "red") +  # Line x=y for perfect prediction
+
+  labs(title = "Actual vs Predicted Wages on Testing Data",
+
+       x = "Actual Wage (USD)",
+
+       y = "Predicted Wage (USD)") +
+
+  theme_minimal() +
+
+  annotate("text", x = max(train_data$Wage), y = max(train_data$Predicted_Wage), label = "Red line indicates perfect prediction", hjust = 1.1, vjust = 1, size = 3.5, color = "red")
 ```
 
