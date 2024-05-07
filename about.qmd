@@ -39,9 +39,3 @@ Phil is a senior studying Statistics and Computer Science.
 
 Ken is a sophomore studying economics and math.
 
-
-<!-- Please leave in the information below -->
-
-### About this Template.
-
-This is based off of the standard Quarto website template from RStudio (2023.09.0 Build 463).

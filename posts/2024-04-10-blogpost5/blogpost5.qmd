@@ -328,9 +328,9 @@ yearly_wage <- final_df %>%
 ggplot(yearly_wage, aes(x = YEAR_BEGIN, y = WAGE_RATE_OF_PAY_FROM)) +
   geom_line() +  # Use a line plot to show trends over time
   geom_point() +  # Add points to highlight each year's average wage
-  labs(title = "Median Employer wage Per Year",
+  labs(title = "Median Employee wage Per Year",
        x = "Year",
-       y = "Median employer wage") 
+       y = "Median employee wage($)") 
 
 ```
 we see a sharp drop in year 2021 due to COVID-19. 
