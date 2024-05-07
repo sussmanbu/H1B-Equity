@@ -14,8 +14,8 @@ library(fastDummies)
 
 # Load H1b data: 2022 and 2023
 ```{r message = FALSE, warning = FALSE}
-fy22 <- read_excel('dataset/Perm_data/PERM_Disclosure_Data_FY2022_Q4.xlsx')
-fy23 <- read_excel('dataset/Perm_data/PERM_Disclosure_Data_FY2023_Q4.xlsx')
+fy22 <- read_excel('dataset-ignore/PERM_Disclosure_Data_FY2022_Q4.xlsx')
+fy23 <- read_excel('dataset-ignore/PERM_Disclosure_Data_FY2023_Q4.xlsx')
 ```
 #Notes:
 Case_status : Certified, Certified-Expired, Denied, Withdrawn
