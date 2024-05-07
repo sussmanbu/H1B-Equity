@@ -125,6 +125,18 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#interpretation-1" id="toc-interpretation-1" class="nav-link" data-scroll-target="#interpretation-1">Interpretation</a></li>
   </ul></li>
   </ul></li>
+  <li><a href="#httpsfacebook.github.ioprophet" id="toc-httpsfacebook.github.ioprophet" class="nav-link" data-scroll-target="#httpsfacebook.github.ioprophet">https://facebook.github.io/prophet/</a></li>
+  <li><a href="#motivation-for-data-analysis-1" id="toc-motivation-for-data-analysis-1" class="nav-link" data-scroll-target="#motivation-for-data-analysis-1">Motivation for Data Analysis</a>
+  <ul class="collapse">
+  <li><a href="#linear-modelling-1" id="toc-linear-modelling-1" class="nav-link" data-scroll-target="#linear-modelling-1">Linear Modelling</a>
+  <ul class="collapse">
+  <li><a href="#interpretation-2" id="toc-interpretation-2" class="nav-link" data-scroll-target="#interpretation-2">Interpretation</a></li>
+  </ul></li>
+  <li><a href="#time-series-forcasting-1" id="toc-time-series-forcasting-1" class="nav-link" data-scroll-target="#time-series-forcasting-1">Time Series Forcasting</a>
+  <ul class="collapse">
+  <li><a href="#interpretation-3" id="toc-interpretation-3" class="nav-link" data-scroll-target="#interpretation-3">Interpretation</a></li>
+  </ul></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -153,10 +165,11 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
+<p>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</p>
 <p><img src="images/big_picture .png" class="img-fluid" width="900"></p>
 <section id="motivation-for-data-analysis" class="level1">
 <h1>Motivation for Data Analysis</h1>
-<p>Our data analysis seeks to achieve an understanding of how and why H1-B applications vary across countries, continents, and time. We are interested in the number of applications from each country and/or continent, the wages of the recipients, the level of education that the applicants have achieved, and the financial information from their country of citizenship. We are interested in answering how the distribution of H1-B applicants has changed throughout time, whether education level and wage are correlated, and how that has changed, as well as whether the financial standing of a country is correlated with the number of citizens applying for an H1-B visa.</p>
+<p>Our data analysis seeks to understand how H1-B applications vary across countries, continents, and time. More specifically, we are interested in the number of applications from each country and/or continent, the wages of the recipients, the level of education that the applicants have achieved, and the economic data of their country of citizenship. We want to investigate how the distribution of H1-B applicants per continent has changed over time, and how (if at all) wage is linked to education level, GDP per capita of country of origin, and Unemployment rate of country of origin for applicants with successful H1B visa applications.</p>
 <ul>
 <li><p>Modeling and Inference</p>
 <ul>
@@ -206,7 +219,67 @@ p-value: &lt; 2.2e-16</p>
 <li><p>The year 2021 stands out as an outlier due to the unprecedented impact of the COVID-19. This global event significantly disrupted normal hiring patterns and economic activity, influencing the performance of forecasting models.</p></li>
 </ol>
 <p><strong>Reference to Meta’s algorithm</strong></p>
-<p>https://facebook.github.io/prophet/</p>
+</section>
+</section>
+</section>
+</section>
+<section id="httpsfacebook.github.ioprophet" class="level1">
+<h1>https://facebook.github.io/prophet/</h1>
+<p><img src="images/big_picture .png" class="img-fluid" width="900"></p>
+</section>
+<section id="motivation-for-data-analysis-1" class="level1">
+<h1>Motivation for Data Analysis</h1>
+<p>Our data analysis seeks to achieve an understanding of how and why H1-B applications vary across countries, continents, and time. We are interested in the number of applications from each country and/or continent, the wages of the recipients, the level of education that the applicants have achieved, and the financial information from their country of citizenship. We are interested in answering how the distribution of H1-B applicants has changed throughout time, whether education level and wage are correlated, and how that has changed, as well as whether the financial standing of a country is correlated with the number of citizens applying for an H1-B visa.</p>
+<ul>
+<li><p>Modeling and Inference</p>
+<ul>
+<li>The page will include some kind of formal statistical model. This could be a linear regression, logistic regression, or another modeling framework.</li>
+<li>Explain the ideas and techniques you used to choose the predictors for your model. (Think about including interaction terms and other transformations of your variables.)</li>
+</ul></li>
+</ul>
+<section id="linear-modelling-1" class="level2">
+<h2 class="anchored" data-anchor-id="linear-modelling-1">Linear Modelling</h2>
+<p>First, the Perm Disclosure datasets for 2023 and 2024 are joined with IMF GDP and Unemployment rates by country. The education level of an applicant is made into a categorical variable, and the correlation between variables can be represented in the following correlation matrix. <img src="images/correlation_heatmap.png" class="img-fluid"></p>
+<p>With the information from this correlation matrix, an initial linear regression model of Wage ~ GDP per Capita + Unemployment can be built. A naive implementation of the model would be strongly influenced by an outlier in the data, which can be detected using Cook’s distance formula. Nigeria, which has an average H1-B applicant wage of $6,524,999, a GDP of 1945.012, and an unemployment rate of 22.6, has a Cook’s distance more than 3 times the average.</p>
+<p><strong>Reference to cooks-distance</strong></p>
+<p><a href="https://www.mathworks.com/help/stats/cooks-distance.html">https://www.mathworks.com/help/stats/cooks-distance.htmlhttps://www.mathworks.com/help/stats/cooks-distance.html</a></p>
+<p>After removing this outlier, the dataset is split 90/10 into training and test sets, and the linear regression model is built on the training set. Test set will be used to evaluate the error on unseen data.</p>
+<p>On the training set, the linear model has the following statistics:</p>
+<p>Residual standard error: 50400 on 13467 degrees of freedom Multiple R-squared: 0.1771,<br>
+Adjusted R-squared: 0.1766<br>
+F-statistic: 362.2 on 8 and 13467 DF,<br>
+p-value: &lt; 2.2e-16</p>
+<section id="interpretation-2" class="level3">
+<h3 class="anchored" data-anchor-id="interpretation-2">Interpretation</h3>
+<p>The Residual standard error indicates that the information provided by the GDP per capita and Unemployment of a country can predict the average wage of an H1-B recipient from that country with an average error of $50,400. A Mutliple R-squared of 0.1771 suggests that about 17.7% of the variability in the wage of H1-B recipients from a country can be explained by the GDP and Unemployment of that country. Despite the fact that these values show that there is a lot of variability in wages not explained by the model, a p-value less than 0.05 leads to the conclusion that the model is statistically significant.</p>
+<p>This plot shows that the fitted values of the model have residuals that are generally concentrated around the Residual = 0 line, but are not exactly aligned with it. This is consistent with the RSE and Multiple R-squared values.</p>
+<p><img src="images/ResidualsVsFitted.png" class="img-fluid"></p>
+<p><strong>Interpretation of the model</strong></p>
+<p>The model’s predictive performance of the testing set has a RSME of 48892.1392, due to the assumption that linear regression assumes the data to have linear relationship. However, in real setting, most of the real world dataset is nonlinear. To obtain a lower root square mean error, we would need a robust machine learning model or transform some of the features.<img src="images/ActualvsPredicted.png" class="img-fluid" alt="Total number of H1B applications in 2020-2024"></p>
+</section>
+</section>
+<section id="time-series-forcasting-1" class="level2">
+<h2 class="anchored" data-anchor-id="time-series-forcasting-1">Time Series Forcasting</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/applications.png" class="img-fluid figure-img"></p>
+<figcaption class="figure-caption">Total number of H1B applications in 2020-2024</figcaption>
+</figure>
+</div>
+<p>The graph illustrates the total number of H1B applications from 2020 to 2024, providing valuable insights for prospective H1B applicants regarding near-future trends.</p>
+<p>To project the volume of H1B applications for the year 2025, Prophet time series model was used. This approach was chosen due to its effectiveness in capturing data with inherent seasonality, which is common in industries where companies often undergo significant hiring cycles, typically peaking in the fall when budget allocations are highest. <img src="images/total_cases.png" class="img-fluid" alt="Total number of H1B applications in 2020-2024"></p>
+<section id="interpretation-3" class="level3">
+<h3 class="anchored" data-anchor-id="interpretation-3">Interpretation</h3>
+<p>The forecast plot reveals promising prospects for prospective applicants, indicating the potential for a surge in hiring activities. The shaded regions delineate the upper and lower bounds of the forecast, offering a range within which the actual number of applications may fall.</p>
+<p>This forecast holds significant implications for potential H1B applicants. Understanding these anticipated trends can inform strategic decision-making processes, ensuring proactive measures are taken to address potential challenges or capitalize on emerging opportunities.</p>
+<section id="limitation-1" class="level4">
+<h4 class="anchored" data-anchor-id="limitation-1">Limitation</h4>
+<ol type="1">
+<li><p>The Prophet time series model is well-suited to analyze this dataset as it focuses on univariate time series data. However, it’s worth noting that the model may not effectively account for multiple correlated time series.</p></li>
+<li><p>The year 2021 stands out as an outlier due to the unprecedented impact of the COVID-19. This global event significantly disrupted normal hiring patterns and economic activity, influencing the performance of forecasting models.</p></li>
+</ol>
+<p><strong>Reference to Meta’s algorithm</strong></p>
+<p>https://facebook.github.io/prophet/ &gt;&gt;&gt;&gt;&gt;&gt;&gt; 9bca79d (render page again 2:59pm)</p>
 
 
 </section>
