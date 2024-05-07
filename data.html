@@ -263,6 +263,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="dataset-2-labor-data" class="level3">
 <h3 class="anchored" data-anchor-id="dataset-2-labor-data">Dataset 2: Labor Data</h3>
 <p><strong>Source</strong>: <a href="https://www.dol.gov/agencies/eta/foreign-labor/performance">U.S. Department of Labor</a>. We downloaded LCA Programs H-1B and PERM disclosure data in .excel file or tabular data.</p>
+<p><strong>Source</strong>: Find the source of the dataset: <a href="./dataset/cleaned_disclosure.rds">here</a></p>
+<p><strong>Source 2</strong>: Find the 2nd source of the dataset: <a href="./dataset/combined_perm_19_23.csv">here</a></p>
 <p>PERM_disclosure_data: A system used by the U.S Department of Labor to process labor certifications, which is the first step required in the process for certain foreign nationals to obtain an employment-based immigrant visa, or green card.</p>
 <p>LCA_Program_data: LCA stands for Labor Condition Application. This application is a component of the H1B visa process, where employers in the U.S. must attest to the Department of Labor that they will pay the H1B visa holder a wage that is no less than the wage paid to similarly qualified U.S. workers. It also ensures that employing a foreign worker will not adversely affect the working conditions of U.S. workers similarly employed.</p>
 <p><strong>Purpose</strong></p>
@@ -287,7 +289,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ol>
 <section id="cleaning-script-1" class="level4">
 <h4 class="anchored" data-anchor-id="cleaning-script-1">Cleaning Script</h4>
-<p>Find the source of the dataset: <a href="./dataset/cleaned_disclosure.rds">here</a></p>
 <p>Find the full cleaning script <a href="./scripts/load_and_clean_data.R">here</a>.</p>
 <p>The following steps would be describing how we load our dataset and merge additional columns. Later down the steps, we will merge the world economic dataset</p>
 <div class="cell">
