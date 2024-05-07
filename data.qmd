@@ -6,7 +6,9 @@ draft: false
 ---
 
 # Dependencies Used For Data.qmd
+
 Below is a list of packages that we use for our dataset
+
 ```{r}
 suppressPackageStartupMessages(library(tidyverse))
 library(tidyr)
@@ -18,52 +20,50 @@ library(readxl)
 library(readr)
 library(lubridate)
 ```
-  
+
 # Data Background
-For this data page, our team explore three datasets. 
 
-1. Travel data from U.S Department of State
+For this data page, our team explore three datasets.
 
-2. U.S Department Labor(work condition of H1B worker)
+1.  Travel data from U.S Department of State
 
-3. World Economic data (merge with H1B dataset)
+2.  U.S Department Labor(work condition of H1B worker)
+
+3.  World Economic data (merge with H1B dataset)
 
 # First Dataset
-  
+
 **Source**
 
-  Our first dataset is downloaded from the [travel.state.gov website](https://travel.state.gov/content/dam/visas/Statistics/Non-Immigrant-Statistics/NIVDetailTables/FYs97-22_NIVDetailTable.xlsx) and stored in the `dataset` folder. The data was collected by U.S Department of State, more specifically the Bureau of Consular Affairs. 
+Our first dataset is downloaded from the [travel.state.gov website](https://travel.state.gov/content/dam/visas/Statistics/Non-Immigrant-Statistics/NIVDetailTables/FYs97-22_NIVDetailTable.xlsx) and stored in the `dataset` folder. The data was collected by U.S Department of State, more specifically the Bureau of Consular Affairs.
 
 **Why collected?**
 
-  The Report of the Visa Office is an annual report providing statistical information on immigrant and non-immigrant visa issuance by consular offices, including information visa allocation in numerically limited categories. The main part of this dataset we want to focus on is the country of origin of visa recipients for H1B-type visas. Years covered range from Fiscal Year 1997 to F.Y. 2022 inclusively.
+The Report of the Visa Office is an annual report providing statistical information on immigrant and non-immigrant visa issuance by consular offices, including information visa allocation in numerically limited categories. The main part of this dataset we want to focus on is the country of origin of visa recipients for H1B-type visas. Years covered range from Fiscal Year 1997 to F.Y. 2022 inclusively.
 
-  
 The original dataset comes with the following features/columns:
 
-* country: origin of country
+-   country: origin of country
 
-* H1B: H1B approval count
+-   H1B: H1B approval count
 
-* FY97 - FY22: represents year 1997 till 2022
+-   FY97 - FY22: represents year 1997 till 2022
 
 Essentially, this dataset contains information of H1B approval from year 1997 till 2022 and its originate country.
-
 
 ## Dataset 1: Data Pipeline
 
 The original dataset is in dataset directory as .xlsx file. It contains pivot tables for each year that describe various U.S travel approvals such as H1B. To transform the dataset into the current one, we did the following operation
 
-* read in excel files
+-   read in excel files
 
-* filter out null values(continents, .., etc)
+-   filter out null values(continents, .., etc)
 
-* group country
+-   group country
 
-* filter out other columns and keep H1B column
+-   filter out other columns and keep H1B column
 
-* create columns for each year (1977-2022)
-
+-   create columns for each year (1977-2022)
 
 The script to transform the dataset is in scripts directory `load_and_clean_data.R` file.
 
@@ -72,6 +72,7 @@ The script to transform the dataset is in scripts directory `load_and_clean_data
 Essentially, the dataset is a large excel file that contains multiple sheets, processes the data from the 'FY22' sheet to assign continents to countries, and then aggregates H-1B visa statistics from each sheet by country, storing the results in a data frame called 'processed_data'. Next we save the cleaned dataset as **cleaned_h1b_data.rds**. More details of the code in load_and_clean_data.R
 
 This is an example of how to load our cleaned dataset from dataset directory:
+
 ```{r}
 
 #filename <- file.choose("cleaned_h1b_data.rds")
@@ -89,6 +90,7 @@ print(current_names)
 ```
 
 The code below is to rename the columns to understandable years format.
+
 ```{r, results='hide'}
 colnames(h1b_country) <- c(
   'Country', 'Continent', 
@@ -102,7 +104,8 @@ colnames(h1b_country) <- c(
 head(h1b_country)
 ```
 
-The following code shortens the dimension of our dataframe to 3 columns specially the years columns. Having many years column can make the dataset hard to analysis or explore. 
+The following code shortens the dimension of our dataframe to 3 columns specially the years columns. Having many years column can make the dataset hard to analysis or explore.
+
 ```{r, results='hide', warning = FALSE}
 h1b_continent <- h1b_country |>
   group_by(Continent)|>
@@ -119,8 +122,7 @@ head(data_long)
 
 **Source**
 
-Source of Dataset: [U.S Department Labor](https://www.dol.gov/agencies/eta/foreign-labor/performance)
-We downloaded LCA Programs H-1B and PERM disclosure data in .excel file or tabular data.
+Source of Dataset: [U.S Department Labor](https://www.dol.gov/agencies/eta/foreign-labor/performance) We downloaded LCA Programs H-1B and PERM disclosure data in .excel file or tabular data.
 
 PERM_disclosure_data: A system used by the U.S Department of Labor to process labor certifications, which is the first step required in the process for certain foreign nationals to obtain an employment-based immigrant visa, or green card.
 
@@ -128,17 +130,14 @@ LCA_Program_data: LCA stands for Labor Condition Application. This application i
 
 **Why Collected?**
 
-The data is made available as part of a broader government initiative toward transparency and open governance. This initiative aims to make government operations more accessible and understandable to the public.
-By providing access to historical and current data about immigration-related labor applications, the dataset aids in understand trends, evaluate the effectiveness of current policies, and plan future actions based on solid data.
-Overall, this dataset is a critical resource for enhancing understanding and facilitating a data-driven approach to managing and legislating foreign labor and immigration-related activities.
-
+The data is made available as part of a broader government initiative toward transparency and open governance. This initiative aims to make government operations more accessible and understandable to the public. By providing access to historical and current data about immigration-related labor applications, the dataset aids in understand trends, evaluate the effectiveness of current policies, and plan future actions based on solid data. Overall, this dataset is a critical resource for enhancing understanding and facilitating a data-driven approach to managing and legislating foreign labor and immigration-related activities.
 
 **How it was collected?**
 
-Recall that the dataset was provided by OFLC(Office of Foreign Labor Certification). 
-Employers who are seeking to hire foreign workers must submit various forms of applications for prevailing wage determinations, labor certifications, and labor attestations. These applications are required for different visa programs, such as H-1B, H-2A, H-2B, and permanent residency applications. Our goal is focus on H-1B but not limited to explore other programs.
+Recall that the dataset was provided by OFLC(Office of Foreign Labor Certification). Employers who are seeking to hire foreign workers must submit various forms of applications for prevailing wage determinations, labor certifications, and labor attestations. These applications are required for different visa programs, such as H-1B, H-2A, H-2B, and permanent residency applications. Our goal is focus on H-1B but not limited to explore other programs.
 
 ## Background
+
 Since there exist many columns, we will list a few important columns.
 
 **CASE_NUMBER**: Unique identifier assigned to each application submitted for processing to OFLC.
@@ -173,6 +172,7 @@ head(df)
 We selected this dataset, updated in 2024, because it comprehensively represents the evolution of U.S. immigration policy from the Trump to the Biden administration. It provides a wealth of columns suitable for statistical modeling. To enrich our analysis, we plan to merge it with two other datasets. The first includes information on the applicants' universities and majors, while the second contains data on their incomes, allowing us to construct a linear regression model. Once merged, we will have a dataframe with approximately 30+ columns.
 
 This is the line of code of how to read xlsx files and convert into rds. We commented out after done. Afterward, we can load in rds files and merge the columns
+
 ```{r}
 # rds for the other two projects
 # df2 <- read_excel("dataset/worksite.xlsx")
@@ -196,9 +196,10 @@ df3 <- readRDS("dataset/appendix.rds")
 head(df3)
 ```
 
-To merge the dataset together, we can find matching case numbers. The additional dataset gives additional information about applicants university, field of major, date of degree etc... 
+To merge the dataset together, we can find matching case numbers. The additional dataset gives additional information about applicants university, field of major, date of degree etc...
 
 Here we commented it out since the dataset has already been merged.
+
 ```{r}
 # merge df1 and df2 by case number
 # merge_1 <- merge(df, df2, by="CASE_NUMBER", all = TRUE)
@@ -214,6 +215,7 @@ Here we commented it out since the dataset has already been merged.
 ```
 
 Load in the dataset here
+
 ```{r, results='hide'}
 final_df <- readRDS("dataset/final_merge.rds")
 head(final_df)
@@ -248,7 +250,7 @@ final_df$DAY_BEGIN = day(final_df$BEGIN_DATE)
 
 **source dataset**:
 
-https://www.imf.org/external/datamapper/NGDPDPC@WEO/OEMDC/ADVEC/WEOWORLD
+https://www.imf.org/external/datamapper/NGDPDPC\@WEO/OEMDC/ADVEC/WEOWORLD
 
 **Why collected**
 
@@ -262,11 +264,12 @@ The format of the IMF data can vary depending on the specific dataset, but it of
 
 To clean and process H1B visa data, we need to filters the data where CLASS_OF_ADMISSION is 'H-1B' and CASE_STATUS is 'Certified'.
 
-1. selects relevant columns specified in relevant_columns
+1.  selects relevant columns specified in relevant_columns
 
-2. creates dummy variables for the 'FOREIGN_WORKER_EDUCATION' column standardizes country names using a function standardize_country_names
+2.  creates dummy variables for the 'FOREIGN_WORKER_EDUCATION' column standardizes country names using a function standardize_country_names
 
-3. Applies this function to two data frames, fy22 and fy23, concatenates the cleaned data frames into one (h1b_stacked), and finally displays the cleaned data frames for FY22 (fy22_cleaned), FY23 (fy23_cleaned), and the concatenated data (h1b_stacked).
+3.  Applies this function to two data frames, fy22 and fy23, concatenates the cleaned data frames into one (h1b_stacked), and finally displays the cleaned data frames for FY22 (fy22_cleaned), FY23 (fy23_cleaned), and the concatenated data (h1b_stacked).
+
 ```{r message = FALSE, warning = FALSE}
 # load dataset
 fy22 <- read_excel('dataset/Perm_data/PERM_Disclosure_Data_FY2022_Q4.xlsx')
@@ -280,13 +283,3 @@ imf_unemployment_raw <- read_excel('dataset/IMF_data/imf_unemployment.xls')
 names(imf_gdpc_usd_raw)[1] <- "Country"
 names(imf_unemployment_raw)[1] <- "Country"
 ```
-
-
-
-
-
-
-
-
-
-
