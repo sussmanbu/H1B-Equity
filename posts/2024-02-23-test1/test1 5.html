@@ -6,11 +6,11 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="T3am-3">
-<meta name="dcterms.date" content="2024-03-25">
-<meta name="description" content="This post details specifics of our dataset and our initial processing steps.">
+<meta name="author" content="weiningmai">
+<meta name="dcterms.date" content="2024-02-23">
+<meta name="description" content="test_1 2/23/24">
 
-<title>MA [46]15 Final Project T3am-3 - Blog Post 2</title>
+<title>MA [46]15 Final Project T3am-3 - test_1</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -90,7 +90,7 @@ ul.task-list li input[type="checkbox"] {
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="../../big_picture.html" rel="" target="">
- <span class="menu-text">Brainpower Bridge to Visa Lottery Pipeline</span></a>
+ <span class="menu-text">H1B workers in US</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="../../analysis.html" rel="" target="">
@@ -111,10 +111,10 @@ ul.task-list li input[type="checkbox"] {
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Blog Post 2</h1>
+      <h1 class="title">test_1</h1>
                   <div>
         <div class="description">
-          <p>This post details specifics of our dataset and our initial processing steps.</p>
+          <p>test_1 2/23/24</p>
         </div>
       </div>
                 </div>
@@ -126,21 +126,21 @@ ul.task-list li input[type="checkbox"] {
       <div>
       <div class="quarto-title-meta-heading">Author</div>
       <div class="quarto-title-meta-contents">
-               <p>T3am-3 </p>
+               <p>weiningmai </p>
             </div>
     </div>
       
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">March 25, 2024</p>
+        <p class="date">February 23, 2024</p>
       </div>
     </div>
     
       <div>
       <div class="quarto-title-meta-heading">Modified</div>
       <div class="quarto-title-meta-contents">
-        <p class="date-modified">March 25, 2024</p>
+        <p class="date-modified">February 23, 2024</p>
       </div>
     </div>
       
@@ -157,21 +157,7 @@ ul.task-list li input[type="checkbox"] {
 
 
 
-<ol type="1">
-<li>Data background</li>
-</ol>
-<p>The data we will analyze is from the U.S Department of State, more specifically the Bureau of Consular Affairs. The Report of the Visa Office is an annual report providing statistical information on immigrant and non-immigrant visa issuances by consular offices, including information visa allocation in numerically limited categories. The main part of this dataset we want to focus on is the country of origin of visa recipients for H1B-type visas. Years covered range from Fiscal Year 1997 to F.Y. 2022 inclusively.</p>
-<p>Regarding potential biases and issues, the data includes all types of visa applicants processed by U.S. consular offices, which could cause biases such as those related to the demographics of applicants or the economic conditions in their countries of origin. These factors might change the likelihood of type of visa for which individuals apply. The data are collected for the purpose of providing transparent information regarding the visa operations and to assist in policy making, and research within government agencies as well as for public knowledge. Since FY2019, the methodology for calculating visa data improved for greater accuracy.</p>
-<ol start="2" type="1">
-<li>Data Loading and Cleaning</li>
-</ol>
-<p>The raw data is a 2.3MB excel file downloaded from the <a href="https://travel.state.gov/content/dam/visas/Statistics/Non-Immigrant-Statistics/NIVDetailTables/FYs97-22_NIVDetailTable.xlsx">travel.state.gov website</a> and stored in the <code>dataset</code> folder. Our <a href="../../scripts/load_and_clean_data.R">load_and_clean_data.R</a> script currently reshapes the data from a 3D country-by-visa-type-by-year format to a 2D country-by-year format where only H1B-type visas are considered. The stored data format is <code>.rds</code>.</p>
-<p>The original data also includes continent names and totals entered as additional rows before and after every group of countries, which are arranged according to their continent. Our script allocates a continent value to each country based on row order relative to those rows, represented as its own <code>Continent</code> column. The rows containing continent names and totals are then removed. It is also noteworthy that an <code>Unknown</code> continent value exists for the two rows <code>No Nationality</code> and <code>United Nations Laissez-Passer</code>, which denote the two special cases for which US visas may be given without being linked to any specific country’s passport.</p>
-<ol start="3" type="1">
-<li>Data Equity</li>
-</ol>
-<p>Acquisition - the dataset comes from the travel state government. It reports statistical information on immigrants and non immigrants visas. Although officials did not explicitly mention the purpose of collecting these visa data annually, it is appropriate to infer that the data serves security and transparency purposes since the travel state government is responsible to provide visa services to foreign nationals who wish to stay in the U.S.</p>
-<p>Conception - Because our dataset contains H1B approval from origin countries, it shows immigrant trends and labor market dynamics. For example, governments may analyze H1B approval data to evaluate the effectiveness of immigrant policies attracting talents.</p>
+<p>testing</p>
 
 
 

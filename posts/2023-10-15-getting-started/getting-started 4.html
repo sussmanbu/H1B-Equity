@@ -6,11 +6,11 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="T3am-3">
-<meta name="dcterms.date" content="2024-03-25">
-<meta name="description" content="This post details specifics of our dataset and our initial processing steps.">
+<meta name="author" content="Daniel Sussman">
+<meta name="dcterms.date" content="2024-02-23">
+<meta name="description" content="Directions to set up your website and create your first post.">
 
-<title>MA [46]15 Final Project T3am-3 - Blog Post 2</title>
+<title>MA [46]15 Final Project T3am-3 - Getting started</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -90,7 +90,7 @@ ul.task-list li input[type="checkbox"] {
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="../../big_picture.html" rel="" target="">
- <span class="menu-text">Brainpower Bridge to Visa Lottery Pipeline</span></a>
+ <span class="menu-text">H1B workers in US</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="../../analysis.html" rel="" target="">
@@ -111,10 +111,10 @@ ul.task-list li input[type="checkbox"] {
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Blog Post 2</h1>
+      <h1 class="title">Getting started</h1>
                   <div>
         <div class="description">
-          <p>This post details specifics of our dataset and our initial processing steps.</p>
+          <p>Directions to set up your website and create your first post.</p>
         </div>
       </div>
                 </div>
@@ -126,21 +126,21 @@ ul.task-list li input[type="checkbox"] {
       <div>
       <div class="quarto-title-meta-heading">Author</div>
       <div class="quarto-title-meta-contents">
-               <p>T3am-3 </p>
+               <p>Daniel Sussman </p>
             </div>
     </div>
       
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">March 25, 2024</p>
+        <p class="date">February 23, 2024</p>
       </div>
     </div>
     
       <div>
       <div class="quarto-title-meta-heading">Modified</div>
       <div class="quarto-title-meta-contents">
-        <p class="date-modified">March 25, 2024</p>
+        <p class="date-modified">February 23, 2024</p>
       </div>
     </div>
       
@@ -157,23 +157,54 @@ ul.task-list li input[type="checkbox"] {
 
 
 
+<p>Below, the items marked with <strong>[[OP]]</strong> should only be done by one person on the team.</p>
+<section id="to-get-started" class="level3">
+<h3 class="anchored" data-anchor-id="to-get-started">To get started</h3>
 <ol type="1">
-<li>Data background</li>
+<li><strong>[[OP]]</strong> One person from the team should click the Github Classroom link on Teams.</li>
+<li><strong>[[OP]]</strong> That person types in the group name for their group.</li>
+<li>The rest of the team now clicks the Github Classroom link and selects their team from the dropdown list.</li>
+<li>Finally, each of you can clone the repository to your laptop like a normal assignment.</li>
 </ol>
-<p>The data we will analyze is from the U.S Department of State, more specifically the Bureau of Consular Affairs. The Report of the Visa Office is an annual report providing statistical information on immigrant and non-immigrant visa issuances by consular offices, including information visa allocation in numerically limited categories. The main part of this dataset we want to focus on is the country of origin of visa recipients for H1B-type visas. Years covered range from Fiscal Year 1997 to F.Y. 2022 inclusively.</p>
-<p>Regarding potential biases and issues, the data includes all types of visa applicants processed by U.S. consular offices, which could cause biases such as those related to the demographics of applicants or the economic conditions in their countries of origin. These factors might change the likelihood of type of visa for which individuals apply. The data are collected for the purpose of providing transparent information regarding the visa operations and to assist in policy making, and research within government agencies as well as for public knowledge. Since FY2019, the methodology for calculating visa data improved for greater accuracy.</p>
-<ol start="2" type="1">
-<li>Data Loading and Cleaning</li>
+</section>
+<section id="setting-up-the-site" class="level3">
+<h3 class="anchored" data-anchor-id="setting-up-the-site">Setting up the site</h3>
+<ol type="1">
+<li><strong>[[OP]]</strong> Open the terminal and run <code>quarto publish gh-pages</code>.</li>
+<li><strong>[[OP]]</strong> Select <code>Yes</code> to the prompt: <br> <code>? Publish site to https://sussmanbu.github.io/ma4615-fa23-final-project-TEAMNAME/ using gh-pages? (Y/n)</code></li>
+<li><strong>[[OP]]</strong> Wait for the process to finish.</li>
+<li>Once it is done, you can go to the URL it asked you about to see your site.</li>
 </ol>
-<p>The raw data is a 2.3MB excel file downloaded from the <a href="https://travel.state.gov/content/dam/visas/Statistics/Non-Immigrant-Statistics/NIVDetailTables/FYs97-22_NIVDetailTable.xlsx">travel.state.gov website</a> and stored in the <code>dataset</code> folder. Our <a href="../../scripts/load_and_clean_data.R">load_and_clean_data.R</a> script currently reshapes the data from a 3D country-by-visa-type-by-year format to a 2D country-by-year format where only H1B-type visas are considered. The stored data format is <code>.rds</code>.</p>
-<p>The original data also includes continent names and totals entered as additional rows before and after every group of countries, which are arranged according to their continent. Our script allocates a continent value to each country based on row order relative to those rows, represented as its own <code>Continent</code> column. The rows containing continent names and totals are then removed. It is also noteworthy that an <code>Unknown</code> continent value exists for the two rows <code>No Nationality</code> and <code>United Nations Laissez-Passer</code>, which denote the two special cases for which US visas may be given without being linked to any specific country’s passport.</p>
-<ol start="3" type="1">
-<li>Data Equity</li>
+<p><strong>Note</strong>: This is the process you will use every time you want to update your published site. Make sure to always follow the steps below for rendering, previewing, and committing your changes before doing these publish steps. Anyone can publish in the future.</p>
+</section>
+<section id="customize-your-site" class="level3">
+<h3 class="anchored" data-anchor-id="customize-your-site">Customize your site</h3>
+<ol type="1">
+<li><strong>[[OP]]</strong> Open the <code>_quarto.yml</code> file and update the title to include your team name.</li>
+<li><strong>[[OP]]</strong> Go to the <code>about.qmd</code> and remove the TF’s and professor’s names.</li>
+<li>add your own along with a short introduction and a link to your Github user page.</li>
+<li><strong>[[OP]]</strong> Render the site.</li>
+<li><strong>[[OP]]</strong> Check and make sure you didn’t get any errors.</li>
+<li><strong>[[OP]]</strong> Commit your changes and push.</li>
+<li><strong>[[OP]]</strong> Repeat the steps under Setting up your site.</li>
 </ol>
-<p>Acquisition - the dataset comes from the travel state government. It reports statistical information on immigrants and non immigrants visas. Although officials did not explicitly mention the purpose of collecting these visa data annually, it is appropriate to infer that the data serves security and transparency purposes since the travel state government is responsible to provide visa services to foreign nationals who wish to stay in the U.S.</p>
-<p>Conception - Because our dataset contains H1B approval from origin countries, it shows immigrant trends and labor market dynamics. For example, governments may analyze H1B approval data to evaluate the effectiveness of immigrant policies attracting talents.</p>
+<p>Once one person is done with this, each teammate in the group can, in turn, repeat steps 3-7. Before doing so, make sure to <code>pull</code> the changes from teammates before starting to make new changes. (We’ll talk soon about ways to organize your work and resolve conflicts.)</p>
+</section>
+<section id="start-your-first-post" class="level3">
+<h3 class="anchored" data-anchor-id="start-your-first-post">Start your first post</h3>
+<ol type="1">
+<li>To start your first post first, run <code>remotes::install_github("sussmanbu/quartopost")</code> in your Console.</li>
+<li><strong>[[OP]]</strong> Run <code>quartopost::quartopost()</code> (or click Addins-&gt;Create Quarto Post, or use C-Shift-P, type “Create Quarto” and press enter to run the command).</li>
+</ol>
+<p>Now you can start working on your post. You’ll want to render your post to see what it will look like on the site.</p>
+<ul>
+<li>Every time you want to <strong>make a new post</strong>, you can repeat step 2 above.</li>
+<li>When you want to <strong>publish your progress</strong>, follow steps 4-7 from Customize your site.</li>
+</ul>
+<p>Finally, make sure to read through everything on <a href="https://sussmanbu.github.io/ma4615-final-project-quarto">this site</a> which has the directions and rubric for the final project.</p>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
