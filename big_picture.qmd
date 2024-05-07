@@ -23,7 +23,8 @@ This page aims to provide an accessible overview of how H-1B visa applicants are
 ## Overview of H-1B Visa Applicants
 
 The majority of H-1B visa applicants are highly educated professionals, primarily working in technology, engineering, and healthcare.
-Countries like India and China dominate the applicant pool, reflecting strong educational systems in these regions and their economies’ growth. Majority of the accepted applicants have atleast master degrees
+Countries like India and China dominate the applicant pool, reflecting strong educational systems in these regions and their economies’ growth.
+Majority of the accepted applicants have atleast master degrees
 
 ![](images/education.png)
 
@@ -47,7 +48,7 @@ So, the concentration in this graph around the wage = \$45,000 is, in reality, a
 
 ![](images/Applications_by_State.png)
 
-**Interpretation of the barchart** 
+**Interpretation of the barchart**
 
 Looking at the chart, H1B applicants have a better odds of finding a full time position in california or texas since thats where majority of tech companies are.
 H1B applicants should plan ahead and think about what states they want to live in.
