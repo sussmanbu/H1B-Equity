@@ -126,3 +126,15 @@ combined_19_23 <- rbind(combined_19_23, fy23_relevant)
 
 #write to csv
 write.csv(combined_19_23, file = "dataset/combined_perm_19_23.csv", row.names = FALSE)
+
+population_data <- read.csv("dataset/IMF_data/imf_population.csv", header=TRUE)
+colnames(population_data) <- population_data[1, ]
+population_data <- population_data[-1, ]
+
+pattern <- "(1997|1998|1999|2000|2001|2002|2003|2004|2005|2006|2007|2008|2009|2010|2011|2012|2013|2014|2015|2016|2017|2018|2019|2020|2021|2022|2023)"
+
+population_data <- population_data |>
+  mutate(year = as.numeric(str_extract(Region, pattern))) |>
+  filter(Year != '1996')
+
+write.csv(population_data, file = "dataset/IMF_data/imf_population.csv", row.names = FALSE)
