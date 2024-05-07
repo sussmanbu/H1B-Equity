@@ -153,6 +153,7 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
+<p><img src="images/big_picture .png" class="img-fluid" width="900"></p>
 <section id="motivation-for-data-analysis" class="level1">
 <h1>Motivation for Data Analysis</h1>
 <p>Our data analysis seeks to achieve an understanding of how and why H1-B applications vary across countries, continents, and time. We are interested in the number of applications from each country and/or continent, the wages of the recipients, the level of education that the applicants have achieved, and the financial information from their country of citizenship. We are interested in answering how the distribution of H1-B applicants has changed throughout time, whether education level and wage are correlated, and how that has changed, as well as whether the financial standing of a country is correlated with the number of citizens applying for an H1-B visa.</p>
@@ -165,7 +166,7 @@ ul.task-list li input[type="checkbox"] {
 </ul>
 <section id="linear-modelling" class="level2">
 <h2 class="anchored" data-anchor-id="linear-modelling">Linear Modelling</h2>
-<p>First, the Perm Disclosure datasets for 2023 and 2024 are joined with IMF GDP and Unemployment rates by country. The education level of an applicant is made into a categorical variable, and the correlation between variables can be represented in the following correlation matrix. <img src="images/correlation_heatmap.png" class="img-fluid" alt="Correlation Matrix"></p>
+<p>First, the Perm Disclosure datasets for 2023 and 2024 are joined with IMF GDP and Unemployment rates by country. The education level of an applicant is made into a categorical variable, and the correlation between variables can be represented in the following correlation matrix. <img src="images/correlation_heatmap.png" class="img-fluid"></p>
 <p>With the information from this correlation matrix, an initial linear regression model of Wage ~ GDP per Capita + Unemployment can be built. A naive implementation of the model would be strongly influenced by an outlier in the data, which can be detected using Cook’s distance formula. Nigeria, which has an average H1-B applicant wage of $6,524,999, a GDP of 1945.012, and an unemployment rate of 22.6, has a Cook’s distance more than 3 times the average.</p>
 <p><strong>Reference to cooks-distance</strong></p>
 <p><a href="https://www.mathworks.com/help/stats/cooks-distance.html">https://www.mathworks.com/help/stats/cooks-distance.htmlhttps://www.mathworks.com/help/stats/cooks-distance.html</a></p>
