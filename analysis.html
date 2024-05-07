@@ -165,17 +165,16 @@ ul.task-list li input[type="checkbox"] {
 </ul>
 <section id="linear-modelling" class="level2">
 <h2 class="anchored" data-anchor-id="linear-modelling">Linear Modelling</h2>
-<p>First, the Perm Disclosure datasets for 2023 and 2024 are joined with IMF GDP and Unemployment rates by country. The education level of an applicant is made into a categorical variable, and the correlation between variables can be represented in the following correlation matrix. <img src="images/corr.png" class="img-fluid" alt="Correlation Matrix"></p>
+<p>First, the Perm Disclosure datasets for 2023 and 2024 are joined with IMF GDP and Unemployment rates by country. The education level of an applicant is made into a categorical variable, and the correlation between variables can be represented in the following correlation matrix. <img src="images/correlation_heatmap.png" class="img-fluid" alt="Correlation Matrix"></p>
 <p>With the information from this correlation matrix, an initial linear regression model of Wage ~ GDP per Capita + Unemployment can be built. A naive implementation of the model would be strongly influenced by an outlier in the data, which can be detected using Cook’s distance formula. Nigeria, which has an average H1-B applicant wage of $6,524,999, a GDP of 1945.012, and an unemployment rate of 22.6, has a Cook’s distance more than 3 times the average.</p>
 <p><strong>Reference to cooks-distance</strong></p>
 <p><a href="https://www.mathworks.com/help/stats/cooks-distance.html">https://www.mathworks.com/help/stats/cooks-distance.htmlhttps://www.mathworks.com/help/stats/cooks-distance.html</a></p>
 <p>After removing this outlier, the dataset is split 90/10 into training and test sets, and the linear regression model is built on the training set. Test set will be used to evaluate the error on unseen data.</p>
 <p>On the training set, the linear model has the following statistics:</p>
-<pre><code>Residual standard error: 50400 on 13467 degrees of freedom 
-Multiple R-squared:  0.1771,    
-Adjusted R-squared:  0.1766  
-F-statistic: 362.2 on 8 and 13467 DF,  
-p-value: &lt; 2.2e-16</code></pre>
+<p>Residual standard error: 50400 on 13467 degrees of freedom Multiple R-squared: 0.1771,<br>
+Adjusted R-squared: 0.1766<br>
+F-statistic: 362.2 on 8 and 13467 DF,<br>
+p-value: &lt; 2.2e-16</p>
 <section id="interpretation" class="level3">
 <h3 class="anchored" data-anchor-id="interpretation">Interpretation</h3>
 <p>The Residual standard error indicates that the information provided by the GDP per capita and Unemployment of a country can predict the average wage of an H1-B recipient from that country with an average error of $50,400. A Mutliple R-squared of 0.1771 suggests that about 17.7% of the variability in the wage of H1-B recipients from a country can be explained by the GDP and Unemployment of that country. Despite the fact that these values show that there is a lot of variability in wages not explained by the model, a p-value less than 0.05 leads to the conclusion that the model is statistically significant.</p>
