@@ -14,10 +14,9 @@ editor:
 
 We explore three datasets:
 
-1.  **Travel Data**: From U.S Department of State.
-2.  **Labor Data**: From U.S Department of Labor (H1B Worker
-    Conditions).
-3.  **Economic Data**: Merged with H1B dataset.
+1.  **Travel Data**: Visas per country - from travel.state.gov (U.S Department of State, Department of Consular Affairs)
+2.  **Labor Data**: H1B worker conditions - from dol.gov (U.S Department of Labor)
+3.  **Economic Data**: GDP per capita and Unemployment rate per country - from imf.org (Internation Monetary Fund)
 
 ### Dataset 1: Travel Data
 
