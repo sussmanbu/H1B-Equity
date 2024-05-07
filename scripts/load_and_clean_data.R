@@ -48,15 +48,15 @@ saveRDS(processed_data, file = "dataset/cleaned_h1b_data.rds")
 
 
 # #Load Perm Data
-filepath <- 'dataset/Perm_data/PERM_FY2019.xlsx'
+filepath <- 'dataset-ignore/PERM_FY2019.xlsx'
 fy19 <- read_excel(filepath)
-filepath <- 'dataset/Perm_data/PERM_Disclosure_Data_FY2020.xlsx'
+filepath <- 'dataset-ignore/PERM_Disclosure_Data_FY2020.xlsx'
 fy20 <- read_excel(filepath)
-filepath <- 'dataset/Perm_data/PERM_Disclosure_Data_FY2021.xlsx'
+filepath <- 'dataset-ignore/PERM_Disclosure_Data_FY2021.xlsx'
 fy21 <- read_excel(filepath)
-filepath <- 'dataset/Perm_data/PERM_Disclosure_Data_FY2022_Q4.xlsx'
+filepath <- 'dataset-ignore/PERM_Disclosure_Data_FY2022_Q4.xlsx'
 fy22 <- read_excel(filepath)
-filepath <- 'dataset/Perm_data/PERM_Disclosure_Data_FY2023_Q4.xlsx'
+filepath <- 'dataset-ignore/PERM_Disclosure_Data_FY2023_Q4.xlsx'
 fy23 <- read_excel(filepath)
 
 #Filter by H-1B

@@ -1,5 +1,5 @@
 standardize_country_names <- function(countries) {
-  countries %>%
+  countries <- countries %>%
     tolower() %>%
     str_replace_all("china - mainland", "china") %>%
     str_replace_all("congo, democratic republic of the", "democratic replublic of congo") %>%
@@ -33,4 +33,6 @@ standardize_country_names <- function(countries) {
     str_replace_all("united states of america", "united states") %>%
     str_replace_all("china, people's republic of", "china") %>%
     str_replace_all("cote d'ivoire", "côte d'ivoire" )
+  return(countries)
+
 }

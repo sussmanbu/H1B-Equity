@@ -118,7 +118,6 @@ Foreign_worker_education: Master's, Bachelor's, Doctorate, Other, None, Associat
 
 #Try Linear Regression, with number of applicants and number of applications certified
 
-
 ```{r}
 applicants_count <- fy23_relevant |>
   group_by(COUNTRY_OF_CITIZENSHIP) |>
@@ -266,10 +265,7 @@ bottom5_countries <- combined_19_23 |>
   summarise(num_applicants = n()) |>
   filter(num_applicants > 0) |>
   top_n(-5)
-```
 
-
-```{r}
 top5_applicants <- combined_19_23 %>%
   filter(COUNTRY_OF_CITIZENSHIP %in% top5_countries$COUNTRY_OF_CITIZENSHIP)|>
   group_by(COUNTRY_OF_CITIZENSHIP, year_month) %>%
@@ -280,9 +276,7 @@ top5_certified <- combined_19_23 %>%
   filter(CASE_STATUS %in% c("Certified", "Certified-Expired")) %>%
   group_by(COUNTRY_OF_CITIZENSHIP, year_month) %>%
   summarise(certified_applicants = n())
-```
 
-```{r}
 merged_data <- left_join(top5_applicants, top5_certified, by = c("COUNTRY_OF_CITIZENSHIP", "year_month"))
 
 ggplot(merged_data, aes(y = total_applicants, x = yearmonth(year_month), color = COUNTRY_OF_CITIZENSHIP)) +
@@ -393,79 +387,26 @@ ggplot(education, aes(y = certified_count/total_count, x = yearmonth(year_month)
 
 
 #Goals: -see if we can do linear regression once things are normalized by population
-```{r}
-population_data_test <- read_xls("dataset/IMF_data/imf_population.xls")
-```
 
 ```{r}
-population_data_test
-```
+population_data <- read.csv("dataset/IMF_data/imf_population.csv", header=TRUE)
+h1b_country <- read_rds('dataset/cleaned_h1b_data.rds')
+population_data$Year <- as.character(population_data$Year)
 
-```{r}
-population_data <- read.csv("dataset/population_1997-2023.csv", header=TRUE)
-colnames(population_data) <- population_data[1, ]
-population_data <- population_data[-1, ]
-
-pattern <- "(1997|1998|1999|2000|2001|2002|2003|2004|2005|2006|2007|2008|2009|2010|2011|2012|2013|2014|2015|2016|2017|2018|2019|2020|2021|2022|2023)"
-
-population_data <- population_data %>%
-  mutate(year = as.numeric(str_extract(Region, pattern))) %>%
-  filter(Year != '1996')
-#population_data$Year = as.numeric(population_data$Year)
-
-h1b_country <- 
-  read_rds('dataset/cleaned_h1b_data.rds')
 colnames(h1b_country) <- c('Country','Continent','1997', '1998', '1999', '2000', '2001', '2002', '2003', '2004', '2005', '2006', '2007', '2008', '2009', '2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022')
 h1b_long <- pivot_longer(h1b_country, cols = -c("Continent", "Country"), names_to = "year", values_to = "count_h1b")
-```
 
-```{r}
-standardize_country_names <- function(countries) {
-  countries %>%
-    tolower() %>%
-    str_replace_all("china - mainland", "china") %>%
-    str_replace_all("congo, democratic republic of the", "democratic replublic of congo") %>%
-    str_replace_all("congo, republic of the", "republic of congo") %>%
-    str_replace_all("congo (brazzaville)", "republic of congo") %>%
-    str_replace_all("congo (kinshasa)", "democratic republic of congo") %>%
-    str_replace_all("hong kong s.a.r.", "hong kong") %>%
-    str_replace_all("cape verde", "cabo verde") %>%
-    str_replace_all("cape verde", "cabo verde") %>%
-    str_replace_all("hong kong sar", "hong kong") %>%
-    str_replace_all("islamic republic of iran", "iran") %>%
-    str_replace_all("kyrgyz republic", "kyrgyzstan") %>%
-    str_replace_all("lao p.d.r.", "laos") %>%
-    str_replace_all("macao sar", "macau") %>%
-    str_replace_all("north macedonia", "macedonia") %>%
-    str_replace_all("russian federation", "russia") %>%
-    str_replace_all("korea, republic of", "south korea") %>%
-    str_replace_all("taiwan province of china", "taiwan") %>%
-    str_replace_all("united republic of tanzania", "tanzania") %>%
-    str_replace_all("türkiye, republic of", "turkey") %>%
-    str_replace_all("united kingdom", "great britain") %>%
-    str_replace_all("bolivarian republic of venezuela", "venezuela") %>%
-    str_replace_all("congo, dem. rep. of the", "democratic republic of congo") %>%
-    str_replace_all("slovak republic", "slovakia") %>%
-    str_replace_all("st lucia", "saint lucia") %>%
-    str_replace_all("st vincent", "saint vincent and the grenadines") %>%
-    str_replace_all("sri lanka", "sri lanka") %>%
-    str_replace_all("bahamas, the", "bahamas") %>%
-    str_replace_all("gambia, the", "gambia") %>%
-    str_replace_all("myanmar \\(myanmar\\)", "myanmar") %>%
-    str_replace_all("united states of america", "united states") %>%
-    str_replace_all("china, people's republic of", "china") %>%
-    str_replace_all("cote d'ivoire", "côte d'ivoire" )
-}
 
+source("scripts/standardize_country_names.R")
 population_data$Country_Standardized <- standardize_country_names(population_data$Name)
 h1b_long$Country_Standardized <- standardize_country_names(h1b_long$Country)
-
 ```
+
 
 ```{r}
 mergetry <- left_join(population_data, h1b_long, by = c("Year" = "year", "Country_Standardized" = "Country_Standardized"))
 mergetry <- mergetry |>
-  mutate(Population = as.numeric(gsub(",", "", `Total Population`)))
+  mutate(Population = as.numeric(gsub(",", "", `Total.Population`)))
 
 merge_continent <- mergetry |>
   group_by(Continent, Year)|>
