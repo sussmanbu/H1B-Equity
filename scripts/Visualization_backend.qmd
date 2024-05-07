@@ -437,6 +437,9 @@ ggplot(merge_continent, aes(x = Year, y = count_h1b/Population, fill = Continent
 ```
 
 ```{r}
+library(RColorBrewer)
+reds_palette <- brewer.pal(9, "Reds")
+
 mergetry$Year <- as.factor(mergetry$Year)
 world_map <- map_data("world")
 world_map$Country_Standardized <- standardize_country_names(world_map$region)
@@ -455,8 +458,8 @@ p <- ggplot() +
   coord_fixed(ratio=1.2) +
   theme_void() +
   #scale_fill_continuous(name = "H1B Count") + 
-  scale_fill_viridis_c()+
-  labs(title = "H1B Visa Distribution by Country, 2022")+
+  scale_fill_gradientn(colors = reds_palette) +
+  labs(title = "H1B Visa Distribution 2022, Normalized by Population")+
   theme(plot.title = element_text(hjust = 0.5))
 
 
@@ -615,20 +618,20 @@ population_data <- population_data |>
 
 mergetry <- left_join(population_data, combined_19_23_pop, by = c("year" = "year", "Name" = "COUNTRY_OF_CITIZENSHIP"))
 
-mergetry$`Total Population` <- as.numeric(gsub(",", "", mergetry$`Total Population`))
+mergetry$Population <- as.numeric(gsub(",", "", mergetry$Population))
 
 mergetry_2023 <- mergetry |> filter(Year == 2023)
 ```
 
 
 ```{r}
-ggplot(mergetry_2023, aes(x = num_applicants/`Total Population`, y = num_certified/`Total Population`)) +
+ggplot(mergetry_2023, aes(x = num_applicants/Population, y = num_certified/Population)) +
   geom_point(shape = 21, fill = "blue", color = "black", size = 3, alpha = 0.5) +
   labs(x = "Number of Applicants", y = "Number Certified", title = "Scatter Plot of Applicants vs Certified 2023, normalized by population")
 ```
 
 ```{r}
-linear_model_pop <- lm(num_applicants/`Total Population` ~ num_certified/`Total Population` -1, data = mergetry_2023)
+linear_model_pop <- lm(num_applicants/Population ~ num_certified/Population -1, data = mergetry_2023)
 
 summary(linear_model_pop)
 broom::tidy(linear_model_pop)
@@ -646,7 +649,7 @@ ggplot(linear_model_pop, aes(x = .fitted, y = .resid)) +
 #Now, see if population can predict number of applicants
 
 ```{r}
-ggplot(mergetry_2023, aes(x = `Total Population`, y = num_applicants)) +
+ggplot(mergetry_2023, aes(x = Population, y = num_applicants)) +
   geom_point(shape = 21, fill = "blue", color = "black", size = 3, alpha = 0.5) +
   labs(x = "Total Population", y = "Number of Applicants", title = "Scatter Plot of population vs applicants 2023")
 ```
