@@ -30,10 +30,10 @@ After removing this outlier, the dataset is split 90/10 into training and test s
 
 On the training set, the linear model has the following statistics:
 
-Residual standard error: 50400 on 13467 degrees of freedom Multiple R-squared: 0.1771,\
-Adjusted R-squared: 0.1766\
-F-statistic: 362.2 on 8 and 13467 DF,\
-p-value: \< 2.2e-16
+* Residual standard error: 50400 on 13467 degrees of freedom Multiple R-squared: 0.1771,\
+* Adjusted R-squared: 0.1766\
+* F-statistic: 362.2 on 8 and 13467 DF,\
+* p-value: \< 2.2e-16
 
 ### Interpretation
 
