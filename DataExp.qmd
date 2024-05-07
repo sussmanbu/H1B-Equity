@@ -13,20 +13,21 @@ h1b_country <-
 ```
 
 ```{r}
-#changing the year to numerical values
-current_names <- names(h1b_country)
-print(current_names)
-#names(df) <- new_names
-
+h1b_country
 ```
-
 
 ```{r}
-colnames(h1b_country) <- c('Country','Continent','1997', '1998', '1999', '2000', '2001', '2002', '2003', '2004', '2005', '2006', '2007', '2008', '2009', '2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022') 
+#changing the year to numerical values
+current_names <- names(h1b_country)
 
-# h1b_country
+colnames(h1b_country) <- c('Country','Continent','1997', '1998', '1999', '2000', '2001', '2002', '2003', '2004', '2005', '2006', '2007', '2008', '2009', '2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022')
+
+data_long <- pivot_longer(h1b_country, cols = -c("Continent", "Country"), names_to = "year", values_to = "count_h1b")
 ```
 
+```{r}
+data_long
+```
 
 ```{r}
 h1b_continent <- h1b_country |>
@@ -188,7 +189,7 @@ ggplot(data_long, aes(x = year, y = count_h1b, fill = Continent)) +
   geom_bar(stat = "identity", position = "stack") +
   facet_wrap(~Continent, scales='free_y') + 
   labs(title = "Total Values by Continent Over the Years",
-       x = "Year", y = "Total Value") + theme(legend.position = "top",
+       x = "Year", y = "Number of Applications") + theme(legend.position = "none",
         axis.text.x = element_text(angle = 45, hjust = 1)) +
   scale_x_discrete(guide=guide_axis(check.overlap=TRUE))
 ```
@@ -351,7 +352,6 @@ print(piecharts_namerica)
 
 ```{r}
 h1b_samerica <- h1b_country |>
-  filter(Continent == 'South America') |>
   select(-Continent)
   #summarize(across(where(is.numeric), sum, na.rm = TRUE))
 
@@ -457,9 +457,8 @@ total_h1b_by_year_long <- h1b_country %>%
   pivot_longer(cols = everything(), names_to = "year", values_to = "Total_H1B_Visas")
 
 # Plot total H1B visas issued worldwide over the years
-ggplot(total_h1b_by_year_long, aes(x = year, y = Total_H1B_Visas, fill = year)) +
+ggplot(total_h1b_by_year_long, aes(x = year, y = Total_H1B_Visas)) +
   geom_bar(stat = "identity") +
-  scale_fill_viridis_d() +
   labs(title = "Total H1B Visas Issued Worldwide Over the Years",
        x = "Year", y = "Total Number of H1B Visas") +
   theme_minimal() +
