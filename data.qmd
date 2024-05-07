@@ -339,8 +339,8 @@ CLASS_OF_ADMISSION is 'H-1B' and CASE_STATUS is 'Certified'.
 ```{r message = FALSE, warning = FALSE}
 # load dataset
 library(readxl)
-fy22 <- read_excel('dataset/Perm_data/PERM_Disclosure_Data_FY2022_Q4.xlsx')
-fy23 <- read_excel('dataset/Perm_data/PERM_Disclosure_Data_FY2023_Q4.xlsx')
+fy22 <- read_excel('dataset-ignore/PERM_Disclosure_Data_FY2022_Q4.xlsx')
+fy23 <- read_excel('dataset-ignore/PERM_Disclosure_Data_FY2023_Q4.xlsx')
 ```
 
 ```{r}
