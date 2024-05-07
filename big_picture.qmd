@@ -31,11 +31,11 @@ Countries like India and China dominate the applicant pool, reflecting strong ed
 In fact, 81.4% of applicants were from India in 2022, when 17.5\$ of the worlds population is in India.
 From 1997 to 2022, applicants from India comprise 61.3% of the total applicant pool, and applicants from Asia comprised 80.4%.
 
-![](images/Pie_2022.png)
 ![](images/GeoVis_2022.png)
 
 In addition, Asia is the only continents where the number of H-1B visa applications has trended upwards in the last 20 years.
-All other countries have remained stagnant or decreased.![](images/Continent_Year_Normalized.png)
+All other countries have remained stagnant or decreased.
+![](images/Continent_Year_Normalized.png)
 
 80% of the Job Titles of H-1B visa holders contain the word 'software', and 40% of the job titles contain the word 'engineer' or 'developer'.
 Therefore, many applicants seek positions in major U.S. tech hubs such as Silicon Valley, Seattle, and New York.
