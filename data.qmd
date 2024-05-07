@@ -103,9 +103,10 @@ The following code shortens the dimension of our dataframe to 3 columns
 specially the years columns. Having many years column can make the
 dataset hard to analysis or explore.
 
-```{r, results='hide', warning = FALSE}
+```{r, results='hide', warning=FALSE, message=FALSE}
 library(dplyr)
 library(tidyr)
+
 h1b_continent <- h1b_country |>
   group_by(Continent)|>
   select(-Country)|>
