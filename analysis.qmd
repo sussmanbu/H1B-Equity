@@ -4,6 +4,7 @@ description: Here we provide a detailed analysis using more sophisticated statis
 toc: true
 draft: false
 ---
+![](images/big_picture .png){width="900"}
 
 # Motivation for Data Analysis
 
