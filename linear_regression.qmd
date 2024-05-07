@@ -1,0 +1,259 @@
+# Libraries
+```{r}
+library(dplyr)
+library(tibble)
+library(tidyr)
+library(readxl)
+library(stringr)
+library(corrplot)
+library(ggplot2)
+library(car)
+library(caret)
+library(fastDummies)
+```
+
+# Load H1b data: 2022 and 2023
+```{r message = FALSE, warning = FALSE}
+fy22 <- read_excel('dataset-ignore/PERM_Disclosure_Data_FY2022_Q4.xlsx')
+fy23 <- read_excel('dataset-ignore/PERM_Disclosure_Data_FY2023_Q4.xlsx')
+```
+#Notes:
+Case_status : Certified, Certified-Expired, Denied, Withdrawn
+Foreign_worker_education: Master's, Bachelor's, Doctorate, Other, None, Associate's, High School
+
+# Load IMF data: GDP per capita and Unemployment
+```{r}
+imf_gdpc_usd_raw <- read_excel('dataset/IMF_data/imf_gdp_per_capita_usd.xls')
+imf_unemployment_raw <- read_excel('dataset/IMF_data/imf_unemployment.xls')
+names(imf_gdpc_usd_raw)[1] <- "Country"
+names(imf_unemployment_raw)[1] <- "Country"
+```
+
+# Country name standardization function
+```{r}
+standardize_country_names <- function(countries) {
+  countries %>%
+    tolower() %>%
+    str_replace_all("burma", "myanmar") %>%
+    str_replace_all("cape verde", "cabo verde") %>%
+    str_replace_all("hong kong sar", "hong kong") %>%
+    str_replace_all("islamic republic of iran", "iran") %>%
+    str_replace_all("kyrgyz republic", "kyrgyzstan") %>%
+    str_replace_all("lao p.d.r.", "laos") %>%
+    str_replace_all("macao sar", "macau") %>%
+    str_replace_all("north macedonia", "macedonia") %>%
+    str_replace_all("russian federation", "russia") %>%
+    str_replace_all("korea, republic of", "south korea") %>%
+    str_replace_all("taiwan province of china", "taiwan") %>%
+    str_replace_all("united republic of tanzania", "tanzania") %>%
+    str_replace_all("türkiye, republic of", "turkey") %>%
+    str_replace_all("united kingdom", "great britain") %>%
+    str_replace_all("bolivarian republic of venezuela", "venezuela") %>%
+    str_replace_all("congo, dem. rep. of the", "democratic republic of congo") %>%
+    str_replace_all("slovak republic", "slovakia") %>%
+    str_replace_all("st lucia", "saint lucia") %>%
+    str_replace_all("st vincent", "saint vincent and the grenadines") %>%
+    str_replace_all("sri lanka", "sri lanka") %>%
+    str_replace_all("bahamas, the", "bahamas") %>%
+    str_replace_all("gambia, the", "gambia") %>%
+    str_replace_all("myanmar \\(myanmar\\)", "myanmar") %>%
+    str_replace_all("united states of america", "united states") %>%
+    str_replace_all("china, people's republic of", "china") %>%
+    str_replace_all("cote d'ivoire", "côte d'ivoire" )
+}
+# TESTING
+
+# h1b_countries <- unique(h1b_stacked$COUNTRY_OF_CITIZENSHIP)
+# imf_countries <- union(imf_gdpc_usd_raw$Country, imf_unemployment_raw$Country)
+# 
+# h1b_countries_standardized <- standardize_country_names(h1b_countries)
+# imf_countries_standardized <- standardize_country_names(imf_countries)
+# 
+# countries_matched_inner <- intersect(h1b_countries_standardized, imf_countries_standardized)
+# countries_matched_full <- union(h1b_countries_standardized, imf_countries_standardized)
+# countries_h1b_left <- setdiff(h1b_countries_standardized, imf_countries_standardized)
+# countries_imf_left <- setdiff(imf_countries_standardized, h1b_countries_standardized)
+# print(length(countries_matched_inner))
+# print(length(countries_matched_full))
+# print(countries_h1b_left)
+# print(countries_imf_left)
+```
+
+# Clean and stack H1b 2022 and 2023
+```{r}
+process_data <- function(df, relevant_columns) {
+  df <- df %>%
+    filter(CLASS_OF_ADMISSION == 'H-1B', CASE_STATUS == 'Certified') %>%
+    select(all_of(relevant_columns)) %>%
+    dummy_cols("FOREIGN_WORKER_EDUCATION", remove_selected_columns = TRUE)
+  df$Country_Standardized <- standardize_country_names(df$COUNTRY_OF_CITIZENSHIP)
+  df <- select(df, -COUNTRY_OF_CITIZENSHIP, -FOREIGN_WORKER_EDUCATION_Other)
+  return (df)
+}
+relevant_columns <- c("WAGE_OFFER_FROM", "COUNTRY_OF_CITIZENSHIP", "FOREIGN_WORKER_EDUCATION")
+fy22_cleaned <- process_data(fy22, relevant_columns)
+fy23_cleaned <- process_data(fy23, relevant_columns)
+h1b_stacked <- rbind(fy22_cleaned, fy23_cleaned)
+fy22_cleaned
+fy23_cleaned
+h1b_stacked
+```
+
+# Clean and backfill IMF GDP per capita and Unemployment
+```{r}
+backfill_leftward <- function(df) {
+  names(df)[1] <- "Country"
+  df[df == "no data"] <- NA
+  df <- df %>% filter(!is.na(Country))
+  df_long <- df %>%
+    pivot_longer(
+      !Country, 
+      names_to = "Year",
+      values_to = "Value"
+    )
+  df_filled <- df_long %>%
+    group_by(Country) %>%
+    fill(Value, .direction = "down") %>%
+    ungroup()
+  df_wide <- df_filled %>%
+    pivot_wider(
+      names_from = Year,
+      values_from = Value
+    )
+  df_wide <- mutate(df_wide, across(c("2022", "2023"), as.numeric))
+  if("2022" %in% names(df_wide) && "2023" %in% names(df_wide)) {
+    df_wide <- df_wide %>%
+      mutate(Average_2022_2023 = rowMeans(select(., c("2022", "2023")), na.rm = TRUE))
+  }
+  df_wide <- df_wide %>%
+    mutate(Country_Standardized = standardize_country_names(Country)) %>%
+    select(Country_Standardized, Average_2022_2023)
+  return(df_wide)
+}
+imf_gdpc_usd <- imf_gdpc_usd_raw %>%
+  slice(1:(nrow(.)-34)) %>%
+  backfill_leftward()
+imf_unemployment <- imf_unemployment_raw %>%
+  slice(1:(nrow(.)-6)) %>%
+  backfill_leftward()
+imf_gdpc_usd
+imf_unemployment
+```
+
+# Mutate IMF columns into H1b
+```{r warning=FALSE}
+h1b_final <- h1b_stacked %>%
+  left_join(imf_gdpc_usd, by = "Country_Standardized") %>%
+  left_join(imf_unemployment, by = "Country_Standardized") %>%
+  na.omit() %>%
+  setNames(c("Wage", "Associate's", "Bachelor's", "Doctorate", "High School", "Master's", "None", "Country", "GDP per capita", "Unemployment"))
+h1b_final
+```
+
+```{r}
+write.csv(h1b_final, file = "dataset/h1b_final_lm.csv", row.names = FALSE)
+```
+
+# Correlation heatmap
+```{r}
+data_for_heatmap <- h1b_final %>%
+  select(-Country) %>%
+  na.omit()
+cor_matrix <- cor(data_for_heatmap)
+corrplot(cor_matrix, method = "color", type = "upper", order = "hclust",
+         tl.col = "black", tl.srt = 45, title = "Correlation Heatmap", addCoef.col = "black", number.cex=0.8)
+```
+
+# Inital linear regression model of Wage ~ GDP per capita + Unemployment
+```{r}
+model_full <- lm(Wage ~ `GDP per capita` + Unemployment + None + `High School` + `Associate's` + `Bachelor's` + `Master's` + Doctorate, data = h1b_final)
+summary(model_full)
+```
+
+# Diagnostics for inital model
+```{r}
+vif(model_full)
+par(mfrow = c(2, 2))
+ggplot(model_full, aes(x = .fitted, y = .resid)) +
+  geom_point(shape = 21, fill = "transparent", color = "black", size = 3, alpha = 0.5) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  labs(x = "Fitted Values", y = "Residuals", title = "Residual vs Fitted of Linear Regression")
+```
+
+# Finding and removing outlier
+```{r}
+cooks_distances <- cooks.distance(model_full)
+threshold <- 0.5 # OR: 4 / (nrow(h1b_final) - length(coef(model)) - 1)
+outliers <- which(cooks_distances > threshold)
+h1b_final_no_outlier <- h1b_final[-outliers, ]
+h1b_final[outliers, ]
+```
+
+# Split h1b_final_no_outlier into training and testing set (9:1)
+```{r}
+set.seed(123)  # for reproducibility
+training_rows <- createDataPartition(h1b_final_no_outlier$Wage, p = 0.9, list = FALSE)
+train_data <- h1b_final_no_outlier[training_rows, ]
+test_data <- h1b_final_no_outlier[-training_rows, ]
+```
+
+# Repeat model on training set only
+```{r}
+model_train <- lm(Wage ~ `GDP per capita` + Unemployment + None + `High School` + `Associate's` + `Bachelor's` + `Master's` + Doctorate, data = train_data)
+summary(model_train)
+```
+
+# Diagnostics for training model
+```{r}
+vif(model_train)
+par(mfrow = c(2, 2))
+ggplot(model_train, aes(x = .fitted, y = .resid)) +
+  geom_point(shape = 21, fill = "transparent", color = "black", size = 3, alpha = 0.5) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  labs(x = "Fitted Values", y = "Residuals", title = "Residual vs Fitted of Linear Regression")
+```
+
+# Evaluating model's predictive performance on testing set
+```{r}
+predictions <- predict(model_train, newdata = test_data)
+test_data$Predicted_Wage <- predictions
+model_rmse <- sqrt(mean((test_data$Wage - test_data$Predicted_Wage)^2))
+print(paste("RMSE on Test Data: ", model_rmse))
+```
+
+# Finding baseline RMSE's (mean & median) to benchmark model
+```{r}
+mean_wage <- mean(h1b_final_no_outlier$Wage, na.rm = TRUE)
+mean_predictions <- rep(mean_wage, nrow(h1b_final_no_outlier))
+mean_rmse <- sqrt(mean((h1b_final_no_outlier$Wage - mean_predictions)^2, na.rm = TRUE))
+print(paste("Baseline RMSE using mean: ", mean_rmse))
+
+median_wage <- median(h1b_final_no_outlier$Wage, na.rm = TRUE)
+median_predictions <- rep(median_wage, nrow(h1b_final_no_outlier))
+median_rmse <- sqrt(mean((h1b_final_no_outlier$Wage - median_predictions)^2, na.rm = TRUE))
+print(paste("Baseline RMSE using median: ", median_rmse))
+
+print(paste("Model RMSE: ", model_rmse))
+print(paste("Improvement over mean baseline: ", mean_rmse - model_rmse))
+print(paste("Improvement over median baseline: ", median_rmse - model_rmse))
+```
+
+# Visualizing actual vs predicted wages
+```{r}
+ggplot(test_data, aes(x = Wage, y = Predicted_Wage)) +
+  
+  geom_point(color = "blue", alpha = 0.5) +
+
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "red") +  # Line x=y for perfect prediction
+
+  labs(title = "Actual vs Predicted Wages on Testing Data",
+
+       x = "Actual Wage (USD)",
+
+       y = "Predicted Wage (USD)") +
+
+  theme_minimal() +
+
+  annotate("text", x = max(train_data$Wage), y = max(train_data$Predicted_Wage), label = "Red line indicates perfect prediction", hjust = 1.1, vjust = 1, size = 3.5, color = "red")
+```
+

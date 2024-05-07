@@ -323,14 +323,14 @@ To recall, one limitation of this KMeans is the choice of cluster, k, and limite
 ```{r}
 yearly_wage <- final_df %>%
   group_by(YEAR_BEGIN) %>%
-  summarise(Avg_Prevailing_Wage = mean(PREVAILING_WAGE, na.rm = TRUE))
+  summarise(WAGE_RATE_OF_PAY_FROM = median(WAGE_RATE_OF_PAY_FROM, na.rm = TRUE))
 
-ggplot(yearly_wage, aes(x = YEAR_BEGIN, y = Avg_Prevailing_Wage)) +
+ggplot(yearly_wage, aes(x = YEAR_BEGIN, y = WAGE_RATE_OF_PAY_FROM)) +
   geom_line() +  # Use a line plot to show trends over time
   geom_point() +  # Add points to highlight each year's average wage
-  labs(title = "Average Prevailing Wage Per Year",
+  labs(title = "Median Employer wage Per Year",
        x = "Year",
-       y = "Average Prevailing Wage") 
+       y = "Median employer wage") 
 
 ```
 we see a sharp drop in year 2021 due to COVID-19. 
