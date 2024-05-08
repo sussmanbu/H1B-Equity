@@ -1,3 +1,4 @@
+
 ---
 title: Data
 description: We describe the sources of our data and the cleaning process.
@@ -8,15 +9,20 @@ editor:
     wrap: 72
 ---
 
-![](images/analysis.png){width="900"} 
+![](images/analysis.png){width="900"}
+
+```{r}
+library(tidyverse)
+```
 
 ### Datasets Overview
 
 We explore three datasets:
 
-1.  **Travel Data**: Visas per country - from travel.state.gov (U.S Department of State, Department of Consular Affairs)
-2.  **Labor Data**: H-1B worker conditions - from dol.gov (U.S Department of Labor)
-3.  **Economic Data**: GDP per capita and Unemployment rate per country - from imf.org (Internation Monetary Fund)
+1.  **Travel Data**: From U.S Department of State.
+2.  **Labor Data**: From U.S Department of Labor (H1B Worker
+    Conditions).
+3.  **Economic Data**: Merged with H1B dataset.
 
 ### Dataset 1: Travel Data
 
@@ -33,17 +39,17 @@ The Report of the Visa Office is an annual report providing statistical
 information on immigrant and non-immigrant visa issuance by consular
 offices, including information visa allocation in numerically limited
 categories. The main part of this dataset we want to focus on is the
-country of origin of visa recipients for H-1B type visas. Years covered
+country of origin of visa recipients for H1B-type visas. Years covered
 range from Fiscal Year 1997 to F.Y. 2022 inclusively.
 
 **Description**: The original dataset comes with the following
 features/columns:
 
 -   **Country**: Origin country of visa recipients.
--   **H-1B**: H-1B approval count.
+-   **H1B**: H1B approval count.
 -   **FY97 - FY22**: Years 1997 to 2022.
 
-Essentially, this dataset contains information of H-1B approval from year
+Essentially, this dataset contains information of H1B approval from year
 1997 till 2022 and its originate country.
 
 **Cleaning Process**:
@@ -66,19 +72,7 @@ Next we save the cleaned dataset as **cleaned_h1b_data.rds**. More
 details of the code in load_and_clean_data.R
 
 ```{r}
-library(readr)
-#filename <- file.choose("cleaned_h1b_data.rds")
-#print(filename)
-h1b_country <- 
-  read_rds('dataset/cleaned_h1b_data.rds')
-```
-
-```{r, results='hide'}
-#changing the year to numerical values
-current_names <- names(h1b_country)
-print(current_names)
-#names(df) <- new_names
-
+h1b_country <- readRDS('dataset/cleaned_h1b_data.rds')
 ```
 
 The code below is to rename the columns to understandable years format.
@@ -92,30 +86,13 @@ colnames(h1b_country) <- c(
   '2015', '2016', '2017', '2018', '2019', '2020', 
   '2021', '2022'
 ) 
-
-head(h1b_country)
 ```
 
 **Reshaped Data**:
 
-The following code shortens the dimension of our dataframe to 3 columns
-specially the years columns. Having many years column can make the
-dataset hard to analysis or explore.
-
-```{r, results='hide', warning=FALSE, message=FALSE}
-library(dplyr)
-library(tidyr)
-
-h1b_continent <- h1b_country |>
-  group_by(Continent)|>
-  select(-Country)|>
-  summarize(across(everything(), sum, na.rm = TRUE))
-
-data_long <- pivot_longer(h1b_continent, cols = -Continent, 
-                          names_to = "year", values_to = "count_h1b")
-
-head(data_long)
-```
+To shortens the dimension of our dataframe to 3 columns
+specially the years columns. We need to group by the continent column and select by country column.
+Next, we will summarize the sum of count results across everything.
 
 ------------------------------------------------------------------------
 
@@ -126,15 +103,19 @@ Labor](https://www.dol.gov/agencies/eta/foreign-labor/performance). We
 downloaded LCA Programs H-1B and PERM disclosure data in .excel file or
 tabular data.
 
+**Source**: Find the source of the dataset: [here](/dataset/cleaned_disclosure.rds)
+
+**Source 2**: Find the 2nd source of the dataset: [here](/dataset/combined_perm_19_23.csv)
+
 PERM_disclosure_data: A system used by the U.S Department of Labor to
 process labor certifications, which is the first step required in the
 process for certain foreign nationals to obtain an employment-based
 immigrant visa, or green card.
 
 LCA_Program_data: LCA stands for Labor Condition Application. This
-application is a component of the H-1B visa process, where employers in
+application is a component of the H1B visa process, where employers in
 the U.S. must attest to the Department of Labor that they will pay the
-H-1B visa holder a wage that is no less than the wage paid to similarly
+H1B visa holder a wage that is no less than the wage paid to similarly
 qualified U.S. workers. It also ensures that employing a foreign worker
 will not adversely affect the working conditions of U.S. workers
 similarly employed.
@@ -199,14 +180,27 @@ attorney, Y or N
 
 Find the full cleaning script [here](/scripts/load_and_clean_data.R).
 
+Because we have dataset that are too big to upload to Github, essentially, we load these datasets from our local machine, and this cleaning script is to filter by H-1B and restrict to relevant columns.
+
+`Case Number`
+
+`Case Status`
+
+`Decision Date`
+
+`Employer name`
+
+`Wage offered`
+
+`country of citizenship`
+
+`foreign worker education`
+
+After that, we split the decision date into years and months for further time analysis, so we can analysis time series data. This is done for the perm_data from year 2019 - 2023, written to the dataset `dataset/combined_perm_19_23.csv`.
+
 The following steps would be describing how we load our dataset and
 merge additional columns. Later down the steps, we will merge the world
 economic dataset
-
-```{r, results='hide'}
-df <- readRDS("dataset/cleaned_disclosure.rds")
-head(df)
-```
 
 We selected this dataset, updated in 2024, because it comprehensively
 represents the evolution of U.S. immigration policy from the Trump to
@@ -217,52 +211,21 @@ universities and majors, while the second contains data on their
 incomes, allowing us to construct a linear regression model. Once
 merged, we will have a dataframe with approximately 30+ columns.
 
-This is the line of code of how to read xlsx files and convert into rds.
+We need  to read xlsx files and convert into rds.
 We commented out after done. Afterward, we can load in rds files and
 merge the columns
 
-```{r}
-# rds for the other two projects
-# df2 <- read_excel("dataset/worksite.xlsx")
-# saveRDS(df2, "dataset/LCA_worksite.rds")
-
-# df3 <- read_excel("dataset/appendix.xlsx")
-# saveRDS(df3, "dataset/LCA_appendix.rds")
-```
-
 ```{r, results='hide'}
-# read in df2
-
 df2 <- readRDS("dataset/LCA_worksite.rds")
-head(df2)
 ```
 
 ```{r, results='hide'}
-# read in df3
-
-df3 <- readRDS("dataset/appendix.rds")
-head(df3)
+df3 <- read_csv("dataset/combined_perm_19_23.csv")
 ```
 
 To merge the dataset together, we can find matching case numbers. The
 additional dataset gives additional information about applicants
 university, field of major, date of degree etc...
-
-Here we commented it out since the dataset has already been merged.
-
-```{r}
-# merge df1 and df2 by case number
-# merge_1 <- merge(df, df2, by="CASE_NUMBER", all = TRUE)
-```
-
-```{r}
-# final_merge <- merge(merge_1, df3, by="CASE_NUMBER", all = TRUE)
-```
-
-```{r}
-# save as new rds for final_merge
-# saveRDS(final_merge, "dataset/final_merge.rds")
-```
 
 Load in the dataset here
 
@@ -322,47 +285,36 @@ preferences.
 
 **Cleaning**
 
-To clean and process H-1B visa data, we need to filters the data where
-CLASS_OF_ADMISSION is 'H-1B' and CASE_STATUS is 'Certified'.
+To clean and process H1B visa data, we used population data from the years 2019 to 2023.
+This is reported by countries. Total population per country.
 
-1.  selects relevant columns specified in relevant_columns
+When we load the dataset, we need to extract the column headers.
 
-2.  creates dummy variables for the 'FOREIGN_WORKER_EDUCATION' column
-    standardizes country names using a function
-    standardize_country_names
+This is written to `dataset/IMF_data/imf_population.csv`.
 
-3.  Applies this function to two data frames, fy22 and fy23,
-    concatenates the cleaned data frames into one (h1b_stacked), and
-    finally displays the cleaned data frames for FY22 (fy22_cleaned),
-    FY23 (fy23_cleaned), and the concatenated data (h1b_stacked).
+We also used GDP per capita in U.S dollars, unemployment rate per country as a percentage.
 
-```{r message = FALSE, warning = FALSE}
-# load dataset
-library(readxl)
-fy22 <- read_excel('dataset-ignore/PERM_Disclosure_Data_FY2022_Q4.xlsx')
-fy23 <- read_excel('dataset-ignore/PERM_Disclosure_Data_FY2023_Q4.xlsx')
-```
-
-```{r}
-# Load IMF data
-imf_gdpc_usd_raw <- read_excel('dataset/IMF_data/imf_gdp_per_capita_usd.xls')
-imf_unemployment_raw <- read_excel('dataset/IMF_data/imf_unemployment.xls')
-names(imf_gdpc_usd_raw)[1] <- "Country"
-names(imf_unemployment_raw)[1] <- "Country"
-```
+There is not much cleaning to be done since these informations can be directly extract from the datasets.
 
 ### Dependencies Used For Data.qmd
 
 Below is a list of packages that we use for our dataset
 
-```{r}
-suppressPackageStartupMessages(library(tidyverse))
-library(tidyr)
-library(viridis)
-library(fastDummies)
-library(ggplot2)
-library(dplyr)
-library(readxl)
-library(readr)
-library(lubridate)
-```
+| Library     | Description                                         |
+|-------------|-----------------------------------------------------|
+| dplyr       | Provides tools for data manipulation.               |
+| tsibble     | Provides time series data structures and functions. |
+| tidyr       | Helps in tidying data for analysis.                 |
+| ggplot2     | A powerful data visualization system.               |
+| forecast    | Methods and tools for forecasting time series data. |
+| zoo         | Methods for irregular time series data.             |
+| magick      | Image processing with ImageMagick.                  |
+| viridis     | Color palettes for data visualization.              |
+| cluster     | Functions for cluster analysis.                     |
+| broom       | Converts analysis objects into tidy data frames.    |
+| stringr     | String manipulation functions.                      |
+| fastDummies | Creates dummy columns for categorical variables.    |
+| prophet     | Time series forecasting using an additive model.    |
+| ggfortify   | Extends ggplot2 for time series and other objects.  |
+| lubridate   | Facilitates working with dates and times.           |
+| corrplot    | Visualizes correlation matrices.                    |

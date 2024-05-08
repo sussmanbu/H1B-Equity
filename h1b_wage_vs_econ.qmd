@@ -1,9 +1,11 @@
 # Libraries
+
 ```{r}
 library(dplyr)
 library(tibble)
 library(tidyr)
 library(readxl)
+library(readr)
 library(stringr)
 library(corrplot)
 library(ggplot2)
@@ -13,6 +15,7 @@ library(fastDummies)
 ```
 
 # Load H1b data: 2022 and 2023
+
 ```{r message = FALSE, warning = FALSE}
 fy <- read_csv('dataset/combined_perm_19_23.csv')
 
@@ -20,14 +23,10 @@ fy23 <- fy |> filter(year == '2023')
 fy22 <- fy |> filter(year == '2022')
 ```
 
-
-
-
-#Notes:
-Case_status : Certified, Certified-Expired, Denied, Withdrawn
-Foreign_worker_education: Master's, Bachelor's, Doctorate, Other, None, Associate's, High School
+#Notes: Case_status : Certified, Certified-Expired, Denied, Withdrawn Foreign_worker_education: Master's, Bachelor's, Doctorate, Other, None, Associate's, High School
 
 # Load IMF data: GDP per capita and Unemployment
+
 ```{r}
 imf_gdpc_usd_raw <- read_excel('dataset/IMF_data/imf_gdp_per_capita_usd.xls')
 imf_unemployment_raw <- read_excel('dataset/IMF_data/imf_unemployment.xls')
@@ -36,6 +35,7 @@ names(imf_unemployment_raw)[1] <- "Country"
 ```
 
 # Clean and stack H1b 2022 and 2023
+
 ```{r}
 source("scripts/standardize_country_names.R")
 process_data <- function(df, relevant_columns) {
@@ -57,6 +57,7 @@ h1b_stacked
 ```
 
 # Clean and backfill IMF GDP per capita and Unemployment
+
 ```{r}
 backfill_leftward <- function(df) {
   names(df)[1] <- "Country"
@@ -98,6 +99,7 @@ imf_unemployment
 ```
 
 # Mutate IMF columns into H1b
+
 ```{r warning=FALSE}
 h1b_final <- h1b_stacked %>%
   left_join(imf_gdpc_usd, by = "Country_Standardized") %>%
@@ -112,6 +114,7 @@ write.csv(h1b_final, file = "dataset/h1b_final_lm.csv", row.names = FALSE)
 ```
 
 # Correlation heatmap
+
 ```{r}
 data_for_heatmap <- h1b_final %>%
   select(-Country) %>%
@@ -121,13 +124,15 @@ corrplot(cor_matrix, method = "color", type = "upper", order = "hclust",
          tl.col = "black", tl.srt = 45, title = "Correlation Heatmap", addCoef.col = "black", number.cex=0.8)
 ```
 
-# Inital linear regression model of Wage ~ GDP per capita + Unemployment
+# Inital linear regression model of Wage \~ GDP per capita + Unemployment
+
 ```{r}
 model_full <- lm(Wage ~ `GDP per capita` + Unemployment + None + `High School` + `Associate's` + `Bachelor's` + `Master's` + Doctorate, data = h1b_final)
 summary(model_full)
 ```
 
 # Diagnostics for inital model
+
 ```{r}
 vif(model_full)
 par(mfrow = c(2, 2))
@@ -138,6 +143,7 @@ ggplot(model_full, aes(x = .fitted, y = .resid)) +
 ```
 
 # Finding and removing outlier
+
 ```{r}
 cooks_distances <- cooks.distance(model_full)
 threshold <- 0.5 # OR: 4 / (nrow(h1b_final) - length(coef(model)) - 1)
@@ -147,6 +153,7 @@ h1b_final[outliers, ]
 ```
 
 # Split h1b_final_no_outlier into training and testing set (9:1)
+
 ```{r}
 set.seed(123)  # for reproducibility
 training_rows <- createDataPartition(h1b_final_no_outlier$Wage, p = 0.9, list = FALSE)
@@ -155,12 +162,14 @@ test_data <- h1b_final_no_outlier[-training_rows, ]
 ```
 
 # Repeat model on training set only
+
 ```{r}
 model_train <- lm(Wage ~ `GDP per capita` + Unemployment + None + `High School` + `Associate's` + `Bachelor's` + `Master's` + Doctorate, data = train_data)
 summary(model_train)
 ```
 
 # Diagnostics for training model
+
 ```{r}
 vif(model_train)
 par(mfrow = c(2, 2))
@@ -171,6 +180,7 @@ ggplot(model_train, aes(x = .fitted, y = .resid)) +
 ```
 
 # Evaluating model's predictive performance on testing set
+
 ```{r}
 predictions <- predict(model_train, newdata = test_data)
 test_data$Predicted_Wage <- predictions
@@ -179,6 +189,7 @@ print(paste("RMSE on Test Data: ", model_rmse))
 ```
 
 # Finding baseline RMSE's (mean & median) to benchmark model
+
 ```{r}
 mean_wage <- mean(h1b_final_no_outlier$Wage, na.rm = TRUE)
 mean_predictions <- rep(mean_wage, nrow(h1b_final_no_outlier))
@@ -196,6 +207,7 @@ print(paste("Improvement over median baseline: ", median_rmse - model_rmse))
 ```
 
 # Visualizing actual vs predicted wages
+
 ```{r}
 ggplot(test_data, aes(x = Wage, y = Predicted_Wage)) +
   
@@ -213,4 +225,3 @@ ggplot(test_data, aes(x = Wage, y = Predicted_Wage)) +
 
   annotate("text", x = max(train_data$Wage), y = max(train_data$Predicted_Wage), label = "Red line indicates perfect prediction", hjust = 1.1, vjust = 1, size = 3.5, color = "red")
 ```
-
